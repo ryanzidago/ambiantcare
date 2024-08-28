@@ -81,6 +81,14 @@ if config_env() == :prod do
       ]
     ]
 
+  config :clipboard, Clipboard.AI.SpeechToText,
+    backends: [
+      huggingface: [
+        base_url: "https://api-inference.huggingface.co",
+        api_key: System.get_env("HUGGING_FACE_API_KEY")
+      ]
+    ]
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
