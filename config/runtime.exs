@@ -77,7 +77,7 @@ if config_env() == :prod do
       ],
       huggingface: [
         base_url: "https://api-inference.huggingface.co",
-        api_key: System.get_env("HUGGINGFACE_API_KEY")
+        api_key: System.get_env("HUGGING_FACE_API_KEY")
       ]
     ]
 
