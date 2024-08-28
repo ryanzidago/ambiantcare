@@ -65,7 +65,7 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :clipboard, Clipboard.LLM,
+  config :clipboard, Clipboard.AI.LLM,
     backends: [
       ollama: [
         base_url: "http://localhost:11434"

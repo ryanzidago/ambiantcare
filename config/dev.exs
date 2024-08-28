@@ -84,7 +84,7 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :clipboard, Clipboard.LLM,
+config :clipboard, Clipboard.AI.LLM,
   backends: [
     ollama: [
       base_url: "http://localhost:11434"
@@ -96,6 +96,14 @@ config :clipboard, Clipboard.LLM,
     ],
     huggingface: [
       base_url: "https://api-inference.huggingface.co",
-      api_key: System.get_env("HUGGINGFACE_API_KEY")
+      api_key: System.get_env("HUGGING_FACE_API_KEY")
+    ]
+  ]
+
+config :clipboard, Clipboard.AI.SpeechToText,
+  backends: [
+    huggingface: [
+      base_url: "https://api-inference.huggingface.co",
+      api_key: System.get_env("HUGGING_FACE_API_KEY")
     ]
   ]

@@ -1,10 +1,10 @@
-defmodule Clipboard.LLM.Backends.Mistral do
+defmodule Clipboard.AI.LLM.Backends.Mistral do
   @moduledoc """
   Mistral backend for LLM.
   """
 
-  alias Clipboard.LLM
-  @behaviour Clipboard.LLM.Backend
+  alias Clipboard.AI.LLM
+  @behaviour Clipboard.AI.LLM.Backend
 
   @agent_endpoint "/v1/agents/completions"
 

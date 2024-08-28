@@ -5,7 +5,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
   use ClipboardWeb, :live_view
 
   alias Clipboard.MedicalNotes.MedicalNote
-  alias Clipboard.LLM
+  alias Clipboard.AI.LLM
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
@@ -17,8 +17,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
-      |> assign(visit_transcription: demo_async_visit_transctiption())
-      |> assign(medical_note_changeset: demo_async_changeset())
+      # |> assign(visit_transcription: demo_async_visit_transctiption())
+      # |> assign(medical_note_changeset: demo_async_changeset())
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     {:ok, socket}
@@ -180,25 +180,35 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp handle_progress(:audio, entry, socket) when entry.done? do
-    # binary =
-    consume_uploaded_entry(socket, entry, fn %{path: path} -> {:ok, File.read!(path)} end)
+    binary =
+      consume_uploaded_entry(socket, entry, fn %{path: path} -> {:ok, File.read!(path)} end)
 
     socket =
       socket
       |> assign(visit_transcription: nil)
-      |> assign_async(:visit_transcription, fn ->
-        transcription = ""
-        {:ok, medical_note_changeset} = query_llm(transcription)
-
-        {:ok,
-         %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
-      end)
+      |> assign_async(:visit_transcription, fn -> audio_to_structured_text(binary) end)
 
     {:noreply, socket}
   end
 
   defp handle_progress(:audio, _entry, socket) do
     {:noreply, socket}
+  end
+
+  defp audio_to_structured_text(binary) do
+    with :ok <- File.write("audio.opus", binary),
+         {:ok, filename} <- Clipboard.Audio.convert("audio.opus", target_extension: "flac"),
+         {:ok, transcription} <-
+           Clipboard.AI.SpeechToText.Backends.HuggingFace.generate(
+             "openai/whisper-large-v3",
+             filename
+           ),
+         {:ok, medical_note_changeset} <- query_llm(transcription) do
+      {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp query_llm(visit_transcription) do
