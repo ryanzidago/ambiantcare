@@ -65,6 +65,22 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :clipboard, Clipboard.LLM,
+    backends: [
+      ollama: [
+        base_url: "http://localhost:11434"
+      ],
+      mistral: [
+        base_url: "https://api.mistral.ai",
+        medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID"),
+        api_key: System.get_env("MISTRAL_API_KEY")
+      ],
+      huggingface: [
+        base_url: "https://api-inference.huggingface.co",
+        api_key: System.get_env("HUGGINGFACE_API_KEY")
+      ]
+    ]
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
