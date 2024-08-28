@@ -19,8 +19,7 @@ defmodule Clipboard.LLM.Backends.Mistral do
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
-      {:error, reason} ->
-        {:error, "Failed to generate response: #{inspect(reason)}"}
+      {:error, _} = error -> error
     end
   end
 
@@ -70,9 +69,6 @@ defmodule Clipboard.LLM.Backends.Mistral do
       {:ok, response}
     else
       {:error, reason} ->
-        require IEx
-        IEx.pry()
-
         {:error,
          decoding_error:
            "Failed to decode response #{inspect(response)} due to #{inspect(reason)}"}
