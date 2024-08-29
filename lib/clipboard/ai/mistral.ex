@@ -1,17 +1,13 @@
-defmodule Clipboard.AI.LLM.Backends.Mistral do
+defmodule Clipboard.AI.Mistral do
   @moduledoc """
   Mistral backend for LLM.
   """
-
-  alias Clipboard.AI.LLM
-  @behaviour Clipboard.AI.LLM.Backend
 
   @agent_endpoint "/v1/agents/completions"
 
   @doc """
   Generates a response using the Mistral backend.
   """
-  @impl LLM.Backend
   def generate(model, prompt, options)
       when is_binary(prompt) and is_binary(model) and is_list(options) do
     with {:ok, body} <- build_body(prompt, model, options),
@@ -80,10 +76,7 @@ defmodule Clipboard.AI.LLM.Backends.Mistral do
   end
 
   defp config do
-    :clipboard
-    |> Application.fetch_env!(LLM)
-    |> Keyword.fetch!(:backends)
-    |> Keyword.fetch!(:mistral)
+    Application.fetch_env!(:clipboard, Mistral)
   end
 
   defp headers do

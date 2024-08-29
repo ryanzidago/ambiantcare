@@ -1,6 +1,6 @@
 defmodule Clipboard.AI.LLM do
-  alias Clipboard.AI.LLM.Backends.Ollama
-  alias Clipboard.AI.LLM.Backends.Mistral
+  alias Clipboard.AI.Ollama
+  alias Clipboard.AI.Mistral
   alias Clipboard.AI.LLM.Backends.Huggingface
 
   @backends_mapper %{

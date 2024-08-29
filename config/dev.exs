@@ -84,26 +84,17 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :clipboard, Clipboard.AI.LLM,
-  backends: [
-    ollama: [
-      base_url: "http://localhost:11434"
-    ],
-    mistral: [
-      base_url: "https://api.mistral.ai",
-      medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID"),
-      api_key: System.get_env("MISTRAL_API_KEY")
-    ],
-    huggingface: [
-      base_url: "https://api-inference.huggingface.co",
-      api_key: System.get_env("HUGGING_FACE_API_KEY")
-    ]
-  ]
+config :clipboard, HuggingFace,
+  serverless_endpoint: "https://api-inference.huggingface.co",
+  dedicated_endpoints: [
+    open_ai_whisper_large_v3:
+      System.get_env("HUGGING_FACE_DEDICATED_OPEN_AI_WHISPER_LARGE_V3_ENDPOINT"),
+    meta_llama31_8B_instruct:
+      System.get_env("HUGGING_FACE_DEDICATED_META_LLAMA_31_8B_INSTRUCT_ENDPOINT")
+  ],
+  api_key: System.get_env("HUGGING_FACE_API_KEY")
 
-config :clipboard, Clipboard.AI.SpeechToText,
-  backends: [
-    huggingface: [
-      base_url: "https://api-inference.huggingface.co",
-      api_key: System.get_env("HUGGING_FACE_API_KEY")
-    ]
-  ]
+config :clipboard, Mistral,
+  base_url: "https://api.mistral.ai",
+  medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID"),
+  api_key: System.get_env("MISTRAL_API_KEY")

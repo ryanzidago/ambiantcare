@@ -1,9 +1,7 @@
-defmodule Clipboard.AI.LLM.Backends.Ollama do
+defmodule Clipboard.AI.Ollama do
   @moduledoc """
-  The `Clipboard.AI.LLM.Backends.Ollama` module implements the `Clipboard.AI.LLM.Backend` for the Ollama API.
+  The `Clipboard.AI.Ollama` module implements the `Clipboard.AI.LLM.Backend` for the Ollama API.
   """
-
-  alias Clipboard.AI.LLM
 
   @generate_endpoint "/api/generate"
   @headers [
@@ -11,9 +9,6 @@ defmodule Clipboard.AI.LLM.Backends.Ollama do
     {"accept", "application/json"}
   ]
 
-  @behaviour Clipboard.AI.LLM.Backend
-
-  @impl LLM.Backend
   @spec generate(model :: binary(), prompt :: binary(), options :: list()) ::
           {:ok, map()} | {:error, binary()}
   def generate(model, prompt, options)
@@ -67,7 +62,7 @@ defmodule Clipboard.AI.LLM.Backends.Ollama do
 
   defp config do
     :clipboard
-    |> Application.fetch_env!(Clipboard.AI.LLM)
+    |> Application.fetch_env!(Clipboard.AI.Ollama)
     |> Keyword.fetch!(:backends)
     |> Keyword.fetch!(:ollama)
   end

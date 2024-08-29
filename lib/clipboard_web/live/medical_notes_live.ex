@@ -5,7 +5,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
   use ClipboardWeb, :live_view
 
   alias Clipboard.MedicalNotes.MedicalNote
-  alias Clipboard.AI.LLM
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
@@ -199,10 +198,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     with :ok <- File.write("audio.opus", binary),
          {:ok, filename} <- Clipboard.Audio.convert("audio.opus", target_extension: "flac"),
          {:ok, transcription} <-
-           Clipboard.AI.SpeechToText.Backends.HuggingFace.generate(
-             "openai/whisper-large-v3",
-             filename
-           ),
+           Clipboard.AI.HuggingFace.generate("openai/whisper-large-v3", filename),
          {:ok, medical_note_changeset} <- query_llm(transcription) do
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
@@ -247,12 +243,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     }
     """
 
-    response = LLM.generate(%{backend: :mistral, model: "", system: system, prompt: prompt})
-
-    # response =
-    #   LLM.generate(%{backend: :ollama, model: "llama3.1", system: system, prompt: prompt})
-
-    with {:ok, response} <- response,
+    with {:ok, response} <- Clipboard.AI.Mistral.generate("", prompt, []),
          changeset <- MedicalNote.changeset(response) do
       {:ok, changeset}
     else
