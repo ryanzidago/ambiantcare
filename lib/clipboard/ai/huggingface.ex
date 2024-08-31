@@ -4,7 +4,7 @@ defmodule Clipboard.AI.HuggingFace do
   alias Clipboard.AI.HuggingFace.Dedicated
 
   def generate(model, data, opts \\ []) do
-    deployment = Keyword.get(opts, :deployment, deployment(:deployment))
+    deployment = Keyword.get(opts, :deployment, deployment())
 
     case deployment do
       :serverless -> Serverless.generate(model, data, opts)
@@ -14,9 +14,13 @@ defmodule Clipboard.AI.HuggingFace do
 
   defp config, do: Application.fetch_env!(:clipboard, HuggingFace)
 
-  defp deployment(key) do
+  def deployment(%{"huggingface_deployment" => "serverless"}), do: :serverless
+  def deployment(%{"huggingface_deployment" => "dedicated"}), do: :dedicated
+  def deployment(_), do: deployment()
+
+  def deployment do
     config()
-    |> Keyword.fetch!(key)
+    |> Keyword.fetch!(:deployment)
     |> String.to_existing_atom()
   end
 end

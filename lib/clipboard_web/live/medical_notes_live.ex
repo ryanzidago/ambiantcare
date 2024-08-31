@@ -7,14 +7,16 @@ defmodule ClipboardWeb.MedicalNotesLive do
   require Logger
 
   alias Clipboard.MedicalNotes.MedicalNote
+  alias Clipboard.AI.HuggingFace
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
 
   @impl LiveView
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     socket =
       socket
+      |> assign(huggingface_deployment: HuggingFace.deployment(params))
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
@@ -187,16 +189,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp handle_progress(:audio, entry, socket) when entry.done? do
-    binary =
-      consume_uploaded_entry(socket, entry, fn %{path: path} -> {:ok, File.read!(path)} end)
-
-    parent = self()
+    binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
+    opts = [parent: self(), huggingface_deployment: socket.assigns.huggingface_deployment]
 
     socket =
       socket
       |> assign(visit_transcription: nil)
       |> assign_async(:visit_transcription, fn ->
-        audio_to_structured_text(binary, parent: parent)
+        audio_to_structured_text(binary, opts)
       end)
 
     {:noreply, socket}
@@ -207,10 +207,12 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp audio_to_structured_text(binary, opts) do
+    deployment = Keyword.get(opts, :huggingface_deployment)
+
     with :ok <- File.write("audio.opus", binary),
          {:ok, filename} <- Clipboard.Audio.convert("audio.opus", target_extension: "flac"),
          {:ok, transcription} <-
-           Clipboard.AI.HuggingFace.generate("openai/whisper-large-v3", filename),
+           HuggingFace.generate("openai/whisper-large-v3", filename, deployment: deployment),
          {:ok, medical_note_changeset} <- query_llm(transcription) do
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
