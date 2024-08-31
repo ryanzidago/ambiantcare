@@ -65,22 +65,31 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :clipboard, HuggingFace,
-    serverless_endpoint: "https://api-inference.huggingface.co",
-    dedicated_endpoints: [
-      open_ai_whisper_large_v3:
-        System.get_env("HUGGING_FACE_DEDICATED_OPEN_AI_WHISPER_LARGE_V3_ENDPOINT"),
-      meta_llama31_8B_instruct:
-        System.get_env("HUGGING_FACE_DEDICATED_META_LLAMA_31_8B_INSTRUCT_ENDPOINT")
+  config :clipboard, Clipboard.AI.HuggingFace,
+    api_key: System.get_env("HUGGING_FACE_API_KEY"),
+    deployment: System.get_env("HUGGING_FACE_DEPLOYMENT") || "dedicated",
+    serverless: [
+      api_endpoint: "https://api-inference.huggingface.co/models"
     ],
-    api_key: System.get_env("HUGGING_FACE_API_KEY")
+    dedicated: [
+      namespace: "GetClipboard",
+      api_endpoint: "https://api.endpoints.huggingface.cloud/v2",
+      model_endpoints: [
+        open_ai_whisper_large_v3:
+          System.get_env("HUGGING_FACE_DEDICATED_OPEN_AI_WHISPER_LARGE_V3_ENDPOINT"),
+        meta_llama_3_1_8b_instruct:
+          System.get_env("HUGGING_FACE_DEDICATED_META_LLAMA_3_1_8B_INSTRUCT_ENDPOINT")
+      ]
+    ]
 
-  config :clipboard, Mistral,
+  config :clipboard, Clipboard.AI.Mistral,
     base_url: "https://api.mistral.ai",
-    medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID"),
-    api_key: System.get_env("MISTRAL_API_KEY")
+    api_key: System.get_env("MISTRAL_API_KEY"),
+    agents: [
+      medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID")
+    ]
 
-  config :clipboard, Ollama, base_url: "http://localhost:11434"
+  config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
 
   # ## SSL Support
   #

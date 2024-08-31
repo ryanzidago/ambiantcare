@@ -4,6 +4,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
   """
   use ClipboardWeb, :live_view
 
+  require Logger
+
   alias Clipboard.MedicalNotes.MedicalNote
 
   alias Phoenix.LiveView
@@ -178,14 +180,24 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  @impl LiveView
+  def handle_info({:error, reason}, socket) do
+    Logger.error(reason)
+    {:noreply, socket}
+  end
+
   defp handle_progress(:audio, entry, socket) when entry.done? do
     binary =
       consume_uploaded_entry(socket, entry, fn %{path: path} -> {:ok, File.read!(path)} end)
 
+    parent = self()
+
     socket =
       socket
       |> assign(visit_transcription: nil)
-      |> assign_async(:visit_transcription, fn -> audio_to_structured_text(binary) end)
+      |> assign_async(:visit_transcription, fn ->
+        audio_to_structured_text(binary, parent: parent)
+      end)
 
     {:noreply, socket}
   end
@@ -194,7 +206,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  defp audio_to_structured_text(binary) do
+  defp audio_to_structured_text(binary, opts) do
     with :ok <- File.write("audio.opus", binary),
          {:ok, filename} <- Clipboard.Audio.convert("audio.opus", target_extension: "flac"),
          {:ok, transcription} <-
@@ -203,26 +215,31 @@ defmodule ClipboardWeb.MedicalNotesLive do
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
       {:error, reason} ->
+        maybe_send_to_parent(opts, {:error, reason})
         {:error, reason}
     end
   end
 
+  defp maybe_send_to_parent(opts, message) do
+    if parent = Keyword.get(opts, :parent), do: send(parent, message)
+  end
+
   defp query_llm(visit_transcription) do
-    system = """
-    You are a medical assistant that transform unstructured doctor medical notes into structured data.
+    # _system = """
+    # You are a medical assistant that transform unstructured doctor medical notes into structured data.
 
-    You will receive a transcript of a patient visit and need to generate a structured medical note based on the information provided.
-    You must reply in JSON format with the following fields:
+    # You will receive a transcript of a patient visit and need to generate a structured medical note based on the information provided.
+    # You must reply in JSON format with the following fields:
 
-    {
-      "chief_complaint": "string",
-      "history_of_present_illness": "string",
-      "medications": "string",
-      "physical_examination": "string",
-      "assessment": "string",
-      "plan": "string"
-    }
-    """
+    # {
+    #   "chief_complaint": "string",
+    #   "history_of_present_illness": "string",
+    #   "medications": "string",
+    #   "physical_examination": "string",
+    #   "assessment": "string",
+    #   "plan": "string"
+    # }
+    # """
 
     prompt = """
     You are a medical assistant that transform unstructured doctor medical notes into structured data.
@@ -247,8 +264,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
          changeset <- MedicalNote.changeset(response) do
       {:ok, changeset}
     else
-      {:error, reason} ->
-        {:error, "Failed to generate medical note: #{inspect(reason)}"}
+      {:error, reason} -> {:error, reason}
     end
   end
 

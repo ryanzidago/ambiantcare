@@ -18,8 +18,7 @@ defmodule Clipboard.AI.Ollama do
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
-      {:error, reason} ->
-        {:error, "Failed to generate response: #{inspect(reason)}"}
+      {:error, reason} -> {:error, reason}
     end
   end
 

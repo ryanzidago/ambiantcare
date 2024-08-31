@@ -2,6 +2,7 @@ defmodule Clipboard.AI.Mistral do
   @moduledoc """
   Mistral backend for LLM.
   """
+  alias __MODULE__
 
   @agent_endpoint "/v1/agents/completions"
 
@@ -15,7 +16,8 @@ defmodule Clipboard.AI.Mistral do
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
-      {:error, _} = error -> error
+      {:error, _} = error ->
+        error
     end
   end
 
@@ -44,7 +46,7 @@ defmodule Clipboard.AI.Mistral do
       |> Map.put("stream", stream)
       # |> Map.put("response_format", format)
       |> Map.put("random_seed", random_seed)
-      |> Map.put("agent_id", config()[:medical_note_agent_id])
+      |> Map.put("agent_id", agent(:medical_note_agent_id))
 
     Jason.encode(body)
   end
@@ -85,5 +87,11 @@ defmodule Clipboard.AI.Mistral do
       {"accept", "application/json"},
       {"authorization", "Bearer #{config()[:api_key]}"}
     ]
+  end
+
+  defp agent(key) do
+    config()
+    |> Keyword.fetch!(:agents)
+    |> Keyword.fetch!(key)
   end
 end

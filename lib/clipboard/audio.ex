@@ -21,6 +21,9 @@ defmodule Clipboard.Audio do
           #{filename_without_extension}.#{target_extension})
       )
 
+    # @ryanzidago -- return to new line after ffmpeg's output
+    IO.puts("\n")
+
     case result do
       {_output, 0} -> {:ok, "#{filename_without_extension}.#{target_extension}"}
       {output, _} -> {:error, output}
