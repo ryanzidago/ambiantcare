@@ -30,11 +30,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="md:h-screen grid md:grid-cols-8 align-center gap-40 md:gap-10 md:p-20 p-10">
-      <div class="md:col-span-2">
+    <div class="lg:h-screen grid lg:grid-cols-8 align-center gap-40 lg:gap-10 lg:p-20 p-10">
+      <div class="lg:col-span-2">
         <.sidebar {assigns} />
       </div>
-      <div class="md:col-span-4 md:overflow-y-auto md:px-8">
+      <div class="lg:col-span-4 lg:overflow-y-auto lg:px-8">
         <.medical_note :if={@medical_note_changeset} medical_note_changeset={@medical_note_changeset} />
       </div>
     </div>
@@ -117,32 +117,32 @@ defmodule ClipboardWeb.MedicalNotesLive do
           type="textarea"
           field={form[:chief_complaint]}
           label="Chief Complaint"
-          input_class="h-80 md:h-auto"
+          input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:history_of_present_illness]}
           label="History of Present Illness"
-          input_class="h-80 md:h-auto"
+          input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:assessment]}
           label="Assessment"
-          input_class="h-80 md:h-auto"
+          input_class="h-80 md:h-28 lg:h-auto"
         />
-        <.input type="textarea" field={form[:plan]} label="Plan" input_class="h-80 md:h-auto" />
+        <.input type="textarea" field={form[:plan]} label="Plan" input_class="h-80 md:h-28 lg:h-auto" />
         <.input
           type="textarea"
           field={form[:medications]}
           label="Medications"
-          input_class="h-80 md:h-auto"
+          input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:physical_examination]}
           label="Physical Examination"
-          input_class="h-80 md:h-auto"
+          input_class="h-80 md:h-28 lg:h-auto"
         />
 
         <.button type="submit" class="md:w-32">Save</.button>
