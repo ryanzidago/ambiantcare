@@ -113,16 +113,37 @@ defmodule ClipboardWeb.MedicalNotesLive do
         class="flex flex-col gap-10 drop-shadow-sm"
       >
         <%= @current_datetime %>
-        <.input type="textarea" field={form[:chief_complaint]} label="Chief Complaint" />
+        <.input
+          type="textarea"
+          field={form[:chief_complaint]}
+          label="Chief Complaint"
+          input_class="h-80 md:h-auto"
+        />
         <.input
           type="textarea"
           field={form[:history_of_present_illness]}
           label="History of Present Illness"
+          input_class="h-80 md:h-auto"
         />
-        <.input type="textarea" field={form[:assessment]} label="Assessment" />
-        <.input type="textarea" field={form[:plan]} label="Plan" />
-        <.input type="textarea" field={form[:medications]} label="Medications" />
-        <.input type="textarea" field={form[:physical_examination]} label="Physical Examination" />
+        <.input
+          type="textarea"
+          field={form[:assessment]}
+          label="Assessment"
+          input_class="h-80 md:h-auto"
+        />
+        <.input type="textarea" field={form[:plan]} label="Plan" input_class="h-80 md:h-auto" />
+        <.input
+          type="textarea"
+          field={form[:medications]}
+          label="Medications"
+          input_class="h-80 md:h-auto"
+        />
+        <.input
+          type="textarea"
+          field={form[:physical_examination]}
+          label="Physical Examination"
+          input_class="h-80 md:h-auto"
+        />
 
         <.button type="submit" class="md:w-32">Save</.button>
       </.form>
