@@ -20,8 +20,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
-      # |> assign(visit_transcription: demo_async_visit_transctiption())
-      # |> assign(medical_note_changeset: demo_async_changeset())
+      |> assign(visit_transcription: demo_async_visit_transctiption())
+      |> assign(medical_note_changeset: demo_async_changeset())
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     {:ok, socket}
@@ -30,11 +30,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="h-screen grid grid-cols-8 align-center gap-10 p-20">
-      <div class="col-span-2">
+    <div class="md:h-screen grid md:grid-cols-8 align-center gap-40 md:gap-10 md:p-20 p-10">
+      <div class="md:col-span-2">
         <.sidebar {assigns} />
       </div>
-      <div class="col-span-4 overflow-y-auto px-8">
+      <div class="md:col-span-4 md:overflow-y-auto md:px-8">
         <.medical_note :if={@medical_note_changeset} medical_note_changeset={@medical_note_changeset} />
       </div>
     </div>
@@ -55,8 +55,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
           :if={@visit_transcription}
           assign={@visit_transcription}
         >
-          <:loading><.spinner /></:loading>
-          <:failed :let={_reason}><span>Oops, something went wrong!</span></:failed>
+          <:loading>
+            <div class="flex flex-col items-center">
+              <.spinner />
+            </div>
+          </:loading>
+          <:failed :let={_reason}>
+            <span class="flex flex-col items-center">Oops, something went wrong!</span>
+          </:failed>
           <quote class="text-sm">
             <.visit_transcription visit_transcription={visit_transcription} />
           </quote>
@@ -98,7 +104,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <.spinner />
       </:loading>
       <:failed :let={_reason}>
-        <span>Oops, something went wrong!</span>
+        Oops, something went wrong!
       </:failed>
       <.form
         :let={form}
@@ -118,7 +124,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <.input type="textarea" field={form[:medications]} label="Medications" />
         <.input type="textarea" field={form[:physical_examination]} label="Physical Examination" />
 
-        <.button type="submit" class="w-32">Save</.button>
+        <.button type="submit" class="md:w-32">Save</.button>
       </.form>
     </.async_result>
     """
@@ -137,7 +143,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
           label="Visit Transcription"
           input_class="h-[50vh]"
         />
-        <.button type="submit" class="w-32">Save</.button>
+        <.button type="submit" class="md:w-32">Save</.button>
       </div>
     </.form>
     """
