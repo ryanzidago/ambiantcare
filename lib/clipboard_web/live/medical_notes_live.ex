@@ -81,7 +81,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       id="microphone"
       phx-hook="Microphone"
       phx-click="toggle_recording"
-      data-endinanness={System.endianness()}
+      data-endianness={System.endianness()}
     >
       <%= if not @recording?, do: "Start Visit", else: "End Visit" %>
     </.button>
