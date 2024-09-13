@@ -1,0 +1,1 @@
+export $(cat .env) && mix format && iex -S mix phx.server
