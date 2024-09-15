@@ -1,4 +1,4 @@
-const SAMPLING_RATE = 16_000;
+const SAMPLE_RATE = 16_000;
 
 const Microphone = {
   mounted() {
@@ -7,9 +7,9 @@ const Microphone = {
 
     this.el.addEventListener("click", () => {
       if (this.isRecording()) {
-        this.stopRecording()
+        this.stopRecording();
       } else {
-        this.startRecording()
+        this.startRecording();
       }
     });
   },
@@ -37,7 +37,7 @@ const Microphone = {
       const audioBlob = new Blob(this.audioChunks);
 
       audioBlob.arrayBuffer().then((buffer) => {
-        const context = new AudioContext({ sampleRate: SAMPLING_RATE });
+        const context = new AudioContext({ sampleRate: SAMPLE_RATE });
 
         context.decodeAudioData(buffer, (audioBuffer) => {
           const pcmBuffer = this.audioBufferToPcm(audioBuffer);
@@ -48,7 +48,7 @@ const Microphone = {
           );
           this.upload("audio", [new Blob([buffer])]);
         });
-      })
+      });
     });
 
     this.mediaRecorder.stop();
@@ -114,7 +114,7 @@ const Microphone = {
     } else {
       return "big";
     }
-  }
-}
+  },
+};
 
 export { Microphone };
