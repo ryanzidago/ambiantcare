@@ -9,6 +9,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
   alias Clipboard.MedicalNotes.MedicalNote
   alias Clipboard.AI.HuggingFace
 
+  alias ClipboardWeb.Microphone
+
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
 
@@ -20,8 +22,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
-      |> assign(visit_transcription: demo_async_visit_transctiption())
-      |> assign(medical_note_changeset: demo_async_changeset())
+      |> assign(microphone_hook: Microphone.from_params(params))
+      # |> assign(visit_transcription: demo_async_visit_transctiption())
+      # |> assign(medical_note_changeset: demo_async_changeset())
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     {:ok, socket}
@@ -73,13 +76,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   attr :recording?, :boolean, required: true
+  attr :microphone_hook, :string, required: true
 
   defp recording_button(assigns) do
     ~H"""
     <.button
       type="button"
       id="microphone"
-      phx-hook="Microphone"
+      phx-hook={@microphone_hook}
       phx-click="toggle_recording"
       data-endianness={System.endianness()}
     >
@@ -181,7 +185,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  def handle_event("no_op", %{}, socket) do
+  def handle_event("no_op", _params, socket) do
     # We need phx-change and phx-submit on the form for live uploads,
     # but we make predictions immediately using :progress, so we just
     # ignore this event
@@ -194,9 +198,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
         socket
       ) do
     socket =
-      socket
-      |> assign(visit_transcription: nil)
-      |> assign_async(:visit_transcription, fn ->
+      assign_async(socket, :visit_transcription, fn ->
         {:ok, medical_note_changeset} = query_llm(visit_transcription)
 
         {:ok,
@@ -216,14 +218,19 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp handle_progress(:audio, entry, socket) when entry.done? do
+    microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
     binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
-    opts = [parent: self(), huggingface_deployment: socket.assigns.huggingface_deployment]
+    current_visit_transcription = get_current_transcription(socket)
+
+    opts = [
+      parent: self(),
+      huggingface_deployment: socket.assigns.huggingface_deployment,
+      microphone_hook: microphone_hook
+    ]
 
     socket =
-      socket
-      |> assign(visit_transcription: nil)
-      |> assign_async(:visit_transcription, fn ->
-        audio_to_structured_text(binary, opts)
+      assign_async(socket, :visit_transcription, fn ->
+        audio_to_structured_text(binary, current_visit_transcription, opts)
       end)
 
     {:noreply, socket}
@@ -233,14 +240,17 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  defp audio_to_structured_text(binary, opts) do
+  defp audio_to_structured_text(binary, current_visit_transcription, opts) do
     deployment = Keyword.get(opts, :huggingface_deployment)
 
-    with :ok <- File.write("audio.opus", binary),
-         {:ok, filename} <- Clipboard.Audio.convert("audio.opus", target_extension: "flac"),
+    with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <-
            HuggingFace.generate("openai/whisper-large-v3", filename, deployment: deployment),
          {:ok, medical_note_changeset} <- query_llm(transcription) do
+      File.write!(build_filename(:transcription), transcription)
+      Logger.debug("*** transcription ***")
+      Logger.debug(transcription)
+      transcription = current_visit_transcription <> " " <> transcription
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
       {:error, reason} ->
@@ -249,27 +259,83 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
+  defp write_to_file(binary, opts) do
+    audio =
+      case Keyword.fetch!(opts, :microphone_hook) do
+        "Microphone" -> :opus
+        "StreamMicrophone" -> :raw_audio
+      end
+
+    filename = build_filename(audio)
+
+    audio_convert_fn =
+      case audio do
+        :opus -> fn filename -> Clipboard.Audio.opus_to_flac(filename) end
+        :raw_audio -> fn filename -> Clipboard.Audio.raw_to_flac(filename) end
+      end
+
+    with :ok <- File.write(filename, binary),
+         {:ok, filename} <- audio_convert_fn.(filename) do
+      {:ok, filename}
+    else
+      {:error, _} = error -> error
+    end
+  end
+
+  defp build_filename(:raw_audio) do
+    tmp_dir = System.tmp_dir!()
+
+    datetime =
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+      |> DateTime.to_string()
+      |> String.replace(":", "_")
+      |> String.replace(" ", "_")
+
+    _filename = "#{tmp_dir}/audio_#{datetime}"
+  end
+
+  defp build_filename(:opus) do
+    tmp_dir = System.tmp_dir!()
+
+    datetime =
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+      |> DateTime.to_string()
+      |> String.replace(":", "_")
+      |> String.replace(" ", "_")
+
+    _filename = "#{tmp_dir}/audio_#{datetime}.opus"
+  end
+
+  defp build_filename(:transcription) do
+    tmp_dir = System.tmp_dir!()
+
+    datetime =
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+      |> DateTime.to_string()
+      |> String.replace(":", "_")
+      |> String.replace(" ", "_")
+
+    "#{tmp_dir}/transcription_#{datetime}.txt"
+  end
+
   defp maybe_send_to_parent(opts, message) do
     if parent = Keyword.get(opts, :parent), do: send(parent, message)
   end
 
+  defp get_current_transcription(%{} = socket) do
+    case Map.get(socket.assigns, :visit_transcription) do
+      %AsyncResult{ok?: true, result: result} when is_binary(result) ->
+        result
+
+      _ ->
+        ""
+    end
+  end
+
   defp query_llm(visit_transcription) do
-    # _system = """
-    # You are a medical assistant that transform unstructured doctor medical notes into structured data.
-
-    # You will receive a transcript of a patient visit and need to generate a structured medical note based on the information provided.
-    # You must reply in JSON format with the following fields:
-
-    # {
-    #   "chief_complaint": "string",
-    #   "history_of_present_illness": "string",
-    #   "medications": "string",
-    #   "physical_examination": "string",
-    #   "assessment": "string",
-    #   "plan": "string"
-    # }
-    # """
-
     prompt = """
     You are a medical assistant that transform unstructured doctor medical notes into structured data.
 
