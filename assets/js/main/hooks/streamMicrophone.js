@@ -1,7 +1,6 @@
 const CHUNK_DURATION_IN_MS = 5_000;
 const AUDIO_BITS_PER_SECOND = 128_000;
 const REQUEST_FIRST_CHUNK_AFTER_DURATION_IN_MS = 50;
-const MIME_TYPE = "audio/ogg;codecs=opus";
 
 // @ryanzidago
 //
@@ -29,7 +28,6 @@ const StreamMicrophone = {
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       this.mediaRecorder = new MediaRecorder(stream, {
-        mimeType: MIME_TYPE,
         audioBitsPerSecond: AUDIO_BITS_PER_SECOND,
       });
 
@@ -77,7 +75,7 @@ const StreamMicrophone = {
   processChunks() {
     if (this.audioChunks.length < 1) return;
 
-    const audioBlob = new Blob(this.audioChunks, { type: MIME_TYPE });
+    const audioBlob = new Blob(this.audioChunks);
     this.upload("audio", [audioBlob]);
     this.audioChunks = [];
   },
@@ -86,4 +84,5 @@ const StreamMicrophone = {
     return this.mediaRecorder && this.mediaRecorder.state === "recording";
   },
 };
+
 export { StreamMicrophone };
