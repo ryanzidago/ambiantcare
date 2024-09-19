@@ -16,6 +16,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   @impl LiveView
   def mount(params, _session, socket) do
+    # @ryanzidago - ensure the endpoint is always running when someone visits the page
+    _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
+
     socket =
       socket
       |> assign(huggingface_deployment: HuggingFace.deployment(params))
