@@ -93,6 +93,10 @@ if config_env() == :prod do
 
   config :clipboard, :default_locale, "en"
 
+  config :clipboard, Clipboard.AI.Gladia,
+    api_key: System.get_env("GLADIA_API_KEY"),
+    base_url: "https://api.gladia.io/v2"
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

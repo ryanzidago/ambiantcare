@@ -110,4 +110,6 @@ config :clipboard, Clipboard.AI.Mistral,
 
 config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
 
-config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
+config :clipboard, Clipboard.AI.Gladia,
+  api_key: System.get_env("GLADIA_API_KEY"),
+  base_url: "https://api.gladia.io/v2"

@@ -9,7 +9,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
   require Logger
 
   alias Clipboard.MedicalNotes.MedicalNote
+
   alias Clipboard.AI.HuggingFace
+  alias Clipboard.AI.Gladia
 
   alias ClipboardWeb.Microphone
 
@@ -25,6 +27,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
     socket =
       socket
+      |> assign_speech_to_text_backend(params)
       |> assign(huggingface_deployment: HuggingFace.deployment(params))
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
@@ -270,16 +273,19 @@ defmodule ClipboardWeb.MedicalNotesLive do
     microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
     binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
     current_visit_transcription = get_current_transcription(socket)
+    stt_backend = socket.assigns.stt_backend
 
     opts = [
       parent: self(),
-      huggingface_deployment: socket.assigns.huggingface_deployment,
       microphone_hook: microphone_hook
     ]
 
+    backend_opts = backend_opts(stt_backend, socket.assigns)
+    opts = Keyword.merge(opts, backend_opts)
+
     socket =
       assign_async(socket, :visit_transcription, fn ->
-        audio_to_structured_text(binary, current_visit_transcription, opts)
+        audio_to_structured_text(stt_backend, binary, current_visit_transcription, opts)
       end)
 
     {:noreply, socket}
@@ -289,12 +295,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  defp audio_to_structured_text(binary, current_visit_transcription, opts) do
-    deployment = Keyword.get(opts, :huggingface_deployment)
-
+  defp audio_to_structured_text(stt_backend, binary, current_visit_transcription, opts) do
     with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <-
-           HuggingFace.generate("openai/whisper-large-v3", filename, deployment: deployment),
+           apply(stt_backend, :generate, ["openai/whisper-large-v3", filename, opts]),
          {:ok, medical_note_changeset} <- query_llm(transcription) do
       File.write!(build_filename(:transcription), transcription)
       Logger.debug("*** transcription ***")
@@ -306,6 +310,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
         maybe_send_to_parent(opts, {:error, reason})
         {:error, reason}
     end
+  end
+
+  defp backend_opts(HuggingFace, assigns) do
+    [deployment: assigns.huggingface_deployment]
+  end
+
+  defp backend_opts(Gladia, _assigns) do
+    []
   end
 
   defp write_to_file(binary, opts) do
@@ -413,7 +425,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp maybe_resume_dedicated_endpoint(socket) do
-    if is_nil(socket.assigns.visit_transcription) do
+    if socket.assigns.stt_backend == HuggingFace and is_nil(socket.assigns.visit_transcription) do
       # @ryanzidago - ensure the endpoint is always running when someone visits the page
       _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
     else
@@ -452,6 +464,21 @@ defmodule ClipboardWeb.MedicalNotesLive do
       "true" -> demo_async_changeset()
       _ -> nil
     end
+  end
+
+  defp assign_speech_to_text_backend(socket, %{"stt_backend" => "huggingface"}) do
+    socket
+    |> assign(stt_backend: HuggingFace)
+  end
+
+  defp assign_speech_to_text_backend(socket, %{"stt_backend" => "gladia"}) do
+    socket
+    |> assign(stt_backend: Gladia)
+  end
+
+  defp assign_speech_to_text_backend(socket, _params) do
+    socket
+    |> assign(stt_backend: Gladia)
   end
 
   def demo_async_visit_transctiption(locale \\ :en) do
