@@ -17,11 +17,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
   alias Phoenix.LiveView.AsyncResult
 
   @available_locales Gettext.known_locales(ClipboardWeb.Gettext)
+  @default_locale Gettext.get_locale(ClipboardWeb.Gettext)
 
   @impl LiveView
   def mount(params, _session, socket) do
-    locale = Map.get(params, "locale", Gettext.get_locale(ClipboardWeb.Gettext))
-    Gettext.put_locale(ClipboardWeb.Gettext, locale)
+    put_locale(params)
 
     socket =
       socket
@@ -30,7 +30,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
-      |> assign(visit_transcription: maybe_demo_visit_transcription(params, locale))
+      |> assign(visit_transcription: maybe_demo_visit_transcription(params))
       |> assign(medical_note_changeset: maybe_demo_changeset(params))
       |> assign(available_locales: @available_locales)
       |> assign(selected_locale: Gettext.get_locale(ClipboardWeb.Gettext))
@@ -414,8 +414,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp maybe_resume_dedicated_endpoint(socket) do
     if is_nil(socket.assigns.visit_transcription) do
-      require IEx
-      IEx.pry()
       # @ryanzidago - ensure the endpoint is always running when someone visits the page
       _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
     else
@@ -424,16 +422,25 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp path_from_mount_params(%{} = params) do
+    {locale, params} = Map.pop!(params, "locale")
     encoded_query = URI.encode_query(params)
 
     _path =
-      "/medical-notes"
+      "/#{locale}/medical-notes"
       |> URI.new!()
       |> URI.append_query(encoded_query)
       |> URI.to_string()
   end
 
-  defp maybe_demo_visit_transcription(params, locale) do
+  defp put_locale(params) do
+    locale = Map.get(params, "locale")
+    locale = if locale in @available_locales, do: locale, else: @default_locale
+    Gettext.put_locale(ClipboardWeb.Gettext, locale)
+  end
+
+  defp maybe_demo_visit_transcription(params) do
+    locale = Gettext.get_locale(ClipboardWeb.Gettext)
+
     case Map.get(params, "use_demo_transcription") do
       "true" -> demo_async_visit_transctiption(locale)
       _ -> nil
