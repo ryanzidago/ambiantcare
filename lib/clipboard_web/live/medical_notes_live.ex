@@ -16,6 +16,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
 
+  @available_locales Gettext.known_locales(ClipboardWeb.Gettext)
+
   @impl LiveView
   def mount(params, _session, socket) do
     locale = Map.get(params, "locale", Gettext.get_locale(ClipboardWeb.Gettext))
@@ -30,6 +32,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params, locale))
       |> assign(medical_note_changeset: maybe_demo_changeset(params))
+      |> assign(available_locales: @available_locales)
+      |> assign(selected_locale: Gettext.get_locale(ClipboardWeb.Gettext))
+      |> assign(mount_params: params)
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket)
@@ -40,13 +45,36 @@ defmodule ClipboardWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="lg:h-screen grid lg:grid-cols-8 align-center gap-40 lg:gap-10 lg:p-20 p-10">
-      <div class="lg:col-span-2">
+    <div class="lg:h-screen grid lg:grid-cols-10 align-center gap-40 lg:gap-10 lg:p-20 p-10">
+      <div class="lg:col-span-1">
+        <.setting_panel
+          mount_params={@mount_params}
+          available_locales={@available_locales}
+          selected_locale={@selected_locale}
+        />
+      </div>
+      <div class="lg:col-span-4">
         <.transcription_panel {assigns} />
       </div>
-      <div class="lg:col-span-4 lg:overflow-y-auto lg:px-8">
+      <div class="lg:col-span-5 lg:overflow-y-auto lg:px-8">
         <.medical_note :if={@medical_note_changeset} medical_note_changeset={@medical_note_changeset} />
       </div>
+    </div>
+    """
+  end
+
+  defp setting_panel(assigns) do
+    ~H"""
+    <div class="flex flex-col w-full h-full">
+      <.form for={%{}} phx-change="change_locale" as={:locale}>
+        <.input
+          type="select"
+          name="locale"
+          label={gettext("Language")}
+          options={@available_locales}
+          value={@selected_locale}
+        />
+      </.form>
     </div>
     """
   end
@@ -189,6 +217,20 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   def handle_event("toggle_recording", _params, socket) when socket.assigns.recording? do
     socket = assign(socket, recording?: false)
+    {:noreply, socket}
+  end
+
+  def handle_event("change_locale", params, socket) do
+    locale = Map.get(params, "locale", Gettext.get_locale(ClipboardWeb.Gettext))
+    Gettext.put_locale(ClipboardWeb.Gettext, locale)
+    socket = assign(socket, selected_locale: locale)
+
+    path =
+      socket.assigns.mount_params
+      |> Map.put("locale", locale)
+      |> path_from_mount_params()
+
+    socket = redirect(socket, to: path)
     {:noreply, socket}
   end
 
@@ -379,6 +421,16 @@ defmodule ClipboardWeb.MedicalNotesLive do
     else
       {:ok, :no_op}
     end
+  end
+
+  defp path_from_mount_params(%{} = params) do
+    encoded_query = URI.encode_query(params)
+
+    _path =
+      "/medical-notes"
+      |> URI.new!()
+      |> URI.append_query(encoded_query)
+      |> URI.to_string()
   end
 
   defp maybe_demo_visit_transcription(params, locale) do

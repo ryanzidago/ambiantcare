@@ -22,7 +22,7 @@ msgstr "Azioni"
 msgid "Attempting to reconnect"
 msgstr "Tentativo di riconnessione"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:101
+#: lib/clipboard_web/live/medical_notes_live.ex:125
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr "Termina Visita"
@@ -42,7 +42,7 @@ msgstr "Resisti mentre torniamo in carreggiata"
 msgid "Something went wrong!"
 msgstr "Qualcosa è andato storto!"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:101
+#: lib/clipboard_web/live/medical_notes_live.ex:125
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr "Inizia Visita"
@@ -63,38 +63,43 @@ msgstr "Non riusciamo a trovare la connessione internet"
 msgid "close"
 msgstr "chiudi"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:146
+#: lib/clipboard_web/live/medical_notes_live.ex:170
 #, elixir-autogen, elixir-format
 msgid "Assessment"
 msgstr "Valutazione"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:134
+#: lib/clipboard_web/live/medical_notes_live.ex:158
 #, elixir-autogen, elixir-format
 msgid "Chief Complaint"
 msgstr "Principale Reclamo"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:140
+#: lib/clipboard_web/live/medical_notes_live.ex:164
 #, elixir-autogen, elixir-format
 msgid "History of Present Illness"
 msgstr "Storia della Malattia Attuale"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:153
+#: lib/clipboard_web/live/medical_notes_live.ex:177
 #, elixir-autogen, elixir-format
 msgid "Medications"
 msgstr "Farmaci"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:159
+#: lib/clipboard_web/live/medical_notes_live.ex:183
 #, elixir-autogen, elixir-format
 msgid "Physical Examination"
 msgstr "Esame Fisico"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:163
-#: lib/clipboard_web/live/medical_notes_live.ex:182
+#: lib/clipboard_web/live/medical_notes_live.ex:187
+#: lib/clipboard_web/live/medical_notes_live.ex:206
 #, elixir-autogen, elixir-format
 msgid "Save"
 msgstr "Salva"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:179
+#: lib/clipboard_web/live/medical_notes_live.ex:203
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr "Trascrizione della Visita"
+
+#: lib/clipboard_web/live/medical_notes_live.ex:73
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "Lingua"
