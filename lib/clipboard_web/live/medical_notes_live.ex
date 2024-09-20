@@ -16,9 +16,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   @impl LiveView
   def mount(params, _session, socket) do
-    # @ryanzidago - ensure the endpoint is always running when someone visits the page
-    _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
-
     socket =
       socket
       |> assign(huggingface_deployment: HuggingFace.deployment(params))
@@ -26,9 +23,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
-      # |> assign(visit_transcription: demo_async_visit_transctiption())
-      # |> assign(medical_note_changeset: demo_async_changeset())
+      |> assign(visit_transcription: maybe_demo_visit_transcription(params))
+      |> assign(medical_note_changeset: maybe_demo_changeset(params))
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
+
+    maybe_resume_dedicated_endpoint(socket)
 
     {:ok, socket}
   end
@@ -366,11 +365,34 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
-  def demo_async_visit_transctiption do
+  defp maybe_resume_dedicated_endpoint(socket) do
+    if is_nil(socket.assigns.visit_transcription) do
+      # @ryanzidago - ensure the endpoint is always running when someone visits the page
+      _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
+    else
+      {:ok, :no_op}
+    end
+  end
+
+  defp maybe_demo_visit_transcription(params) do
+    case Map.get(params, "use_demo_transcription") do
+      "true" -> demo_async_visit_transctiption()
+      _ -> nil
+    end
+  end
+
+  defp maybe_demo_changeset(params) do
+    case Map.get(params, "use_demo_transcription") do
+      "true" -> demo_async_changeset()
+      _ -> nil
+    end
+  end
+
+  def demo_async_visit_transctiption(locale \\ :en) do
     %AsyncResult{
       ok?: true,
       loading: false,
-      result: demo_visit_transcription()
+      result: demo_visit_transcription(locale)
     }
   end
 
@@ -382,7 +404,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
     }
   end
 
-  defp demo_visit_transcription do
+  defp demo_visit_transcription(locale)
+
+  defp demo_visit_transcription(:en) do
     """
     Cardiologist: Good morning, Mr. Rossi. I see you're here for a follow-up. How have you been feeling since your last visit?
 
@@ -429,6 +453,29 @@ defmodule ClipboardWeb.MedicalNotesLive do
     Patient: I will. Thanks again.
 
     Cardiologist: Take care, Mr. Rossi.
+    """
+  end
+
+  defp demo_visit_transcription(:it) do
+    """
+     Come si sente oggi?
+
+     Non tanto bene, dottore.
+     Ho avuto un forte mal di testa per tre giorni consecutivi e ultimamente mi sento molto stanco.
+
+     Capisco. Ha notato altri sintomi? Febbre, nausea o problemi di vista?
+
+     No, niente febbre o nausea, ma a volte vedo delle macchie scure davanti agli occhi, soprattutto quando mi alzo rapidamente.
+
+     Ha cambiato qualcosa nella sua routine, come dieta o orari di sonno?
+
+     In effetti, ho dormito meno del solito e ho mangiato più cibo da asporto nelle ultime settimane a causa del lavoro.
+
+     Potrebbe influire, ma vorrei comunque fare qualche controllo. La pressione sanguigna sembra un po' alta. Ha una storia familiare di ipertensione?
+
+     Sì, mio padre soffre di ipertensione da anni. Va bene, faremo qualche esame del sangue per escludere eventuali altre cause.
+
+     Intanto le consiglio di riposare di più e cercare di seguire una dieta più equilibrata.
     """
   end
 end
