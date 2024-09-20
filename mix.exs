@@ -80,7 +80,8 @@ defmodule Clipboard.MixProject do
         "tailwind clipboard --minify",
         "esbuild clipboard --minify",
         "phx.digest"
-      ]
+      ],
+      "gettext.pipeline": ["gettext.extract", "gettext.merge priv/gettext"]
     ]
   end
 end

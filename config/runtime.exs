@@ -91,6 +91,8 @@ if config_env() == :prod do
 
   config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
 
+  config :clipboard, :default_locale, "en"
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

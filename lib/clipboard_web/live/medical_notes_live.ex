@@ -4,6 +4,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
   """
   use ClipboardWeb, :live_view
 
+  use Gettext, backend: ClipboardWeb.Gettext
+
   require Logger
 
   alias Clipboard.MedicalNotes.MedicalNote
@@ -16,6 +18,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   @impl LiveView
   def mount(params, _session, socket) do
+    locale = Map.get(params, "locale", Gettext.get_locale(ClipboardWeb.Gettext))
+    Gettext.put_locale(ClipboardWeb.Gettext, locale)
+
     socket =
       socket
       |> assign(huggingface_deployment: HuggingFace.deployment(params))
@@ -23,7 +28,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
-      |> assign(visit_transcription: maybe_demo_visit_transcription(params))
+      |> assign(visit_transcription: maybe_demo_visit_transcription(params, locale))
       |> assign(medical_note_changeset: maybe_demo_changeset(params))
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
@@ -37,7 +42,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     ~H"""
     <div class="lg:h-screen grid lg:grid-cols-8 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-2">
-        <.sidebar {assigns} />
+        <.transcription_panel {assigns} />
       </div>
       <div class="lg:col-span-4 lg:overflow-y-auto lg:px-8">
         <.medical_note :if={@medical_note_changeset} medical_note_changeset={@medical_note_changeset} />
@@ -46,7 +51,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     """
   end
 
-  defp sidebar(assigns) do
+  defp transcription_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
       <.recording_button {assigns} />
@@ -89,7 +94,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       phx-click="toggle_recording"
       data-endianness={System.endianness()}
     >
-      <%= if not @recording?, do: "Start Visit", else: "End Visit" %>
+      <%= if not @recording?, do: gettext("Start Visit"), else: gettext("End Visit") %>
     </.button>
     """
   end
@@ -122,36 +127,36 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <.input
           type="textarea"
           field={form[:chief_complaint]}
-          label="Chief Complaint"
+          label={gettext("Chief Complaint")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:history_of_present_illness]}
-          label="History of Present Illness"
+          label={gettext("History of Present Illness")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:assessment]}
-          label="Assessment"
+          label={gettext("Assessment")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input type="textarea" field={form[:plan]} label="Plan" input_class="h-80 md:h-28 lg:h-auto" />
         <.input
           type="textarea"
           field={form[:medications]}
-          label="Medications"
+          label={gettext("Medications")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
         <.input
           type="textarea"
           field={form[:physical_examination]}
-          label="Physical Examination"
+          label={gettext("Physical Examination")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
 
-        <.button type="submit" class="md:w-32">Save</.button>
+        <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
       </.form>
     </.async_result>
     """
@@ -167,10 +172,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
           type="textarea"
           value={@visit_transcription}
           name="visit_transcription"
-          label="Visit Transcription"
+          label={gettext("Visit Transcription")}
           input_class="h-[50vh]"
         />
-        <.button type="submit" class="md:w-32">Save</.button>
+        <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
       </div>
     </.form>
     """
@@ -367,6 +372,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp maybe_resume_dedicated_endpoint(socket) do
     if is_nil(socket.assigns.visit_transcription) do
+      require IEx
+      IEx.pry()
       # @ryanzidago - ensure the endpoint is always running when someone visits the page
       _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
     else
@@ -374,9 +381,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_demo_visit_transcription(params) do
+  defp maybe_demo_visit_transcription(params, locale) do
     case Map.get(params, "use_demo_transcription") do
-      "true" -> demo_async_visit_transctiption()
+      "true" -> demo_async_visit_transctiption(locale)
       _ -> nil
     end
   end
@@ -406,7 +413,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp demo_visit_transcription(locale)
 
-  defp demo_visit_transcription(:en) do
+  defp demo_visit_transcription("en") do
     """
     Cardiologist: Good morning, Mr. Rossi. I see you're here for a follow-up. How have you been feeling since your last visit?
 
@@ -456,7 +463,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     """
   end
 
-  defp demo_visit_transcription(:it) do
+  defp demo_visit_transcription("it") do
     """
      Come si sente oggi?
 

@@ -17,7 +17,7 @@ defmodule ClipboardWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import ClipboardWeb.Gettext
+  use Gettext, backend: ClipboardWeb.Gettext
 
   @doc """
   Renders a modal.
