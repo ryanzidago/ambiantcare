@@ -31,7 +31,7 @@ defmodule Clipboard.AI.Gladia do
     end
   end
 
-  defp get_result(%{"result_url" => result_url} = response, attempted, opts)
+  defp get_result(%{"result_url" => result_url} = _response, attempted, opts)
        when attempted < @max_retries do
     with {:ok, response} <- request(:get, result_url, opts),
          {:ok, body} <- parse_response(response),

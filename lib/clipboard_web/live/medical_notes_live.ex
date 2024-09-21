@@ -28,7 +28,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
     socket =
       socket
       |> assign_speech_to_text_backend(params)
-      |> assign(huggingface_deployment: HuggingFace.deployment(params))
+      |> assign_huggingface_deployment(params)
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
@@ -295,6 +295,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  defp assign_huggingface_deployment(socket, params) do
+    if socket.assigns.stt_backend == HuggingFace do
+      assign(socket, huggingface_deployment: HuggingFace.deployment(params))
+    else
+      socket
+    end
+  end
+
   defp audio_to_structured_text(stt_backend, binary, current_visit_transcription, opts) do
     with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <-
@@ -426,6 +434,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp maybe_resume_dedicated_endpoint(socket) do
     if socket.assigns.stt_backend == HuggingFace and is_nil(socket.assigns.visit_transcription) do
+      Logger.debug("Resuming HuggingFace endpoint")
       # @ryanzidago - ensure the endpoint is always running when someone visits the page
       _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
     else
@@ -467,18 +476,15 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp assign_speech_to_text_backend(socket, %{"stt_backend" => "huggingface"}) do
-    socket
-    |> assign(stt_backend: HuggingFace)
+    assign(socket, stt_backend: HuggingFace)
   end
 
   defp assign_speech_to_text_backend(socket, %{"stt_backend" => "gladia"}) do
-    socket
-    |> assign(stt_backend: Gladia)
+    assign(socket, stt_backend: Gladia)
   end
 
   defp assign_speech_to_text_backend(socket, _params) do
-    socket
-    |> assign(stt_backend: Gladia)
+    assign(socket, stt_backend: Gladia)
   end
 
   def demo_async_visit_transctiption(locale \\ :en) do

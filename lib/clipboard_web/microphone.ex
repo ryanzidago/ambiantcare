@@ -7,5 +7,5 @@ defmodule ClipboardWeb.Microphone do
     microphone_hook
   end
 
-  def from_params(_params), do: "StreamMicrophone"
+  def from_params(_params), do: "Microphone"
 end
