@@ -51,10 +51,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
     ~H"""
     <div class="lg:h-screen grid lg:grid-cols-10 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-1">
-        <.setting_panel
+        <.action_panel
           mount_params={@mount_params}
           available_locales={@available_locales}
           selected_locale={@selected_locale}
+          visit_transcription={@visit_transcription}
         />
       </div>
       <div class="lg:col-span-4">
@@ -67,9 +68,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
     """
   end
 
-  defp setting_panel(assigns) do
+  defp action_panel(assigns) do
     ~H"""
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col gap-4 w-full h-full text-sm">
       <.form for={%{}} phx-change="change_locale" as={:locale}>
         <.input
           type="select"
@@ -207,7 +208,19 @@ defmodule ClipboardWeb.MedicalNotesLive do
           label={gettext("Visit Transcription")}
           input_class="h-[50vh]"
         />
-        <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+        <div class="flex flex-row gap-10">
+          <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+          <.button
+            :if={@visit_transcription}
+            type="button"
+            class="md:w-32"
+            phx-click={
+              JS.dispatch("download-transcription", detail: %{transcription: @visit_transcription})
+            }
+          >
+            <%= gettext("Download") %>
+          </.button>
+        </div>
       </div>
     </.form>
     """

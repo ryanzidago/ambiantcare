@@ -59,7 +59,8 @@ defmodule Clipboard.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:multipart, "~> 0.4.0"}
+      {:multipart, "~> 0.4.0"},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 

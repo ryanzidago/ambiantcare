@@ -35,6 +35,19 @@ topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
+// custom events
+window.addEventListener("download-transcription", (event) => {
+  console.log(event);
+  const transcription = event.detail.transcription;
+  const filename = "transcription.txt";
+  const blob = new Blob([transcription], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 
