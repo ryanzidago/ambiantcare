@@ -113,3 +113,7 @@ config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
 config :clipboard, Clipboard.AI.Gladia,
   api_key: System.get_env("GLADIA_API_KEY"),
   base_url: "https://api.gladia.io/v2"
+
+config :clipboard, Clipboard.AI.SpeechMatics,
+  api_key: System.get_env("SPEECHMATICS_API_KEY"),
+  base_url: "https://asr.api.speechmatics.com/v2"

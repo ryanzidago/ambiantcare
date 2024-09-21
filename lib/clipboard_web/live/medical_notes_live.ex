@@ -12,6 +12,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   alias Clipboard.AI.HuggingFace
   alias Clipboard.AI.Gladia
+  alias Clipboard.AI.SpeechMatics
 
   alias ClipboardWeb.Microphone
 
@@ -275,13 +276,12 @@ defmodule ClipboardWeb.MedicalNotesLive do
     current_visit_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
 
-    opts = [
-      parent: self(),
-      microphone_hook: microphone_hook
-    ]
-
-    backend_opts = backend_opts(stt_backend, socket.assigns)
-    opts = Keyword.merge(opts, backend_opts)
+    opts =
+      []
+      |> Keyword.put(:parent, self())
+      |> Keyword.put(:microphone_hook, microphone_hook)
+      |> Keyword.put(:locale, Gettext.get_locale(ClipboardWeb.Gettext))
+      |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
 
     socket =
       assign_async(socket, :visit_transcription, fn ->
@@ -325,6 +325,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp backend_opts(Gladia, _assigns) do
+    []
+  end
+
+  defp backend_opts(SpeechMatics, _assigns) do
     []
   end
 
@@ -481,6 +485,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp assign_speech_to_text_backend(socket, %{"stt_backend" => "gladia"}) do
     assign(socket, stt_backend: Gladia)
+  end
+
+  defp assign_speech_to_text_backend(socket, %{"stt_backend" => "speechmatics"}) do
+    assign(socket, stt_backend: SpeechMatics)
   end
 
   defp assign_speech_to_text_backend(socket, _params) do

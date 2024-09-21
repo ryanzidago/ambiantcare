@@ -21,8 +21,7 @@ defmodule Clipboard.AI.HuggingFace.Dedicated do
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
-      {:error, _} = error ->
-        error
+      {:error, _} = error -> error
     end
   end
 

@@ -1,6 +1,7 @@
 defmodule Clipboard.AI.Gladia do
   require Logger
 
+  # @ryanzidago - 30 minutes of retries
   @retry_delay_in_ms 1_000
   @max_retries 1 * 60 * 30
 
@@ -70,7 +71,7 @@ defmodule Clipboard.AI.Gladia do
     {:retry, response}
   end
 
-  def request(:post_multipart, endpoint, file_path, _opts) do
+  defp request(:post_multipart, endpoint, file_path, _opts) do
     part = Multipart.Part.file_field(file_path, :audio)
 
     multipart =
@@ -92,7 +93,7 @@ defmodule Clipboard.AI.Gladia do
     |> Finch.request(Clipboard.Finch, receive_timeout: 60_000 * 10)
   end
 
-  def request(:post, endpoint, body, opts) do
+  defp request(:post, endpoint, body, opts) do
     headers = headers(opts)
 
     :post
@@ -100,7 +101,7 @@ defmodule Clipboard.AI.Gladia do
     |> Finch.request(Clipboard.Finch, receive_timeout: 60_000 * 10)
   end
 
-  def request(:get, endpoint, opts) do
+  defp request(:get, endpoint, opts) do
     headers = headers(opts)
 
     :get
