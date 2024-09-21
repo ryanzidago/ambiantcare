@@ -47,6 +47,16 @@ window.addEventListener("download-transcription", (event) => {
   link.click();
   URL.revokeObjectURL(link.href);
 });
+window.addEventListener("download-medical-note", (event) => {
+  console.log(event);
+  const { filename, medical_note } = event.detail;
+  const blob = new Blob([medical_note], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

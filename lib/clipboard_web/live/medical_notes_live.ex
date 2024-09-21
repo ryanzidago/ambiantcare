@@ -6,6 +6,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   use Gettext, backend: ClipboardWeb.Gettext
 
+  import ClipboardWeb.MedicalNotesLive.Helpers
+
   require Logger
 
   alias Clipboard.MedicalNotes.MedicalNote
@@ -133,14 +135,18 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp medical_note(assigns) do
+    current_datetime =
+      (DateTime.utc_now()
+       |> DateTime.truncate(:second)
+       |> DateTime.to_string()
+       |> String.replace("Z", "")) <> " UTC"
+
+    medical_note_text = to_text(assigns.medical_note_changeset, current_datetime)
+
     assigns =
-      assign(assigns,
-        current_datetime:
-          (DateTime.utc_now()
-           |> DateTime.truncate(:second)
-           |> DateTime.to_string()
-           |> String.replace("Z", "")) <> " UTC"
-      )
+      assigns
+      |> assign(current_datetime: current_datetime)
+      |> assign(medical_note_text: medical_note_text)
 
     ~H"""
     <.async_result :let={changeset} :if={@medical_note_changeset} assign={@medical_note_changeset}>
@@ -189,7 +195,23 @@ defmodule ClipboardWeb.MedicalNotesLive do
           input_class="h-80 md:h-28 lg:h-auto"
         />
 
-        <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+        <div class="flex flex-row gap-10">
+          <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+          <.button
+            type="button"
+            class="md:w-32"
+            phx-click={
+              JS.dispatch("download-medical-note",
+                detail: %{
+                  medical_note: @medical_note_text,
+                  filename: "medical_note_#{@current_datetime}.txt"
+                }
+              )
+            }
+          >
+            <%= gettext("Download") %>
+          </.button>
+        </div>
       </.form>
     </.async_result>
     """
