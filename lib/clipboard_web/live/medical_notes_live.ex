@@ -204,7 +204,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
               JS.dispatch("download-medical-note",
                 detail: %{
                   medical_note: @medical_note_text,
-                  filename: "medical_note_#{@current_datetime}.txt"
+                  filename: "medical_note_#{@current_datetime}.txt",
+                  type: "text/plain"
                 }
               )
             }
@@ -237,7 +238,13 @@ defmodule ClipboardWeb.MedicalNotesLive do
             type="button"
             class="md:w-32"
             phx-click={
-              JS.dispatch("download-transcription", detail: %{transcription: @visit_transcription})
+              JS.dispatch("download-transcription",
+                detail: %{
+                  transcription: @visit_transcription,
+                  filename: "transcription.txt",
+                  type: "text/plain"
+                }
+              )
             }
           >
             <%= gettext("Download") %>
