@@ -44,6 +44,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket)
+    log_key_values(socket)
 
     {:ok, socket}
   end
@@ -519,6 +520,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
       "true" -> demo_async_changeset()
       _ -> nil
     end
+  end
+
+  defp log_key_values(socket) do
+      keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
+    Logger.info("ClipboardWeb.MedicalNotesLive mounted with: #{inspect(keys)}")
   end
 
   defp assign_speech_to_text_backend(socket, %{"stt_backend" => "huggingface"}) do
