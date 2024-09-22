@@ -41,12 +41,28 @@ window.addEventListener("download-transcription", (event) => {
   const transcription = event.detail.transcription;
   const filename = "transcription.txt";
   const blob = new Blob([transcription], { type: "text/plain" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
+
+  if (navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i)) {
+    // Mobile approach
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const link = document.createElement("a");
+      link.href = e.target.result;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    reader.readAsDataURL(blob);
+  } else {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
 });
+
 window.addEventListener("download-medical-note", (event) => {
   console.log(event);
   const { filename, medical_note } = event.detail;
