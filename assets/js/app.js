@@ -22,70 +22,33 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import { Hooks } from "./main/hooks"
+import { handleDownload } from "./main/download";
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: Hooks
-})
+  hooks: Hooks,
+});
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
-window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
-window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
+window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
+window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // custom events
 window.addEventListener("download-transcription", (event) => {
   console.log(event);
-  const transcription = event.detail.transcription;
-  const filename = "transcription.txt";
-  const blob = new Blob([transcription], { type: "text/plain" });
-
-  if (navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i)) {
-    // Mobile approach
-    const link = document.createElement("a");
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      link.href = e.target.result;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-    reader.readAsDataURL(blob);
-  } else {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  }
+  const { transcription, filename, type } = event.detail;
+  handleDownload(transcription, filename, type);
 });
 
 window.addEventListener("download-medical-note", (event) => {
   console.log(event);
-  const { filename, medical_note } = event.detail;
-  const blob = new Blob([medical_note], { type: "text/plain" });
-
-  if (navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i)) {
-    // Mobile approach
-    const link = document.createElement("a");
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      link.href = e.target.result;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-  } else {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  }
+  const { medical_note, filename, type } = event.detail;
+  handleDownload(medical_note, filename, type);
 });
 
 // connect if there are any LiveViews on the page
