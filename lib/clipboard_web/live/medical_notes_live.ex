@@ -123,15 +123,23 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   defp recording_button(assigns) do
     ~H"""
-    <.button
-      type="button"
-      id="microphone"
-      phx-hook={@microphone_hook}
-      phx-click="toggle_recording"
-      data-endianness={System.endianness()}
-    >
-      <%= if not @recording?, do: gettext("Start Visit"), else: gettext("End Visit") %>
-    </.button>
+    <div class="flex flex-row items-center justify-between">
+      <.button
+        type="button"
+        id="microphone"
+        phx-hook={@microphone_hook}
+        phx-click="toggle_recording"
+        data-endianness={System.endianness()}
+        class="md:w-32"
+      >
+        <%= if not @recording?, do: gettext("Start Visit"), else: gettext("End Visit") %>
+      </.button>
+
+      <div :if={@recording?} class="flex flex-row items-center justify-center gap-4">
+        <div class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></div>
+        Recording
+      </div>
+    </div>
     """
   end
 
