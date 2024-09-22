@@ -73,7 +73,7 @@ msgstr "Valutazione"
 #: lib/clipboard_web/live/medical_notes_live.ex:169
 #, elixir-autogen, elixir-format
 msgid "Chief Complaint"
-msgstr "Principale Reclamo"
+msgstr "Motivo della Visita"
 
 #: lib/clipboard_web/live/medical_notes/helpers.ex:17
 #: lib/clipboard_web/live/medical_notes_live.ex:175
@@ -85,13 +85,13 @@ msgstr "Storia della Malattia Attuale"
 #: lib/clipboard_web/live/medical_notes_live.ex:188
 #, elixir-autogen, elixir-format
 msgid "Medications"
-msgstr "Farmaci"
+msgstr "Farmaci in corso"
 
 #: lib/clipboard_web/live/medical_notes/helpers.ex:29
 #: lib/clipboard_web/live/medical_notes_live.ex:194
 #, elixir-autogen, elixir-format
 msgid "Physical Examination"
-msgstr "Esame Fisico"
+msgstr "Esame Obiettivo"
 
 #: lib/clipboard_web/live/medical_notes_live.ex:199
 #: lib/clipboard_web/live/medical_notes_live.ex:234
@@ -113,7 +113,7 @@ msgstr "Lingua"
 #: lib/clipboard_web/live/medical_notes_live.ex:243
 #, elixir-autogen, elixir-format
 msgid "Download"
-msgstr "Scaricare"
+msgstr "Scarica la nota"
 
 #: lib/clipboard_web/live/medical_notes/helpers.ex:12
 #, elixir-autogen, elixir-format
@@ -123,4 +123,4 @@ msgstr "Nota Medica"
 #: lib/clipboard_web/live/medical_notes/helpers.ex:23
 #, elixir-autogen, elixir-format
 msgid "Plan"
-msgstr "Piano"
+msgstr "Consigli terapeutici"
