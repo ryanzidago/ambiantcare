@@ -79,6 +79,7 @@ window.addEventListener("download-medical-note", (event) => {
       link.click();
       document.body.removeChild(link);
     };
+    reader.readAsDataURL(blob);
   } else {
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
