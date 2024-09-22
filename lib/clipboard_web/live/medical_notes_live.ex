@@ -182,7 +182,12 @@ defmodule ClipboardWeb.MedicalNotesLive do
           label={gettext("Assessment")}
           input_class="h-80 md:h-28 lg:h-auto"
         />
-        <.input type="textarea" field={form[:plan]} label="Plan" input_class="h-80 md:h-28 lg:h-auto" />
+        <.input
+          type="textarea"
+          field={form[:plan]}
+          label={gettext("Plan")}
+          input_class="h-80 md:h-28 lg:h-auto"
+        />
         <.input
           type="textarea"
           field={form[:medications]}
@@ -523,7 +528,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp log_key_values(socket) do
-      keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
+    keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
     Logger.info("ClipboardWeb.MedicalNotesLive mounted with: #{inspect(keys)}")
   end
 
