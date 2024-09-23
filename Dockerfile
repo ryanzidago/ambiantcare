@@ -21,7 +21,7 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git ffmpeg \
+RUN apt-get update -y && apt-get install -y build-essential git ffmpeg curl \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # install Node.js and Yarn
