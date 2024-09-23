@@ -24,6 +24,11 @@ FROM ${BUILDER_IMAGE} as builder
 RUN apt-get update -y && apt-get install -y build-essential git ffmpeg \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
+# install Node.js and Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn
+
 # prepare build dir
 WORKDIR /app
 
@@ -50,6 +55,10 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
+
+# install yarn dependencies
+COPY assets/package.json assets/yarn.lock ./assets/
+RUN cd assets && yarn install --production
 
 # compile assets
 RUN mix assets.deploy
