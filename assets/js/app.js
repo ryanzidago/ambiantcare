@@ -52,6 +52,11 @@ window.addEventListener("download-medical-note", (event) => {
   handleDownload(medical_note, filename, type);
 });
 
+window.addEventListener("phx:copy", (event) => {
+  let { text } = event.detail;
+  navigator.clipboard.writeText(text);
+});
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 
