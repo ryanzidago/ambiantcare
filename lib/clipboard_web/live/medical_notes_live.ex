@@ -276,6 +276,19 @@ defmodule ClipboardWeb.MedicalNotesLive do
           >
             <%= gettext("Download") %>
           </.button>
+          <.button
+            type="button"
+            class="md:w-32"
+            phx-click={
+              JS.dispatch("phx:copy",
+                detail: %{
+                  text: @visit_transcription
+                }
+              )
+            }
+          >
+            <%= gettext("Copy") %>
+          </.button>
         </div>
       </div>
     </.form>

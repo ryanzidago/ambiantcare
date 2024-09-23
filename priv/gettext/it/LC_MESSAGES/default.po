@@ -127,6 +127,7 @@ msgid "Plan"
 msgstr "Consigli terapeutici"
 
 #: lib/clipboard_web/live/medical_notes_live.ex:240
+#: lib/clipboard_web/live/medical_notes_live.ex:290
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr "Copia"
