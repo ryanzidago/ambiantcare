@@ -215,9 +215,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
             type="button"
             class="md:w-32"
             phx-click={
-              JS.dispatch("download-medical-note",
+              JS.dispatch("phx:download",
                 detail: %{
-                  medical_note: @medical_note_text,
+                  data: @medical_note_text,
                   filename: "medical_note_#{@current_datetime}.txt",
                   type: "text/plain"
                 }
@@ -265,9 +265,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
             type="button"
             class="md:w-32"
             phx-click={
-              JS.dispatch("download-transcription",
+              JS.dispatch("phx:download",
                 detail: %{
-                  transcription: @visit_transcription,
+                  data: @visit_transcription,
                   filename: "transcription.txt",
                   type: "text/plain"
                 }

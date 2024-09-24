@@ -40,16 +40,10 @@ window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // custom events
-window.addEventListener("download-transcription", (event) => {
+window.addEventListener("phx:download", (event) => {
   console.log(event);
-  const { transcription, filename, type } = event.detail;
-  handleDownload(transcription, filename, type);
-});
-
-window.addEventListener("download-medical-note", (event) => {
-  console.log(event);
-  const { medical_note, filename, type } = event.detail;
-  handleDownload(medical_note, filename, type);
+  const { data, filename, type } = event.detail;
+  handleDownload(data, filename, type);
 });
 
 window.addEventListener("phx:copy", (event) => {
