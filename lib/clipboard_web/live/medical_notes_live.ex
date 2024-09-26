@@ -13,6 +13,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   alias Clipboard.MedicalNotes.Template
   alias Clipboard.MedicalNotes.MedicalNote
+  alias Clipboard.MedicalNotes.Prompts
 
   alias Clipboard.AI.HuggingFace
   alias Clipboard.AI.Gladia
@@ -43,7 +44,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params))
-      # |> assign(medical_note_changeset: maybe_demo_changeset(params))
       |> assign_medical_note_changeset(params)
       |> assign(available_locales: @available_locales)
       |> assign(selected_locale: Gettext.get_locale(ClipboardWeb.Gettext))
@@ -51,7 +51,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket)
-    log_key_values(socket)
+    log_values(socket)
 
     {:ok, socket}
   end
@@ -75,7 +75,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
       </div>
       <div class="lg:col-span-5 lg:overflow-y-auto lg:px-8">
         <.medical_note
-          :if={@medical_note_changeset}
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
         />
@@ -119,11 +118,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       </form>
 
       <div class="flex flex-col">
-        <.async_result
-          :let={visit_transcription}
-          :if={@visit_transcription}
-          assign={@visit_transcription}
-        >
+        <.async_result :let={visit_transcription} assign={@visit_transcription}>
           <:loading>
             <div class="flex flex-col items-center">
               <.spinner />
@@ -181,7 +176,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(medical_note_text: medical_note_text)
 
     ~H"""
-    <.async_result :let={changeset} :if={@medical_note_changeset} assign={@medical_note_changeset}>
+    <.async_result :let={changeset} assign={@medical_note_changeset}>
       <:loading>
         <.spinner />
       </:loading>
@@ -275,7 +270,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <div class="flex flex-row gap-10">
           <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
           <.button
-            :if={@visit_transcription}
             type="button"
             class="md:w-32"
             phx-click={
@@ -386,14 +380,17 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
     socket =
       assign_async(socket, :visit_transcription, fn ->
-        {:ok, response} = query_llm(visit_transcription, selected_template)
-        {:ok, medical_note_changeset} = response_to_changeset(response, selected_template)
+        case query_llm(visit_transcription, selected_template) do
+          {:ok, medical_note_changeset} ->
+            {:ok,
+             %{
+               visit_transcription: visit_transcription,
+               medical_note_changeset: medical_note_changeset
+             }}
 
-        {:ok,
-         %{
-           visit_transcription: visit_transcription,
-           medical_note_changeset: medical_note_changeset
-         }}
+          {:error, reason} ->
+            {:error, reason}
+        end
       end)
 
     {:noreply, socket}
@@ -454,12 +451,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
          opts
        ) do
     with {:ok, filename} <- write_to_file(binary, opts),
-         {:ok, transcription} <-
-           apply(stt_backend, :generate, ["openai/whisper-large-v3", filename, opts]),
-         {:ok, response} <- query_llm(transcription, selected_template),
-         {:ok, medical_note_changeset} <- response_to_changeset(response, selected_template) do
-      File.write!(build_filename(:transcription), transcription)
-
+         {:ok, transcription} <- transcribe_audio(stt_backend, filename, opts),
+         {:ok, medical_note_changeset} <- query_llm(transcription, selected_template) do
       Logger.debug("*** begin transcription ***")
       Logger.debug(transcription)
       Logger.debug("*** end transcription ***")
@@ -471,6 +464,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
         maybe_send_to_parent(opts, {:error, reason})
         {:error, reason}
     end
+  end
+
+  defp transcribe_audio(stt, filename, opts) do
+    apply(stt, :generate, ["openai/whisper-large-v3", filename, opts])
   end
 
   defp backend_opts(HuggingFace, assigns) do
@@ -562,25 +559,20 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp query_llm(visit_transcription, selected_template) do
-    prompt = """
-    You are a medical assistant that transform unstructured doctor medical notes into structured data.
+    prompt = Prompts.transcription_to_medical_note(visit_transcription, selected_template)
+    result = Clipboard.AI.Mistral.generate("", prompt, [])
 
-    Structure the following medical note:
-    ```
-    <%= visit_transcription %>
-    ```
+    Logger.debug("*** prompt ***")
+    Logger.debug(prompt)
+    Logger.debug("*** result ***")
+    Logger.debug(inspect(result))
 
-    Into the following JSON object:
-    <%= schema %>
-    """
-
-    prompt =
-      EEx.eval_string(prompt,
-        visit_transcription: visit_transcription,
-        schema: Template.to_prompt(selected_template)
-      )
-
-    Clipboard.AI.Mistral.generate("", prompt, [])
+    with {:ok, response} <- result,
+         {:ok, medical_note_changeset} <- response_to_changeset(response, selected_template) do
+      {:ok, medical_note_changeset}
+    else
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   defp maybe_resume_dedicated_endpoint(socket) do
@@ -615,18 +607,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
     case Map.get(params, "use_demo_transcription") do
       "true" -> demo_async_visit_transctiption(locale)
-      _ -> nil
+      _ -> %AsyncResult{ok?: true, loading: false, result: nil}
     end
   end
 
-  # defp maybe_demo_changeset(params) do
-  #   case Map.get(params, "use_demo_transcription") do
-  #     "true" -> demo_async_changeset()
-  #     _ -> nil
-  #   end
-  # end
-
-  defp log_key_values(socket) do
+  defp log_values(socket) do
     keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
     Logger.info("ClipboardWeb.MedicalNotesLive mounted with: #{inspect(keys)}")
   end
@@ -712,19 +697,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
     {:ok, changeset}
   end
-
-  # def demo_async_changeset do
-  #   changeset =
-  #     @selected_template
-  #     |> MedicalNote.from_template()
-  #     |> MedicalNote.changeset(%{})
-
-  #   %AsyncResult{
-  #     ok?: true,
-  #     loading: false,
-  #     result: changeset
-  #   }
-  # end
 
   defp demo_visit_transcription(locale)
 
