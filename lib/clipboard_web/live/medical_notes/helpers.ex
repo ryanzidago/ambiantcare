@@ -6,29 +6,16 @@ defmodule ClipboardWeb.MedicalNotesLive.Helpers do
 
   alias Clipboard.MedicalNotes.MedicalNote
 
-  @spec to_text(MedicalNote.t() | Changeset.t(), DateTime.t()) :: String.t()
+  # @spec to_text(MedicalNote.t() | Changeset.t(), DateTime.t()) :: String.t()
   def to_text(%MedicalNote{} = medical_note, datetime) do
-    """
-    #{gettext("Medical Note")} - #{datetime}
+    header = gettext("Medical Note") <> " " <> "#{datetime}\n\n"
 
-    #{gettext("Chief Complaint")}:
-    #{medical_note.chief_complaint}
+    body =
+      Enum.map_join(medical_note.fields, "\n\n", fn field ->
+        Gettext.gettext(ClipboardWeb.Gettext, field.label) <> ":\n" <> (field.value || "")
+      end)
 
-    #{gettext("History of Present Illness")}:
-    #{medical_note.history_of_present_illness}
-
-    #{gettext("Assessment")}:
-    #{medical_note.assessment}
-
-    #{gettext("Plan")}:
-    #{medical_note.plan}
-
-    #{gettext("Medications")}:
-    #{medical_note.medications}
-
-    #{gettext("Physical Examination")}:
-    #{medical_note.physical_examination}
-    """
+    header <> body
   end
 
   def to_text(%Changeset{} = changeset, datetime) do
@@ -39,5 +26,11 @@ defmodule ClipboardWeb.MedicalNotesLive.Helpers do
 
   def to_text(%AsyncResult{ok?: true, result: %Changeset{}} = async_result, datetime) do
     to_text(async_result.result, datetime)
+  end
+
+  def to_fields(%{} = response) do
+    Enum.map(response, fn {key, value} ->
+      %{name: String.to_existing_atom(key), value: value}
+    end)
   end
 end

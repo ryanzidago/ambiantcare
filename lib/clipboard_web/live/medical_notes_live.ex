@@ -7,9 +7,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
   use Gettext, backend: ClipboardWeb.Gettext
 
   import ClipboardWeb.MedicalNotesLive.Helpers
+  import Ecto.Changeset
 
   require Logger
 
+  alias Clipboard.MedicalNotes.Template
   alias Clipboard.MedicalNotes.MedicalNote
 
   alias Clipboard.AI.HuggingFace
@@ -32,12 +34,17 @@ defmodule ClipboardWeb.MedicalNotesLive do
       socket
       |> assign_speech_to_text_backend(params)
       |> assign_huggingface_deployment(params)
+      |> assign_templates()
+      |> assign_template_options()
+      |> assign_selected_template()
+      |> assign_selected_template_option()
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params))
-      |> assign(medical_note_changeset: maybe_demo_changeset(params))
+      # |> assign(medical_note_changeset: maybe_demo_changeset(params))
+      |> assign_medical_note_changeset(params)
       |> assign(available_locales: @available_locales)
       |> assign(selected_locale: Gettext.get_locale(ClipboardWeb.Gettext))
       |> assign(mount_params: params)
@@ -58,6 +65,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
           mount_params={@mount_params}
           available_locales={@available_locales}
           selected_locale={@selected_locale}
+          template_options={@template_options}
+          selected_template_option={@selected_template_option}
           visit_transcription={@visit_transcription}
         />
       </div>
@@ -65,7 +74,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <.transcription_panel {assigns} />
       </div>
       <div class="lg:col-span-5 lg:overflow-y-auto lg:px-8">
-        <.medical_note :if={@medical_note_changeset} medical_note_changeset={@medical_note_changeset} />
+        <.medical_note
+          :if={@medical_note_changeset}
+          medical_note_changeset={@medical_note_changeset}
+          selected_template={@selected_template}
+        />
       </div>
     </div>
     """
@@ -81,6 +94,16 @@ defmodule ClipboardWeb.MedicalNotesLive do
           label={gettext("Language")}
           options={@available_locales}
           value={@selected_locale}
+        />
+      </.form>
+
+      <.form for={%{}} phx-change="change_template" as={:template}>
+        <.input
+          type="select"
+          name="template"
+          label={gettext("Template")}
+          options={@template_options}
+          value={@selected_template_option |> elem(1)}
         />
       </.form>
     </div>
@@ -168,46 +191,12 @@ defmodule ClipboardWeb.MedicalNotesLive do
       <.form
         :let={form}
         for={changeset}
-        phx-submit="save-medical-notes"
         class="flex flex-col gap-10 drop-shadow-sm"
+        phx-change="change_medical_note"
       >
-        <%= @current_datetime %>
-        <.input
-          type="textarea"
-          field={form[:chief_complaint]}
-          label={gettext("Chief Complaint")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
-        <.input
-          type="textarea"
-          field={form[:history_of_present_illness]}
-          label={gettext("History of Present Illness")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
-        <.input
-          type="textarea"
-          field={form[:assessment]}
-          label={gettext("Assessment")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
-        <.input
-          type="textarea"
-          field={form[:plan]}
-          label={gettext("Plan")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
-        <.input
-          type="textarea"
-          field={form[:medications]}
-          label={gettext("Medications")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
-        <.input
-          type="textarea"
-          field={form[:physical_examination]}
-          label={gettext("Physical Examination")}
-          input_class="h-80 md:h-28 lg:h-auto"
-        />
+        <.inputs_for :let={field} field={form[:fields]}>
+          <.field field={field} selected_template={@selected_template} />
+        </.inputs_for>
 
         <div class="flex flex-row gap-10">
           <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
@@ -245,11 +234,36 @@ defmodule ClipboardWeb.MedicalNotesLive do
     """
   end
 
+  defp field(assigns) do
+    name = fetch_field!(assigns.field.source, :name)
+    value = fetch_field!(assigns.field.source, :value)
+
+    template_fields = assigns.selected_template.fields
+    template_fields_by_name = Map.new(template_fields, fn field -> {field.name, field} end)
+    template_field = Map.fetch!(template_fields_by_name, name)
+
+    assigns =
+      assigns
+      |> assign(input_type: Atom.to_string(template_field.input_type))
+      |> assign(name: name)
+      |> assign(label: Gettext.gettext(ClipboardWeb.Gettext, template_field.label))
+      |> assign(value: value)
+
+    ~H"""
+    <.input type={@input_type} name={@name} label={@label} value={@value} />
+    """
+  end
+
   attr :visit_transcription, :string, required: true
 
   defp visit_transcription(assigns) do
     ~H"""
-    <.form for={%{}} class="drop-shadow-sm" phx-submit="edit_visit_transcription">
+    <.form
+      for={%{}}
+      class="drop-shadow-sm"
+      phx-change="change_visit_transcription"
+      phx-submit="submit_visit_transcription"
+    >
       <div class="w-full flex flex-col gap-10">
         <.input
           type="textarea"
@@ -320,6 +334,32 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  def handle_event("change_template", %{"template" => key}, socket) do
+    selected_template = Enum.find(socket.assigns.templates, &(&1.key == key))
+
+    medical_note_changeset =
+      %AsyncResult{
+        ok?: true,
+        loading: false,
+        result:
+          selected_template
+          |> MedicalNote.from_template()
+          |> MedicalNote.changeset(%{})
+      }
+
+    socket =
+      socket
+      |> assign(selected_template: selected_template)
+      |> assign(selected_template_option: {selected_template.title, key})
+      |> assign(medical_note_changeset: medical_note_changeset)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("change_medical_note", _params, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event("no_op", _params, socket) do
     # We need phx-change and phx-submit on the form for live uploads,
     # but we make predictions immediately using :progress, so we just
@@ -328,13 +368,26 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   def handle_event(
-        "edit_visit_transcription",
+        "change_visit_transcription",
         %{"visit_transcription" => visit_transcription},
         socket
       ) do
+    visit_transcription = %AsyncResult{ok?: true, loading: false, result: visit_transcription}
+    socket = assign(socket, visit_transcription: visit_transcription)
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "submit_visit_transcription",
+        %{"visit_transcription" => visit_transcription},
+        socket
+      ) do
+    selected_template = socket.assigns.selected_template
+
     socket =
       assign_async(socket, :visit_transcription, fn ->
-        {:ok, medical_note_changeset} = query_llm(visit_transcription)
+        {:ok, response} = query_llm(visit_transcription, selected_template)
+        {:ok, medical_note_changeset} = response_to_changeset(response, selected_template)
 
         {:ok,
          %{
@@ -357,6 +410,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
     binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
     current_visit_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
+    selected_template = socket.assigns.selected_template
+
+    params =
+      %{}
+      |> Map.put(:stt_backend, stt_backend)
+      |> Map.put(:binary, binary)
+      |> Map.put(:current_visit_transcription, current_visit_transcription)
+      |> Map.put(:selected_template, selected_template)
 
     opts =
       []
@@ -366,9 +427,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
 
     socket =
-      assign_async(socket, :visit_transcription, fn ->
-        audio_to_structured_text(stt_backend, binary, current_visit_transcription, opts)
-      end)
+      assign_async(socket, :visit_transcription, fn -> audio_to_structured_text(params, opts) end)
 
     {:noreply, socket}
   end
@@ -385,14 +444,26 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
-  defp audio_to_structured_text(stt_backend, binary, current_visit_transcription, opts) do
+  defp audio_to_structured_text(
+         %{
+           stt_backend: stt_backend,
+           binary: binary,
+           current_visit_transcription: current_visit_transcription,
+           selected_template: selected_template
+         },
+         opts
+       ) do
     with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <-
            apply(stt_backend, :generate, ["openai/whisper-large-v3", filename, opts]),
-         {:ok, medical_note_changeset} <- query_llm(transcription) do
+         {:ok, response} <- query_llm(transcription, selected_template),
+         {:ok, medical_note_changeset} <- response_to_changeset(response, selected_template) do
       File.write!(build_filename(:transcription), transcription)
-      Logger.debug("*** transcription ***")
+
+      Logger.debug("*** begin transcription ***")
       Logger.debug(transcription)
+      Logger.debug("*** end transcription ***")
+
       transcription = current_visit_transcription <> " " <> transcription
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
@@ -490,32 +561,26 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
-  defp query_llm(visit_transcription) do
+  defp query_llm(visit_transcription, selected_template) do
     prompt = """
     You are a medical assistant that transform unstructured doctor medical notes into structured data.
 
     Structure the following medical note:
     ```
-    #{visit_transcription}
+    <%= visit_transcription %>
     ```
 
-    Into the following JSON format:
-    {
-      "chief_complaint": "string",
-      "history_of_present_illness": "string",
-      "medications": "string",
-      "physical_examination": "string",
-      "assessment": "string",
-      "plan": "string"
-    }
+    Into the following JSON object:
+    <%= schema %>
     """
 
-    with {:ok, response} <- Clipboard.AI.Mistral.generate("", prompt, []),
-         changeset <- MedicalNote.changeset(response) do
-      {:ok, changeset}
-    else
-      {:error, reason} -> {:error, reason}
-    end
+    prompt =
+      EEx.eval_string(prompt,
+        visit_transcription: visit_transcription,
+        schema: Template.to_prompt(selected_template)
+      )
+
+    Clipboard.AI.Mistral.generate("", prompt, [])
   end
 
   defp maybe_resume_dedicated_endpoint(socket) do
@@ -554,12 +619,12 @@ defmodule ClipboardWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_demo_changeset(params) do
-    case Map.get(params, "use_demo_transcription") do
-      "true" -> demo_async_changeset()
-      _ -> nil
-    end
-  end
+  # defp maybe_demo_changeset(params) do
+  #   case Map.get(params, "use_demo_transcription") do
+  #     "true" -> demo_async_changeset()
+  #     _ -> nil
+  #   end
+  # end
 
   defp log_key_values(socket) do
     keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
@@ -582,6 +647,44 @@ defmodule ClipboardWeb.MedicalNotesLive do
     assign(socket, stt_backend: Gladia)
   end
 
+  defp assign_templates(socket) do
+    templates = [Template.default_template(), Template.gastroenterology_template()]
+    assign(socket, templates: templates)
+  end
+
+  defp assign_template_options(socket) do
+    options = Enum.map(socket.assigns.templates, &{&1.title, &1.key})
+    assign(socket, template_options: options)
+  end
+
+  defp assign_selected_template(socket) do
+    selected_template = hd(socket.assigns.templates)
+    assign(socket, selected_template: selected_template)
+  end
+
+  defp assign_selected_template_option(socket) do
+    %{title: title, key: key} = socket.assigns.selected_template
+    assign(socket, selected_template_option: {title, key})
+  end
+
+  defp assign_medical_note_changeset(socket, _params) do
+    selected_template = socket.assigns.selected_template
+
+    changeset =
+      selected_template
+      |> MedicalNote.from_template()
+      |> MedicalNote.changeset(%{})
+
+    changeset =
+      %AsyncResult{
+        ok?: true,
+        loading: false,
+        result: changeset
+      }
+
+    assign(socket, medical_note_changeset: changeset)
+  end
+
   def demo_async_visit_transctiption(locale \\ :en) do
     %AsyncResult{
       ok?: true,
@@ -590,13 +693,38 @@ defmodule ClipboardWeb.MedicalNotesLive do
     }
   end
 
-  def demo_async_changeset do
-    %AsyncResult{
-      ok?: true,
-      loading: false,
-      result: MedicalNote.changeset(%{})
-    }
+  defp response_to_changeset(response, template) do
+    template_fields_by_name = Map.new(template.fields, &{&1.name, &1})
+
+    fields =
+      response
+      |> to_fields()
+      |> Enum.map(fn field ->
+        template_field = Map.fetch!(template_fields_by_name, field.name)
+
+        field
+        |> Map.put(:label, template_field.label)
+        |> Map.put(:position, template_field.position)
+      end)
+      |> Enum.sort_by(& &1.position)
+
+    changeset = MedicalNote.changeset(%MedicalNote{}, %{title: "Some title", fields: fields})
+
+    {:ok, changeset}
   end
+
+  # def demo_async_changeset do
+  #   changeset =
+  #     @selected_template
+  #     |> MedicalNote.from_template()
+  #     |> MedicalNote.changeset(%{})
+
+  #   %AsyncResult{
+  #     ok?: true,
+  #     loading: false,
+  #     result: changeset
+  #   }
+  # end
 
   defp demo_visit_transcription(locale)
 
