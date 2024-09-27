@@ -10,5 +10,7 @@ defmodule ClipboardWeb.Layouts do
   """
   use ClipboardWeb, :html
 
+  alias ClipboardWeb.Sidebar
+
   embed_templates "layouts/*"
 end

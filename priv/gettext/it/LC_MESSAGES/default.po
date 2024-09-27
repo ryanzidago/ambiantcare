@@ -22,7 +22,7 @@ msgstr "Azioni"
 msgid "Attempting to reconnect"
 msgstr "Tentativo di riconnessione"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:158
+#: lib/clipboard_web/live/medical_notes_live.ex:134
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr "Termina Visita"
@@ -42,7 +42,7 @@ msgstr "Resisti mentre torniamo in carreggiata"
 msgid "Something went wrong!"
 msgstr "Qualcosa è andato storto!"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:158
+#: lib/clipboard_web/live/medical_notes_live.ex:134
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr "Inizia Visita"
@@ -63,35 +63,35 @@ msgstr "Non riusciamo a trovare la connessione internet"
 msgid "close"
 msgstr "chiudi"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:202
-#: lib/clipboard_web/live/medical_notes_live.ex:276
+#: lib/clipboard_web/live/medical_notes_live.ex:178
+#: lib/clipboard_web/live/medical_notes_live.ex:252
 #, elixir-autogen, elixir-format
 msgid "Save"
 msgstr "Salva"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:272
+#: lib/clipboard_web/live/medical_notes_live.ex:248
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr "Trascrizione della Visita"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:94
+#: lib/clipboard_web/components/sidebar.ex:47
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Lingua"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:216
-#: lib/clipboard_web/live/medical_notes_live.ex:291
+#: lib/clipboard_web/live/medical_notes_live.ex:192
+#: lib/clipboard_web/live/medical_notes_live.ex:266
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr "Scarica la nota"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:229
-#: lib/clipboard_web/live/medical_notes_live.ex:304
+#: lib/clipboard_web/live/medical_notes_live.ex:205
+#: lib/clipboard_web/live/medical_notes_live.ex:279
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr "Copia"
 
-#: lib/clipboard_web/live/medical_notes_live.ex:104
+#: lib/clipboard_web/live/medical_notes_live.ex:84
 #, elixir-autogen, elixir-format
 msgid "Template"
 msgstr "Modello"

@@ -6,10 +6,13 @@ defmodule ClipboardWeb.MedicalNotesLive do
 
   use Gettext, backend: ClipboardWeb.Gettext
 
-  import ClipboardWeb.MedicalNotesLive.Helpers
-  import Ecto.Changeset
-
   require Logger
+
+  import Ecto.Changeset
+  import ClipboardWeb.MedicalNotesLive.Helpers
+
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.AsyncResult
 
   alias Clipboard.MedicalNotes.Template
   alias Clipboard.MedicalNotes.MedicalNote
@@ -20,17 +23,10 @@ defmodule ClipboardWeb.MedicalNotesLive do
   alias Clipboard.AI.SpeechMatics
 
   alias ClipboardWeb.Microphone
-
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.AsyncResult
-
-  @available_locales Gettext.known_locales(ClipboardWeb.Gettext)
-  @default_locale Gettext.get_locale(ClipboardWeb.Gettext)
+  alias ClipboardWeb.SetLocale
 
   @impl LiveView
   def mount(params, _session, socket) do
-    put_locale(params)
-
     socket =
       socket
       |> assign_speech_to_text_backend(params)
@@ -45,9 +41,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params))
       |> assign_medical_note_changeset(params)
-      |> assign(available_locales: @available_locales)
-      |> assign(selected_locale: Gettext.get_locale(ClipboardWeb.Gettext))
-      |> assign(mount_params: params)
+      |> assign(url_params: params)
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket)
@@ -59,12 +53,9 @@ defmodule ClipboardWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="lg:h-screen grid lg:grid-cols-10 align-center gap-40 lg:gap-10 lg:p-20 p-10">
+    <div class="grid lg:grid-cols-10 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-1">
         <.action_panel
-          mount_params={@mount_params}
-          available_locales={@available_locales}
-          selected_locale={@selected_locale}
           template_options={@template_options}
           selected_template_option={@selected_template_option}
           visit_transcription={@visit_transcription}
@@ -86,16 +77,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
   defp action_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full h-full text-sm">
-      <.form for={%{}} phx-change="change_locale" as={:locale}>
-        <.input
-          type="select"
-          name="locale"
-          label={gettext("Language")}
-          options={@available_locales}
-          value={@selected_locale}
-        />
-      </.form>
-
       <.form for={%{}} phx-change="change_template" as={:template}>
         <.input
           type="select"
@@ -314,20 +295,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  def handle_event("change_locale", params, socket) do
-    locale = Map.get(params, "locale", Gettext.get_locale(ClipboardWeb.Gettext))
-    Gettext.put_locale(ClipboardWeb.Gettext, locale)
-    socket = assign(socket, selected_locale: locale)
-
-    path =
-      socket.assigns.mount_params
-      |> Map.put("locale", locale)
-      |> path_from_mount_params()
-
-    socket = redirect(socket, to: path)
-    {:noreply, socket}
-  end
-
   def handle_event("change_template", %{"template" => key}, socket) do
     selected_template = Enum.find(socket.assigns.templates, &(&1.key == key))
 
@@ -397,6 +364,11 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   @impl LiveView
+  def handle_info({:change_locale, locale}, socket) do
+    socket = SetLocale.set(socket, locale, "/medical-notes")
+    {:noreply, socket}
+  end
+
   def handle_info({:error, reason}, socket) do
     Logger.error(reason)
     {:noreply, socket}
@@ -583,23 +555,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
     else
       {:ok, :no_op}
     end
-  end
-
-  defp path_from_mount_params(%{} = params) do
-    {locale, params} = Map.pop!(params, "locale")
-    encoded_query = URI.encode_query(params)
-
-    _path =
-      "/#{locale}/medical-notes"
-      |> URI.new!()
-      |> URI.append_query(encoded_query)
-      |> URI.to_string()
-  end
-
-  defp put_locale(params) do
-    locale = Map.get(params, "locale")
-    locale = if locale in @available_locales, do: locale, else: @default_locale
-    Gettext.put_locale(ClipboardWeb.Gettext, locale)
   end
 
   defp maybe_demo_visit_transcription(params) do

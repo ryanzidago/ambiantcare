@@ -54,6 +54,7 @@ defmodule ClipboardWeb do
       use Phoenix.LiveView,
         layout: {ClipboardWeb.Layouts, :app}
 
+      on_mount ClipboardWeb.SetLocale
       unquote(html_helpers())
     end
   end
