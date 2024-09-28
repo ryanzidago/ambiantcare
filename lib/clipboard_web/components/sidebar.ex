@@ -59,7 +59,7 @@ defmodule ClipboardWeb.Sidebar do
   defp branding(assigns) do
     ~H"""
     <div class="justify-center p-4 rounded mb-20 shadow flex flex-row text-2x gap-0.5 drop-shadow-2xl font-semibold">
-      <span class="text-blue-600">Ambiant</span>
+      <span class="text-blue-600">ambiant</span>
       <span class="bg-blue-600 px-2 rounded text-white">.Care</span>
     </div>
     """
