@@ -58,9 +58,14 @@ defmodule ClipboardWeb.Sidebar do
 
   defp branding(assigns) do
     ~H"""
-    <div class="justify-center p-4 rounded mb-20 shadow flex flex-row text-2x gap-0.5 drop-shadow-2xl font-semibold">
+    <div class="justify-center p-4 rounded mb-20 shadow flex flex-row gap-0.5 drop-shadow-2xl font-semibold">
       <span class="text-blue-600">ambiant</span>
-      <span class="bg-blue-600 px-2 rounded text-white">.Care</span>
+      <span class="bg-blue-600 px-2 rounded text-white flex flex-row items-end">
+      <svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" class="mb-0.5">
+        <circle cx="3" cy="3" r="3" fill="white" />
+      </svg>
+        Care
+      </span>
     </div>
     """
   end
