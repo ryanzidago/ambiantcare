@@ -43,6 +43,7 @@ defmodule ClipboardWeb.Sidebar do
     >
       <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <ul class="space-y-2">
+          <.branding />
           <.locale_setting locale_options={@locale_options} locale={@locale} phxtarget={@myself} />
           <.template_setting
             template_options={@template_options}
@@ -52,6 +53,15 @@ defmodule ClipboardWeb.Sidebar do
         </ul>
       </div>
     </aside>
+    """
+  end
+
+  defp branding(assigns) do
+    ~H"""
+    <div class="justify-center p-4 rounded mb-20 shadow flex flex-row text-2x gap-0.5 drop-shadow-2xl font-semibold">
+      <span class="text-blue-600">Ambiant</span>
+      <span class="bg-blue-600 px-2 rounded text-white">.Care</span>
+    </div>
     """
   end
 
