@@ -31,10 +31,8 @@ defmodule ClipboardWeb.MedicalNotesLive do
       socket
       |> assign_speech_to_text_backend(params)
       |> assign_huggingface_deployment(params)
-      |> assign_templates()
-      |> assign_template_options()
+      |> assign_templates_by_id()
       |> assign_selected_template()
-      |> assign_selected_template_option()
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
       |> assign(medical_note_changeset: nil)
@@ -53,39 +51,16 @@ defmodule ClipboardWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="grid lg:grid-cols-10 align-center gap-40 lg:gap-10 lg:p-20 p-10">
+    <div class="grid lg:grid-cols-2 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-1">
-        <.action_panel
-          template_options={@template_options}
-          selected_template_option={@selected_template_option}
-          visit_transcription={@visit_transcription}
-        />
-      </div>
-      <div class="lg:col-span-4">
         <.transcription_panel {assigns} />
       </div>
-      <div class="lg:col-span-5 lg:overflow-y-auto lg:px-8">
+      <div class="lg:col-span-1 lg:overflow-y-auto lg:px-8">
         <.medical_note
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
         />
       </div>
-    </div>
-    """
-  end
-
-  defp action_panel(assigns) do
-    ~H"""
-    <div class="flex flex-col gap-4 w-full h-full text-sm">
-      <.form for={%{}} phx-change="change_template" as={:template}>
-        <.input
-          type="select"
-          name="template"
-          label={gettext("Template")}
-          options={@template_options}
-          value={@selected_template_option |> elem(1)}
-        />
-      </.form>
     </div>
     """
   end
@@ -164,18 +139,13 @@ defmodule ClipboardWeb.MedicalNotesLive do
       <:failed :let={_reason}>
         Oops, something went wrong!
       </:failed>
-      <.form
-        :let={form}
-        for={changeset}
-        class="flex flex-col gap-10 drop-shadow-sm"
-        phx-change="change_medical_note"
-      >
+      <.form :let={form} for={changeset} class="flex flex-col gap-10 drop-shadow-sm">
         <.inputs_for :let={field} field={form[:fields]}>
           <.field field={field} selected_template={@selected_template} />
         </.inputs_for>
 
         <div class="flex flex-row gap-10">
-          <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+          <.button type="button" class="md:w-32"><%= gettext("Save") %></.button>
           <.button
             type="button"
             class="md:w-32"
@@ -295,29 +265,33 @@ defmodule ClipboardWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  def handle_event("change_template", %{"template" => key}, socket) do
-    selected_template = Enum.find(socket.assigns.templates, &(&1.key == key))
+  def handle_event("change_template", %{"template_id" => template_id}, socket) do
+    template = Map.fetch!(socket.assigns.templates_by_id, template_id)
 
     medical_note_changeset =
       %AsyncResult{
         ok?: true,
         loading: false,
         result:
-          selected_template
+          template
           |> MedicalNote.from_template()
           |> MedicalNote.changeset(%{})
       }
 
     socket =
       socket
-      |> assign(selected_template: selected_template)
-      |> assign(selected_template_option: {selected_template.title, key})
+      |> assign(selected_template: template)
       |> assign(medical_note_changeset: medical_note_changeset)
 
     {:noreply, socket}
   end
 
   def handle_event("change_medical_note", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("change_locale", %{"locale" => locale}, socket) do
+    socket = SetLocale.set(socket, locale, "/medical-notes")
     {:noreply, socket}
   end
 
@@ -364,11 +338,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   @impl LiveView
-  def handle_info({:change_locale, locale}, socket) do
-    socket = SetLocale.set(socket, locale, "/medical-notes")
-    {:noreply, socket}
-  end
-
   def handle_info({:error, reason}, socket) do
     Logger.error(reason)
     {:noreply, socket}
@@ -587,24 +556,21 @@ defmodule ClipboardWeb.MedicalNotesLive do
     assign(socket, stt_backend: Gladia)
   end
 
-  defp assign_templates(socket) do
-    templates = [Template.default_template(), Template.gastroenterology_template()]
-    assign(socket, templates: templates)
-  end
+  defp assign_templates_by_id(socket) do
+    templates_by_id =
+      [Template.default_template(), Template.gastroenterology_template()]
+      |> Map.new(&{&1.key, &1})
 
-  defp assign_template_options(socket) do
-    options = Enum.map(socket.assigns.templates, &{&1.title, &1.key})
-    assign(socket, template_options: options)
+    assign(socket, templates_by_id: templates_by_id)
   end
 
   defp assign_selected_template(socket) do
-    selected_template = hd(socket.assigns.templates)
-    assign(socket, selected_template: selected_template)
-  end
+    selected_template =
+      socket.assigns.templates_by_id
+      |> Map.values()
+      |> List.first()
 
-  defp assign_selected_template_option(socket) do
-    %{title: title, key: key} = socket.assigns.selected_template
-    assign(socket, selected_template_option: {title, key})
+    assign(socket, selected_template: selected_template)
   end
 
   defp assign_medical_note_changeset(socket, _params) do

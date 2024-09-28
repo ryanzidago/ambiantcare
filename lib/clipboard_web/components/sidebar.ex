@@ -2,25 +2,38 @@ defmodule ClipboardWeb.Sidebar do
   use ClipboardWeb, :live_component
   use Gettext, backend: ClipboardWeb.Gettext
 
+  require Logger
+
+  alias Clipboard.MedicalNotes.Template
+
   import ClipboardWeb.CoreComponents
 
   @known_locales Gettext.known_locales(ClipboardWeb.Gettext)
 
-  require Logger
-
+  @impl true
   def mount(socket) do
     {:ok, socket}
   end
 
+  @impl true
   def update(%{locale: locale}, socket) do
     socket =
       socket
-      |> assign_available_locale_options()
       |> assign(locale: locale)
+      |> assign_available_locale_options()
+      |> assign_templates()
+      |> assign_template_options()
+      |> assign_template()
 
     {:ok, socket}
   end
 
+  attr :locale_options, :list, required: true, doc: "The available locales"
+  attr :locale, :string, required: true, doc: "The current locale"
+  attr :template_options, :list, required: true, doc: "The available templates"
+  attr :template, :map, required: true, doc: "The current template"
+
+  @impl true
   def render(assigns) do
     ~H"""
     <aside
@@ -30,17 +43,22 @@ defmodule ClipboardWeb.Sidebar do
     >
       <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <ul class="space-y-2">
-          <.locale_selection locale_options={@locale_options} locale={@locale} phxtarget={@myself} />
+          <.locale_setting locale_options={@locale_options} locale={@locale} phxtarget={@myself} />
+          <.template_setting
+            template_options={@template_options}
+            template={@template}
+            phxtarget={@myself}
+          />
         </ul>
       </div>
     </aside>
     """
   end
 
-  defp locale_selection(assigns) do
+  defp locale_setting(assigns) do
     ~H"""
     <div>
-      <.form for={%{}} phx-change="change_locale" phx-target={@phxtarget} as={:locale}>
+      <.form for={%{}} phx-change="change_locale" as={:locale}>
         <.input
           type="select"
           name="locale"
@@ -50,6 +68,20 @@ defmodule ClipboardWeb.Sidebar do
         />
       </.form>
     </div>
+    """
+  end
+
+  defp template_setting(assigns) do
+    ~H"""
+    <.form for={%{}} phx-change="change_template" as={:template}>
+      <.input
+        type="select"
+        name="template_id"
+        label={gettext("Template")}
+        options={@template_options}
+        value={@template.title}
+      />
+    </.form>
     """
   end
 
@@ -64,8 +96,18 @@ defmodule ClipboardWeb.Sidebar do
     assign(socket, locale_options: locale_options)
   end
 
-  def handle_event("change_locale", %{"locale" => locale}, socket) do
-    send(self(), {:change_locale, locale})
-    {:noreply, socket}
+  defp assign_templates(socket) do
+    templates = [Template.default_template(), Template.gastroenterology_template()]
+    assign(socket, templates: templates)
+  end
+
+  defp assign_template_options(socket) do
+    options = Enum.map(socket.assigns.templates, &{&1.title, &1.key})
+    assign(socket, template_options: options)
+  end
+
+  defp assign_template(socket) do
+    template = hd(socket.assigns.templates)
+    assign(socket, template: template)
   end
 end
