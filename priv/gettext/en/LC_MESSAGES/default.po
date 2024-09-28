@@ -11,7 +11,7 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/clipboard_web/components/core_components.ex:485
+#: lib/clipboard_web/components/core_components.ex:486
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr ""
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:134
+#: lib/clipboard_web/live/medical_notes_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr ""
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:134
+#: lib/clipboard_web/live/medical_notes_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr ""
@@ -62,35 +62,29 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:178
-#: lib/clipboard_web/live/medical_notes_live.ex:252
-#, elixir-autogen, elixir-format
-msgid "Save"
-msgstr ""
-
-#: lib/clipboard_web/live/medical_notes_live.ex:248
+#: lib/clipboard_web/live/medical_notes_live.ex:217
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr ""
 
-#: lib/clipboard_web/components/sidebar.ex:47
+#: lib/clipboard_web/components/sidebar.ex:65
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:192
-#: lib/clipboard_web/live/medical_notes_live.ex:266
+#: lib/clipboard_web/live/medical_notes_live.ex:161
+#: lib/clipboard_web/live/medical_notes_live.ex:235
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:205
-#: lib/clipboard_web/live/medical_notes_live.ex:279
+#: lib/clipboard_web/live/medical_notes_live.ex:174
+#: lib/clipboard_web/live/medical_notes_live.ex:248
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:84
+#: lib/clipboard_web/components/sidebar.ex:80
 #, elixir-autogen, elixir-format
 msgid "Template"
 msgstr ""
@@ -140,4 +134,14 @@ msgstr ""
 #: lib/clipboard_web/live/medical_notes/helpers.ex:11
 #, elixir-autogen, elixir-format
 msgid "Medical Note"
+msgstr ""
+
+#: lib/clipboard_web/live/medical_notes_live.ex:221
+#, elixir-autogen, elixir-format
+msgid "Create note"
+msgstr ""
+
+#: lib/clipboard_web/live/medical_notes_live.ex:140
+#, elixir-autogen, elixir-format
+msgid "Oops, something went wrong!"
 msgstr ""

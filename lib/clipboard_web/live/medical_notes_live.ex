@@ -137,7 +137,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
         <.spinner />
       </:loading>
       <:failed :let={_reason}>
-        Oops, something went wrong!
+        <%= gettext("Oops, something went wrong!") %>
       </:failed>
       <.form :let={form} for={changeset} class="flex flex-col gap-10 drop-shadow-sm">
         <.inputs_for :let={field} field={form[:fields]}>
@@ -145,7 +145,6 @@ defmodule ClipboardWeb.MedicalNotesLive do
         </.inputs_for>
 
         <div class="flex flex-row gap-10">
-          <.button type="button" class="md:w-32"><%= gettext("Save") %></.button>
           <.button
             type="button"
             class="md:w-32"
@@ -208,7 +207,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
       for={%{}}
       class="drop-shadow-sm"
       phx-change="change_visit_transcription"
-      phx-submit="submit_visit_transcription"
+      phx-submit="generate_medical_note"
     >
       <div class="w-full flex flex-col gap-10">
         <.input
@@ -219,7 +218,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
           input_class="h-[50vh]"
         />
         <div class="flex flex-row gap-10">
-          <.button type="submit" class="md:w-32"><%= gettext("Save") %></.button>
+          <.button type="submit" class="md:w-32"><%= gettext("Create note") %></.button>
           <.button
             type="button"
             class="md:w-32"
@@ -313,7 +312,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   def handle_event(
-        "submit_visit_transcription",
+        "generate_medical_note",
         %{"visit_transcription" => visit_transcription},
         socket
       ) do
