@@ -14,13 +14,10 @@ defmodule ClipboardWeb.Router do
     plug :accepts, ["json"]
   end
 
-  # @ryanzidago - deprecate these routes in favor of `:locale` scope
   scope "/", ClipboardWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-
-    live "/medical-notes", MedicalNotesLive, :index
+    get "/", PageController, :index
   end
 
   scope "/:locale", ClipboardWeb do
