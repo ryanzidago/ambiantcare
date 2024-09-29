@@ -6,4 +6,8 @@ defmodule ClipboardWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def index(conn, _params) do
+    redirect(conn, to: ~p"/en")
+  end
 end

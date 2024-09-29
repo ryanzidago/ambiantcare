@@ -1,4 +1,4 @@
-defmodule ClipboardWeb.SetLocale do
+defmodule ClipboardWeb.Hooks.SetLocale do
   @moduledoc """
   Module responsible for setting the locale.
   """

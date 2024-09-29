@@ -67,7 +67,7 @@ msgstr ""
 msgid "Visit Transcription"
 msgstr ""
 
-#: lib/clipboard_web/components/sidebar.ex:65
+#: lib/clipboard_web/components/sidebar.ex:101
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr ""
@@ -84,7 +84,7 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: lib/clipboard_web/components/sidebar.ex:80
+#: lib/clipboard_web/components/sidebar.ex:116
 #, elixir-autogen, elixir-format
 msgid "Template"
 msgstr ""
@@ -145,4 +145,96 @@ msgstr ""
 #: lib/clipboard_web/live/medical_notes_live.ex:140
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:211
+#: lib/clipboard_web/live/landing_page_live.ex:223
+#, elixir-autogen, elixir-format
+msgid ""
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:28
+#, elixir-autogen, elixir-format
+msgid "About"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:106
+#, elixir-autogen, elixir-format
+msgid "Automated medical notes for clinicians"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:446
+#, elixir-autogen, elixir-format
+msgid "Book a demo"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:207
+#, elixir-autogen, elixir-format
+msgid "Co-Founder & CEO"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:220
+#, elixir-autogen, elixir-format
+msgid "Co-Founder & CTO"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:142
+#, elixir-autogen, elixir-format
+msgid "Focus on what matters: patient care. We'll handle the rest."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:168
+#, elixir-autogen, elixir-format
+msgid "Get your patient's consent and record the consultation."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:29
+#: lib/clipboard_web/live/landing_page_live.ex:161
+#, elixir-autogen, elixir-format
+msgid "How it works"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:174
+#, elixir-autogen, elixir-format
+msgid "Learn how we safely process your patient data"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:50
+#, elixir-autogen, elixir-format
+msgid "Open main menu"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:145
+#, elixir-autogen, elixir-format
+msgid "Our copilot helps clinicians generate medical notes from audio transcription or text documents."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:191
+#, elixir-autogen, elixir-format
+msgid "Our copilot will generate a medical notes in minutes. You can edit and download them."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:109
+#, elixir-autogen, elixir-format
+msgid "Press a button and generate medical notes in minutes instead of hours."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:288
+#, elixir-autogen, elixir-format
+msgid "Spend more time with your patients and less time on paperwork."
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:30
+#, elixir-autogen, elixir-format
+msgid "Team"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:429
+#, elixir-autogen, elixir-format
+msgid "Try for free"
+msgstr ""
+
+#: lib/clipboard_web/live/landing_page_live.ex:182
+#, elixir-autogen, elixir-format
+msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""

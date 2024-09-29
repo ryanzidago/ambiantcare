@@ -26,8 +26,7 @@ defmodule ClipboardWeb.Router do
   scope "/:locale", ClipboardWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-
+    live "/", LandingPageLive, :home
     live "/medical-notes", MedicalNotesLive, :index
   end
 

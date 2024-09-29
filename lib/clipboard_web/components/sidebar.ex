@@ -9,6 +9,8 @@ defmodule ClipboardWeb.Sidebar do
 
   alias Clipboard.MedicalNotes.Template
 
+  alias ClipboardWeb.Components.Branding
+
   import ClipboardWeb.CoreComponents
 
   @known_locales Gettext.known_locales(ClipboardWeb.Gettext)
@@ -74,7 +76,7 @@ defmodule ClipboardWeb.Sidebar do
         aria-label="Sidenav"
       >
         <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-          <.branding />
+          <Branding.logo class="mb-20" />
           <div class="flex flex-col gap-2">
             <.locale_setting locale_options={@locale_options} locale={@locale} phxtarget={@myself} />
             <.template_setting
@@ -85,20 +87,6 @@ defmodule ClipboardWeb.Sidebar do
           </div>
         </div>
       </aside>
-    </div>
-    """
-  end
-
-  defp branding(assigns) do
-    ~H"""
-    <div class="justify-center p-4 rounded mb-20 shadow flex flex-row gap-0.5 drop-shadow-2xl font-semibold">
-      <span class="text-blue-600">ambiant</span>
-      <span class="bg-blue-600 px-2 rounded text-white flex flex-row items-end">
-        <svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" class="mb-0.5">
-          <circle cx="3" cy="3" r="3" fill="white" />
-        </svg>
-        Care
-      </span>
     </div>
     """
   end

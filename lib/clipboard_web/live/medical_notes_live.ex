@@ -23,7 +23,7 @@ defmodule ClipboardWeb.MedicalNotesLive do
   alias Clipboard.AI.SpeechMatics
 
   alias ClipboardWeb.Microphone
-  alias ClipboardWeb.SetLocale
+  alias ClipboardWeb.Hooks.SetLocale
 
   @impl LiveView
   def mount(params, _session, socket) do
