@@ -72,7 +72,7 @@ if config_env() == :prod do
       api_endpoint: "https://api-inference.huggingface.co/models"
     ],
     dedicated: [
-      namespace: "GetClipboard",
+      namespace: "ambiantcare",
       api_endpoint: "https://api.endpoints.huggingface.cloud/v2",
       model_endpoints: [
         open_ai_whisper_large_v3:

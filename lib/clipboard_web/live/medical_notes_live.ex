@@ -516,12 +516,14 @@ defmodule ClipboardWeb.MedicalNotesLive do
   end
 
   defp maybe_resume_dedicated_endpoint(socket) do
-    if socket.assigns.stt_backend == HuggingFace and is_nil(socket.assigns.visit_transcription) do
-      Logger.debug("Resuming HuggingFace endpoint")
-      # @ryanzidago - ensure the endpoint is always running when someone visits the page
-      _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
-    else
-      {:ok, :no_op}
+    case socket.assigns do
+      %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
+        Logger.debug("Resuming HuggingFace endpoint")
+        # @ryanzidago - ensure the endpoint is always running when someone visits the page
+        _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
+
+      _ ->
+        :no_op
     end
   end
 
