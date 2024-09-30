@@ -8,8 +8,8 @@ const path = require("path")
 module.exports = {
   content: [
     "./js/**/*.js",
-    "../lib/clipboard_web.ex",
-    "../lib/clipboard_web/**/*.*ex",
+    "../lib/ambiantcare_web.ex",
+    "../lib/ambiantcare_web/**/*.*ex",
     "../node_modules/flowbite/**/*.js",
   ],
   theme: {

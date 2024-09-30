@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :clipboard, Clipboard.Repo,
+config :ambiantcare, Ambiantcare.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "clipboard_dev",
+  database: "ambiantcare_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -16,7 +16,7 @@ config :clipboard, Clipboard.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :clipboard, ClipboardWeb.Endpoint,
+config :ambiantcare, AmbiantcareWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
@@ -25,8 +25,8 @@ config :clipboard, ClipboardWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "Ke60J4Sq5Dxr8Z6gRAL7CVQwG/86zLHiXcHZsMy03RA4xB1aKgTKMj7l4ji/w1Sr",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:clipboard, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:clipboard, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:ambiantcare, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:ambiantcare, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -53,17 +53,17 @@ config :clipboard, ClipboardWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :clipboard, ClipboardWeb.Endpoint,
+config :ambiantcare, AmbiantcareWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/clipboard_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/ambiantcare_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :clipboard, dev_routes: true
+config :ambiantcare, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -84,7 +84,7 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :clipboard, Clipboard.AI.HuggingFace,
+config :ambiantcare, Ambiantcare.AI.HuggingFace,
   api_key: System.get_env("HUGGING_FACE_API_KEY"),
   deployment: System.get_env("HUGGING_FACE_DEPLOYMENT") || "dedicated",
   serverless: [
@@ -101,19 +101,19 @@ config :clipboard, Clipboard.AI.HuggingFace,
     ]
   ]
 
-config :clipboard, Clipboard.AI.Mistral,
+config :ambiantcare, Ambiantcare.AI.Mistral,
   base_url: "https://api.mistral.ai",
   api_key: System.get_env("MISTRAL_API_KEY"),
   agents: [
     medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID")
   ]
 
-config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
+config :ambiantcare, Ambiantcare.AI.Ollama, base_url: "http://localhost:11434"
 
-config :clipboard, Clipboard.AI.Gladia,
+config :ambiantcare, Ambiantcare.AI.Gladia,
   api_key: System.get_env("GLADIA_API_KEY"),
   base_url: "https://api.gladia.io/v2"
 
-config :clipboard, Clipboard.AI.SpeechMatics,
+config :ambiantcare, Ambiantcare.AI.SpeechMatics,
   api_key: System.get_env("SPEECHMATICS_API_KEY"),
   base_url: "https://asr.api.speechmatics.com/v2"

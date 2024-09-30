@@ -11,80 +11,80 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/clipboard_web/components/core_components.ex:486
+#: lib/ambiantcare_web/components/core_components.ex:486
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:160
+#: lib/ambiantcare_web/components/core_components.ex:160
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:109
+#: lib/ambiantcare_web/live/medical_notes_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:151
+#: lib/ambiantcare_web/components/core_components.ex:151
 #, elixir-autogen, elixir-format
 msgid "Error!"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:172
+#: lib/ambiantcare_web/components/core_components.ex:172
 #, elixir-autogen, elixir-format
 msgid "Hang in there while we get back on track"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:167
+#: lib/ambiantcare_web/components/core_components.ex:167
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:109
+#: lib/ambiantcare_web/live/medical_notes_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:150
+#: lib/ambiantcare_web/components/core_components.ex:150
 #, elixir-autogen, elixir-format
 msgid "Success!"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:155
+#: lib/ambiantcare_web/components/core_components.ex:155
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr ""
 
-#: lib/clipboard_web/components/core_components.ex:76
-#: lib/clipboard_web/components/core_components.ex:130
+#: lib/ambiantcare_web/components/core_components.ex:76
+#: lib/ambiantcare_web/components/core_components.ex:130
 #, elixir-autogen, elixir-format
 msgid "close"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:217
+#: lib/ambiantcare_web/live/medical_notes_live.ex:217
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr ""
 
-#: lib/clipboard_web/components/sidebar.ex:101
+#: lib/ambiantcare_web/components/sidebar.ex:101
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:161
-#: lib/clipboard_web/live/medical_notes_live.ex:235
+#: lib/ambiantcare_web/live/medical_notes_live.ex:161
+#: lib/ambiantcare_web/live/medical_notes_live.ex:235
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:174
-#: lib/clipboard_web/live/medical_notes_live.ex:248
+#: lib/ambiantcare_web/live/medical_notes_live.ex:174
+#: lib/ambiantcare_web/live/medical_notes_live.ex:248
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr ""
 
-#: lib/clipboard_web/components/sidebar.ex:116
+#: lib/ambiantcare_web/components/sidebar.ex:116
 #, elixir-autogen, elixir-format
 msgid "Template"
 msgstr ""
@@ -131,109 +131,109 @@ msgstr ""
 msgid "Therapeutic Advices"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes/helpers.ex:11
+#: lib/ambiantcare_web/live/medical_notes/helpers.ex:11
 #, elixir-autogen, elixir-format
 msgid "Medical Note"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:221
+#: lib/ambiantcare_web/live/medical_notes_live.ex:221
 #, elixir-autogen, elixir-format
 msgid "Create note"
 msgstr ""
 
-#: lib/clipboard_web/live/medical_notes_live.ex:140
+#: lib/ambiantcare_web/live/medical_notes_live.ex:140
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:211
-#: lib/clipboard_web/live/landing_page_live.ex:223
+#: lib/ambiantcare_web/live/landing_page_live.ex:211
+#: lib/ambiantcare_web/live/landing_page_live.ex:223
 #, elixir-autogen, elixir-format
 msgid ""
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:28
+#: lib/ambiantcare_web/live/landing_page_live.ex:28
 #, elixir-autogen, elixir-format
 msgid "About"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:106
+#: lib/ambiantcare_web/live/landing_page_live.ex:106
 #, elixir-autogen, elixir-format
 msgid "Automated medical notes for clinicians"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:446
+#: lib/ambiantcare_web/live/landing_page_live.ex:446
 #, elixir-autogen, elixir-format
 msgid "Book a demo"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:207
+#: lib/ambiantcare_web/live/landing_page_live.ex:207
 #, elixir-autogen, elixir-format
 msgid "Co-Founder & CEO"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:220
+#: lib/ambiantcare_web/live/landing_page_live.ex:220
 #, elixir-autogen, elixir-format
 msgid "Co-Founder & CTO"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:142
+#: lib/ambiantcare_web/live/landing_page_live.ex:142
 #, elixir-autogen, elixir-format
 msgid "Focus on what matters: patient care. We'll handle the rest."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:168
+#: lib/ambiantcare_web/live/landing_page_live.ex:168
 #, elixir-autogen, elixir-format
 msgid "Get your patient's consent and record the consultation."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:29
-#: lib/clipboard_web/live/landing_page_live.ex:161
+#: lib/ambiantcare_web/live/landing_page_live.ex:29
+#: lib/ambiantcare_web/live/landing_page_live.ex:161
 #, elixir-autogen, elixir-format
 msgid "How it works"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:174
+#: lib/ambiantcare_web/live/landing_page_live.ex:174
 #, elixir-autogen, elixir-format
 msgid "Learn how we safely process your patient data"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:50
+#: lib/ambiantcare_web/live/landing_page_live.ex:50
 #, elixir-autogen, elixir-format
 msgid "Open main menu"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:145
+#: lib/ambiantcare_web/live/landing_page_live.ex:145
 #, elixir-autogen, elixir-format
 msgid "Our copilot helps clinicians generate medical notes from audio transcription or text documents."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:191
+#: lib/ambiantcare_web/live/landing_page_live.ex:191
 #, elixir-autogen, elixir-format
 msgid "Our copilot will generate a medical notes in minutes. You can edit and download them."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:109
+#: lib/ambiantcare_web/live/landing_page_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "Press a button and generate medical notes in minutes instead of hours."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:288
+#: lib/ambiantcare_web/live/landing_page_live.ex:288
 #, elixir-autogen, elixir-format
 msgid "Spend more time with your patients and less time on paperwork."
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:30
+#: lib/ambiantcare_web/live/landing_page_live.ex:30
 #, elixir-autogen, elixir-format
 msgid "Team"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:429
+#: lib/ambiantcare_web/live/landing_page_live.ex:429
 #, elixir-autogen, elixir-format
 msgid "Try for free"
 msgstr ""
 
-#: lib/clipboard_web/live/landing_page_live.ex:182
+#: lib/ambiantcare_web/live/landing_page_live.ex:182
 #, elixir-autogen, elixir-format
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""

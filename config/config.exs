@@ -7,19 +7,19 @@
 # General application configuration
 import Config
 
-config :clipboard,
-  ecto_repos: [Clipboard.Repo],
+config :ambiantcare,
+  ecto_repos: [Ambiantcare.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Configures the endpoint
-config :clipboard, ClipboardWeb.Endpoint,
+config :ambiantcare, AmbiantcareWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: ClipboardWeb.ErrorHTML, json: ClipboardWeb.ErrorJSON],
+    formats: [html: AmbiantcareWeb.ErrorHTML, json: AmbiantcareWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Clipboard.PubSub,
+  pubsub_server: Ambiantcare.PubSub,
   live_view: [signing_salt: "gGKldpAL"]
 
 # Configures the mailer
@@ -29,12 +29,12 @@ config :clipboard, ClipboardWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :clipboard, Clipboard.Mailer, adapter: Swoosh.Adapters.Local
+config :ambiantcare, Ambiantcare.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  clipboard: [
+  ambiantcare: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -44,7 +44,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",
-  clipboard: [
+  ambiantcare: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

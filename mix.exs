@@ -1,9 +1,9 @@
-defmodule Clipboard.MixProject do
+defmodule Ambiantcare.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :clipboard,
+      app: :ambiantcare,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -21,7 +21,7 @@ defmodule Clipboard.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Clipboard.Application, []},
+      mod: {Ambiantcare.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -81,10 +81,10 @@ defmodule Clipboard.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind clipboard", "esbuild clipboard"],
+      "assets.build": ["tailwind ambiantcare", "esbuild ambiantcare"],
       "assets.deploy": [
-        "tailwind clipboard --minify",
-        "esbuild clipboard --minify",
+        "tailwind ambiantcare --minify",
+        "esbuild ambiantcare --minify",
         "phx.digest"
       ],
       "gettext.pipeline": ["gettext.extract", "gettext.merge priv/gettext"]

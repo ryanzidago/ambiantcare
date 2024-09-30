@@ -12,12 +12,12 @@ import Config
 # If you use `mix release`, you need to explicitly enable the server
 # by passing the PHX_SERVER=true when you start it:
 #
-#     PHX_SERVER=true bin/clipboard start
+#     PHX_SERVER=true bin/ambiantcare start
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 if System.get_env("PHX_SERVER") do
-  config :clipboard, ClipboardWeb.Endpoint, server: true
+  config :ambiantcare, AmbiantcareWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do
@@ -30,7 +30,7 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :clipboard, Clipboard.Repo,
+  config :ambiantcare, Ambiantcare.Repo,
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
@@ -51,9 +51,9 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
-  config :clipboard, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :ambiantcare, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :clipboard, ClipboardWeb.Endpoint,
+  config :ambiantcare, AmbiantcareWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
@@ -65,7 +65,7 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :clipboard, Clipboard.AI.HuggingFace,
+  config :ambiantcare, Ambiantcare.AI.HuggingFace,
     api_key: System.get_env("HUGGING_FACE_API_KEY"),
     deployment: System.get_env("HUGGING_FACE_DEPLOYMENT") || "dedicated",
     serverless: [
@@ -82,22 +82,22 @@ if config_env() == :prod do
       ]
     ]
 
-  config :clipboard, Clipboard.AI.Mistral,
+  config :ambiantcare, Ambiantcare.AI.Mistral,
     base_url: "https://api.mistral.ai",
     api_key: System.get_env("MISTRAL_API_KEY"),
     agents: [
       medical_note_agent_id: System.get_env("MISTRAL_MEDICAL_NOTE_AGENT_ID")
     ]
 
-  config :clipboard, Clipboard.AI.Ollama, base_url: "http://localhost:11434"
+  config :ambiantcare, Ambiantcare.AI.Ollama, base_url: "http://localhost:11434"
 
-  config :clipboard, :default_locale, "en"
+  config :ambiantcare, :default_locale, "en"
 
-  config :clipboard, Clipboard.AI.Gladia,
+  config :ambiantcare, Ambiantcare.AI.Gladia,
     api_key: System.get_env("GLADIA_API_KEY"),
     base_url: "https://api.gladia.io/v2"
 
-  config :clipboard, Clipboard.AI.SpeechMatics,
+  config :ambiantcare, Ambiantcare.AI.SpeechMatics,
     api_key: System.get_env("SPEECHMATICS_API_KEY"),
     base_url: "https://asr.api.speechmatics.com/v2"
 
@@ -106,7 +106,7 @@ if config_env() == :prod do
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  #     config :clipboard, ClipboardWeb.Endpoint,
+  #     config :ambiantcare, AmbiantcareWeb.Endpoint,
   #       https: [
   #         ...,
   #         port: 443,
@@ -128,7 +128,7 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your config/prod.exs,
   # ensuring no data is ever sent via http, always redirecting to https:
   #
-  #     config :clipboard, ClipboardWeb.Endpoint,
+  #     config :ambiantcare, AmbiantcareWeb.Endpoint,
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
@@ -139,7 +139,7 @@ if config_env() == :prod do
   # Also, you may need to configure the Swoosh API client of your choice if you
   # are not using SMTP. Here is an example of the configuration:
   #
-  #     config :clipboard, Clipboard.Mailer,
+  #     config :ambiantcare, Ambiantcare.Mailer,
   #       adapter: Swoosh.Adapters.Mailgun,
   #       api_key: System.get_env("MAILGUN_API_KEY"),
   #       domain: System.get_env("MAILGUN_DOMAIN")

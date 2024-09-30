@@ -1,1 +1,1 @@
-call "%~dp0\clipboard" eval Clipboard.Release.migrate
+call "%~dp0\ambiantcare" eval Ambiantcare.Release.migrate

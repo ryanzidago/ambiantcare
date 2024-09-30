@@ -1,1 +1,1 @@
-fly ssh console --pty -C "/app/bin/clipboard remote"
+fly ssh console --pty -C "/app/bin/ambiantcare remote"

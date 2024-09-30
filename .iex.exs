@@ -1,7 +1,7 @@
 alias Ecto.Changeset
 
-alias Clipboard.MedicalNotes
-alias Clipboard.MedicalNotes.MedicalNote
-alias Clipboard.MedicalNotes.Template
+alias Ambiantcare.MedicalNotes
+alias Ambiantcare.MedicalNotes.MedicalNote
+alias Ambiantcare.MedicalNotes.Template
 
 import Ecto.Changeset
