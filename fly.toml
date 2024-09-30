@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for clipboard on 2024-08-28T18:27:32+02:00
+# fly.toml app configuration file generated for ambiantcare on 2024-09-30T08:24:15+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'clipboard'
+app = 'ambiantcare'
 primary_region = 'mad'
 kill_signal = 'SIGTERM'
 
@@ -13,7 +13,7 @@ kill_signal = 'SIGTERM'
   release_command = '/app/bin/migrate'
 
 [env]
-  PHX_HOST = 'clipboard.fly.dev'
+  PHX_HOST = 'ambiant.care'
   PORT = '8080'
 
 [http_service]
