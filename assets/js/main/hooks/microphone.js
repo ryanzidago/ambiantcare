@@ -17,17 +17,27 @@ const Microphone = {
   startRecording() {
     this.audioChunks = [];
 
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      this.mediaRecorder = new MediaRecorder(stream);
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.pushEvent("start_recording", {});
 
-      this.mediaRecorder.addEventListener("dataavailable", (event) => {
-        if (event.data.size > 0) {
-          this.audioChunks.push(event.data);
+        this.mediaRecorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size > 0) {
+            this.audioChunks.push(event.data);
+          }
+        });
+
+        this.mediaRecorder.start();
+      })
+      .catch((error) => {
+        if (error.name == "NotAllowedError") {
+          alert(
+            "Permission to access the microphone is required in order to generate the audio transcript."
+          );
         }
       });
-
-      this.mediaRecorder.start();
-    });
   },
 
   stopRecording() {
@@ -52,6 +62,8 @@ const Microphone = {
     });
 
     this.mediaRecorder.stop();
+    this.pushEvent("stop_recording", {});
+
   },
 
   isRecording() {

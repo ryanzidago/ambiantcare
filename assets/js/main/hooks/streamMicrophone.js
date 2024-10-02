@@ -131,10 +131,4 @@ const StreamMicrophone = {
   },
 };
 
-function containsNotAllowedError(error) {
-  return error.message.includes(
-    "The request is not allowed by the user agent or the platform in the current context"
-  );
-}
-
 export { StreamMicrophone };
