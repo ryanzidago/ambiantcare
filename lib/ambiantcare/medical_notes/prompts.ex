@@ -5,13 +5,24 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
 
   alias Ambiantcare.MedicalNotes.Template
 
-  @spec transcription_to_medical_note(String.t(), Template.t()) :: String.t()
-  def transcription_to_medical_note(transcription, %Template{} = template) do
-    context =
+  def compose(params) do
+    context = Map.get(params, :context)
+    transcription = Map.fetch!(params, :transcription)
+    template = Map.fetch!(params, :template)
+
+    require IEx
+    IEx.pry()
+
+    role =
       "You are a medical assistant that structures patient visit transcriptions into medical notes."
 
     instructions = """
-    <%= @context %>
+    <%= @role %>
+
+    The doctor has provided the following additional context about the patient:
+    <%= if is_binary(@context) do %>
+      <%= @context %>
+    <% end %>
 
     Structure this patient visit transcription:
     <%= @transcription %>
@@ -23,6 +34,7 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
     """
 
     assigns = [
+      role: role,
       context: context,
       transcription: transcription,
       schema: Template.to_prompt(template)

@@ -11,6 +11,7 @@ const SILENCE_THRESHOLD = 0.05;
 // Otherwise, it isn't possible to read any but the very first chunk.
 const StreamMicrophone = {
   mounted() {
+    console.log("StreamMicrophone mounted");
     // @ryanzidago - ensure clean state on mount
     this.stopRecording();
 
@@ -97,7 +98,7 @@ const StreamMicrophone = {
     this.firstBlob = null;
     this.audioChunks = [];
     clearInterval(this.updateInterval);
-    this.pushEvent("stop_recording", {});
+    // this.pushEvent("stop_recording", {});
   },
 
   async processChunks() {

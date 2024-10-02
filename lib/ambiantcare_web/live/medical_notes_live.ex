@@ -35,11 +35,13 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign_selected_template()
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
+      |> assign(consultation_context: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params))
       |> assign_medical_note_changeset(params)
       |> assign(url_params: params)
+      |> assign(current_action: "transcription")
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket)
@@ -53,7 +55,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     ~H"""
     <div class="grid lg:grid-cols-2 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-1">
-        <.transcription_panel {assigns} />
+        <.action_panel {assigns} />
       </div>
       <div class="lg:col-span-1 lg:overflow-y-auto lg:px-8">
         <.medical_note
@@ -61,6 +63,27 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           selected_template={@selected_template}
         />
       </div>
+    </div>
+    """
+  end
+
+  defp action_panel(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-">
+      <div class="inline-flex rounded-md " role="group">
+        <.button type="button" phx-click="toggle_action_panel" phx-value-action="transcription">
+          <%= gettext("Transcripion") %>
+        </.button>
+        <.button type="button" phx-click="toggle_action_panel" phx-value-action="consultation_context">
+          <%= gettext("Context") %>
+        </.button>
+      </div>
+      <%= case @current_action do %>
+        <% "transcription" -> %>
+          <.transcription_panel {assigns} />
+        <% "consultation_context" -> %>
+          <.consultation_panel {assigns} />
+      <% end %>
     </div>
     """
   end
@@ -85,6 +108,46 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           </:failed>
           <quote class="text-sm">
             <.visit_transcription visit_transcription={visit_transcription} />
+          </quote>
+        </.async_result>
+      </div>
+    </div>
+    """
+  end
+
+  attr :consultation_context, :string, required: true
+
+  defp consultation_panel(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-10">
+      <%!-- <.recording_button {assigns} /> --%>
+      <%!-- <form phx-change="no_op" phx-submit="no_op" class="hidden">
+        <.live_file_input upload={@uploads.audio} />
+      </form> --%>
+
+      <div class="flex flex-col">
+        <.async_result :let={consultation_context} assign={@consultation_context}>
+          <:loading>
+            <div class="flex flex-col items-center">
+              <.spinner />
+            </div>
+          </:loading>
+          <:failed :let={_reason}>
+            <span class="flex flex-col items-center">Oops, something went wrong!</span>
+          </:failed>
+          <quote class="text-sm">
+            <.form for={%{}} class="drop-shadow-sm" phx-change="change_consultation_context">
+              <div class="w-full flex flex-col gap-10">
+                <.input
+                  type="textarea"
+                  value={consultation_context}
+                  name="consultation_context"
+                  label={gettext("Consultation Context")}
+                  placeholder={gettext("Provide additional context about the patient.")}
+                  input_class="h-[50vh]"
+                />
+              </div>
+            </.form>
           </quote>
         </.async_result>
       </div>
@@ -293,6 +356,21 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_action_panel", %{"action" => action}, socket) do
+    {:noreply, assign(socket, current_action: action)}
+  end
+
+  def handle_event("change_consultation_context", %{"consultation_context" => context}, socket) do
+    Logger.debug("Consultation context changed to: #{context}")
+
+    socket =
+      assign(socket,
+        consultation_context: %AsyncResult{ok?: true, loading: false, result: context}
+      )
+
+    {:noreply, socket}
+  end
+
   def handle_event("no_op", _params, socket) do
     # We need phx-change and phx-submit on the form for live uploads,
     # but we make predictions immediately using :progress, so we just
@@ -316,10 +394,12 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         socket
       ) do
     selected_template = socket.assigns.selected_template
+    context = socket.assigns.consultation_context.result
+    params = %{context: context, transcription: visit_transcription, template: selected_template}
 
     socket =
-      assign_async(socket, :visit_transcription, fn ->
-        case query_llm(visit_transcription, selected_template) do
+      assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
+        case query_llm(params) do
           {:ok, medical_note_changeset} ->
             {:ok,
              %{
@@ -347,6 +427,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     current_visit_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
     selected_template = socket.assigns.selected_template
+    context = socket.assigns.consultation_context.result
 
     params =
       %{}
@@ -354,6 +435,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> Map.put(:binary, binary)
       |> Map.put(:current_visit_transcription, current_visit_transcription)
       |> Map.put(:selected_template, selected_template)
+      |> Map.put(:consultation_context, context)
 
     opts =
       []
@@ -363,7 +445,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
 
     socket =
-      assign_async(socket, :visit_transcription, fn -> audio_to_structured_text(params, opts) end)
+      assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
+        audio_to_structured_text(params, opts)
+      end)
 
     {:noreply, socket}
   end
@@ -385,13 +469,19 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
            stt_backend: stt_backend,
            binary: binary,
            current_visit_transcription: current_visit_transcription,
-           selected_template: selected_template
+           consultation_context: consultation_context,
+           selected_template: template
          },
          opts
        ) do
     with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <- transcribe_audio(stt_backend, filename, opts),
-         {:ok, medical_note_changeset} <- query_llm(transcription, selected_template) do
+         params <- %{
+           context: consultation_context,
+           transcription: transcription,
+           template: template
+         },
+         {:ok, medical_note_changeset} <- query_llm(params) do
       Logger.debug("*** begin transcription ***")
       Logger.debug(transcription)
       Logger.debug("*** end transcription ***")
@@ -497,14 +587,16 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp query_llm(visit_transcription, selected_template) do
-    prompt = Prompts.transcription_to_medical_note(visit_transcription, selected_template)
+  defp query_llm(%{} = params) do
+    prompt = Prompts.compose(params)
     result = Ambiantcare.AI.Mistral.generate("", prompt, [])
 
     Logger.debug("*** prompt ***")
     Logger.debug(prompt)
     Logger.debug("*** result ***")
     Logger.debug(inspect(result))
+
+    selected_template = Map.fetch!(params, :template)
 
     with {:ok, response} <- result,
          {:ok, medical_note_changeset} <- response_to_changeset(response, selected_template) do
