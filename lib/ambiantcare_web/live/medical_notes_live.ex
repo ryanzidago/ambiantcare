@@ -102,7 +102,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         type="button"
         id="microphone"
         phx-hook={@microphone_hook}
-        phx-click="toggle_recording"
         data-endianness={System.endianness()}
         class="md:w-32"
       >
@@ -254,12 +253,12 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   @impl LiveView
-  def handle_event("toggle_recording", _params, socket) when not socket.assigns.recording? do
+  def handle_event("start_recording", _, socket) do
     socket = assign(socket, recording?: true)
     {:noreply, socket}
   end
 
-  def handle_event("toggle_recording", _params, socket) when socket.assigns.recording? do
+  def handle_event("stop_recording", _, socket) do
     socket = assign(socket, recording?: false)
     {:noreply, socket}
   end

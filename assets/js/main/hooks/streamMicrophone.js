@@ -25,6 +25,8 @@ const StreamMicrophone = {
 
   startRecording() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      this.pushEvent("start_recording", {});
+
       this.mediaRecorder = new MediaRecorder(stream, {
         audioBitsPerSecond: AUDIO_BITS_PER_SECOND,
       });
@@ -79,6 +81,7 @@ const StreamMicrophone = {
     this.firstBlob = null;
     this.audioChunks = [];
     clearInterval(this.updateInterval);
+    this.pushEvent("stop_recording", {});
   },
 
   async processChunks() {
