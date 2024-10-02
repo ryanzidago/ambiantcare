@@ -24,48 +24,64 @@ const StreamMicrophone = {
   },
 
   startRecording() {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      this.pushEvent("start_recording", {});
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        this.pushEvent("start_recording", {});
 
-      this.mediaRecorder = new MediaRecorder(stream, {
-        audioBitsPerSecond: AUDIO_BITS_PER_SECOND,
-      });
+        this.mediaRecorder = new MediaRecorder(stream, {
+          audioBitsPerSecond: AUDIO_BITS_PER_SECOND,
+        });
 
-      this.mediaRecorder.addEventListener("dataavailable", async (event) => {
-        if (event.data.size > 0) {
-          if (this.firstBlob && event.data.size < 25000) {
-            return;
-          }
-
-          if (!this.firstBlob) {
-            this.firstBlob = event.data;
-          } else {
-            const chunkWithHeader = new Blob([this.firstBlob, event.data], {
-              type: event.type,
-            });
-
-            const isSilent = await this.isSilent(chunkWithHeader);
-            if (isSilent) {
-              console.log("Silent chunk detected, skipping...");
-            } else {
-              this.audioChunks.push(chunkWithHeader);
-              this.processChunks();
-            }
-          }
+        this.handleOnDataAvailable();
+        this.handleTimeUpdate();
+      })
+      .catch((error) => {
+        if (error.name == "NotAllowedError") {
+          alert(
+            "Permission to access the microphone is required in order to generate the audio transcript."
+          );
         }
       });
+  },
 
-      this.mediaRecorder.start(CHUNK_DURATION_IN_MS);
+  handleOnDataAvailable() {
+    this.mediaRecorder.addEventListener("dataavailable", async (event) => {
+      if (event.data.size > 0) {
+        if (this.firstBlob && event.data.size < 25000) {
+          return;
+        }
 
-      // Force the first chunk to be generated
-      setTimeout(() => {
-        this.mediaRecorder.requestData(); // Request the first chunk early
-      }, REQUEST_FIRST_CHUNK_AFTER_DURATION_IN_MS);
+        if (!this.firstBlob) {
+          this.firstBlob = event.data;
+        } else {
+          const chunkWithHeader = new Blob([this.firstBlob, event.data], {
+            type: event.type,
+          });
 
-      this.updateInterval = setInterval(() => {
-        this.mediaRecorder.requestData();
-      }, CHUNK_DURATION_IN_MS);
+          const isSilent = await this.isSilent(chunkWithHeader);
+          if (isSilent) {
+            console.log("Silent chunk detected, skipping...");
+          } else {
+            this.audioChunks.push(chunkWithHeader);
+            this.processChunks();
+          }
+        }
+      }
     });
+  },
+
+  handleTimeUpdate() {
+    this.mediaRecorder.start(CHUNK_DURATION_IN_MS);
+
+    // Force the first chunk to be generated
+    setTimeout(() => {
+      this.mediaRecorder.requestData(); // Request the first chunk early
+    }, REQUEST_FIRST_CHUNK_AFTER_DURATION_IN_MS);
+
+    this.updateInterval = setInterval(() => {
+      this.mediaRecorder.requestData();
+    }, CHUNK_DURATION_IN_MS);
   },
 
   stopRecording() {
@@ -114,5 +130,11 @@ const StreamMicrophone = {
     });
   },
 };
+
+function containsNotAllowedError(error) {
+  return error.message.includes(
+    "The request is not allowed by the user agent or the platform in the current context"
+  );
+}
 
 export { StreamMicrophone };
