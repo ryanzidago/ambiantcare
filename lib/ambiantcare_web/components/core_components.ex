@@ -222,6 +222,7 @@ defmodule AmbiantcareWeb.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :overwrite_class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -230,12 +231,15 @@ defmodule AmbiantcareWeb.CoreComponents do
     ~H"""
     <button
       type={@type}
-      class={[
-        "bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
-        "phx-submit-loading:opacity-75 rounded-lg py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
-        @class
-      ]}
+      class={
+        @overwrite_class ||
+          [
+            "bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
+            "phx-submit-loading:opacity-75 rounded-lg py-2 px-3",
+            "text-sm font-semibold leading-6 text-white active:text-white/80",
+            @class
+          ]
+      }
       {@rest}
     >
       <%= render_slot(@inner_block) %>
