@@ -72,7 +72,7 @@ defmodule AmbiantcareWeb.Sidebar do
       </button>
 
       <aside id="default-sidebar" class="w-44 h-screen hidden sm:visible" aria-label="Sidenav">
-        <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div class="overflow-y-auto py-5 px-3 h-full bg-white rounded-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <Branding.logo class="mb-20" />
           <div class="flex flex-col gap-2">
             <.locale_setting locale_options={@locale_options} locale={@locale} phxtarget={@myself} />
