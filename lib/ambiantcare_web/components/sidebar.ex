@@ -49,9 +49,9 @@ defmodule AmbiantcareWeb.Sidebar do
         phx-click={
           JS.toggle(
             to: "#default-sidebar",
-            in: "transition ease-out duration-300",
-            out: "transition ease-in duration-300"
-          )
+            in: "",
+            out: ""
+            )
         }
       >
         <span class="sr-only">Open sidebar</span>
@@ -70,6 +70,7 @@ defmodule AmbiantcareWeb.Sidebar do
           </path>
         </svg>
       </button>
+
       <aside
         id="default-sidebar"
         class="w-44 h-screen transition-transform -translate-x-full sm:hidden md:block sm:translate-x-0"
