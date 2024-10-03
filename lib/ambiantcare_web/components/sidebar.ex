@@ -43,15 +43,15 @@ defmodule AmbiantcareWeb.Sidebar do
     ~H"""
     <div class="flex flex-col gap-2">
       <button
-        aria-controls="default-sidebar"
         type="button"
         class="inline-flex items-center p-2 mt-2 ms-3 text-sm w-10 rounded-lg hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         phx-click={
-          JS.toggle(
+          JS.toggle_class(
+            "hidden sm:block",
             to: "#default-sidebar",
-            in: "",
-            out: ""
-            )
+            transition: "",
+            time: 0
+          )
         }
       >
         <span class="sr-only">Open sidebar</span>
@@ -71,11 +71,7 @@ defmodule AmbiantcareWeb.Sidebar do
         </svg>
       </button>
 
-      <aside
-        id="default-sidebar"
-        class="w-44 h-screen transition-transform -translate-x-full sm:hidden md:block sm:translate-x-0"
-        aria-label="Sidenav"
-      >
+      <aside id="default-sidebar" class="w-44 h-screen hidden sm:visible" aria-label="Sidenav">
         <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <Branding.logo class="mb-20" />
           <div class="flex flex-col gap-2">
