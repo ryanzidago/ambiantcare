@@ -21,7 +21,7 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:171
+#: lib/ambiantcare_web/live/medical_notes_live.ex:181
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr ""
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:171
+#: lib/ambiantcare_web/live/medical_notes_live.ex:181
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr ""
@@ -62,7 +62,7 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:279
+#: lib/ambiantcare_web/live/medical_notes_live.ex:289
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr ""
@@ -72,14 +72,14 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:223
-#: lib/ambiantcare_web/live/medical_notes_live.ex:297
+#: lib/ambiantcare_web/live/medical_notes_live.ex:233
+#: lib/ambiantcare_web/live/medical_notes_live.ex:307
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:236
-#: lib/ambiantcare_web/live/medical_notes_live.ex:310
+#: lib/ambiantcare_web/live/medical_notes_live.ex:246
+#: lib/ambiantcare_web/live/medical_notes_live.ex:320
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr ""
@@ -137,12 +137,12 @@ msgstr ""
 msgid "Medical Note"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:283
+#: lib/ambiantcare_web/live/medical_notes_live.ex:293
 #, elixir-autogen, elixir-format
 msgid "Create note"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:202
+#: lib/ambiantcare_web/live/medical_notes_live.ex:212
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
 msgstr ""
@@ -239,22 +239,22 @@ msgstr ""
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:145
+#: lib/ambiantcare_web/live/medical_notes_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "Consultation Context"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:78
+#: lib/ambiantcare_web/live/medical_notes_live.ex:88
 #, elixir-autogen, elixir-format
 msgid "Context"
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:146
+#: lib/ambiantcare_web/live/medical_notes_live.ex:156
 #, elixir-autogen, elixir-format
 msgid "Provide additional context about the patient."
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:75
+#: lib/ambiantcare_web/live/medical_notes_live.ex:80
 #, elixir-autogen, elixir-format
-msgid "Transcripion"
+msgid "Transcription"
 msgstr ""

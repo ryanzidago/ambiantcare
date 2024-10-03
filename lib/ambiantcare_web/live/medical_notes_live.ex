@@ -71,10 +71,20 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     ~H"""
     <div class="flex flex-col gap-10">
       <div class="inline-flex gap-2" role="group">
-        <.button type="button" phx-click="toggle_action_panel" phx-value-action="transcription" class="md:w-32">
-          <%= gettext("Transcripion") %>
+        <.button
+          type="button"
+          phx-click="toggle_action_panel"
+          phx-value-action="transcription"
+          class="md:w-32"
+        >
+          <%= gettext("Transcription") %>
         </.button>
-        <.button type="button" phx-click="toggle_action_panel" phx-value-action="consultation_context" class="md:w-32">
+        <.button
+          type="button"
+          phx-click="toggle_action_panel"
+          phx-value-action="consultation_context"
+          class="md:w-32"
+        >
           <%= gettext("Context") %>
         </.button>
       </div>

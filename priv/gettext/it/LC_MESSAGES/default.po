@@ -22,7 +22,7 @@ msgstr "Azioni"
 msgid "Attempting to reconnect"
 msgstr "Tentativo di riconnessione"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:171
+#: lib/ambiantcare_web/live/medical_notes_live.ex:181
 #, elixir-autogen, elixir-format
 msgid "End Visit"
 msgstr "Termina Visita"
@@ -42,7 +42,7 @@ msgstr "Resisti mentre torniamo in carreggiata"
 msgid "Something went wrong!"
 msgstr "Qualcosa è andato storto!"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:171
+#: lib/ambiantcare_web/live/medical_notes_live.ex:181
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
 msgstr "Inizia Visita"
@@ -63,7 +63,7 @@ msgstr "Non riusciamo a trovare la connessione internet"
 msgid "close"
 msgstr "chiudi"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:279
+#: lib/ambiantcare_web/live/medical_notes_live.ex:289
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr "Trascrizione della Visita"
@@ -73,14 +73,14 @@ msgstr "Trascrizione della Visita"
 msgid "Language"
 msgstr "Lingua"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:223
-#: lib/ambiantcare_web/live/medical_notes_live.ex:297
+#: lib/ambiantcare_web/live/medical_notes_live.ex:233
+#: lib/ambiantcare_web/live/medical_notes_live.ex:307
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr "Scarica la nota"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:236
-#: lib/ambiantcare_web/live/medical_notes_live.ex:310
+#: lib/ambiantcare_web/live/medical_notes_live.ex:246
+#: lib/ambiantcare_web/live/medical_notes_live.ex:320
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr "Copia"
@@ -138,12 +138,12 @@ msgstr "Consigli Terapeutici"
 msgid "Medical Note"
 msgstr "Nota medica"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:283
+#: lib/ambiantcare_web/live/medical_notes_live.ex:293
 #, elixir-autogen, elixir-format
 msgid "Create note"
 msgstr "Crea nota"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:202
+#: lib/ambiantcare_web/live/medical_notes_live.ex:212
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
 msgstr "Ops, qualcosa è andato storto!"
@@ -240,22 +240,22 @@ msgstr ""
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:145
+#: lib/ambiantcare_web/live/medical_notes_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "Consultation Context"
 msgstr "Contesto di consultazione"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:78
+#: lib/ambiantcare_web/live/medical_notes_live.ex:88
 #, elixir-autogen, elixir-format
 msgid "Context"
 msgstr "Contesto"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:146
+#: lib/ambiantcare_web/live/medical_notes_live.ex:156
 #, elixir-autogen, elixir-format
 msgid "Provide additional context about the patient."
 msgstr "Fornite ulteriore contesto sul paziente."
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:75
-#, elixir-autogen, elixir-format
-msgid "Transcripion"
-msgstr "Transcripion"
+#: lib/ambiantcare_web/live/medical_notes_live.ex:80
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Transcription"
+msgstr "Trascrizione"
