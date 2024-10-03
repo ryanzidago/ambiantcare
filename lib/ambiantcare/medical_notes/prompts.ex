@@ -10,31 +10,18 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
     transcription = Map.fetch!(params, :transcription)
     template = Map.fetch!(params, :template)
 
-    require IEx
-    IEx.pry()
-
-    role =
-      "You are a medical assistant that structures patient visit transcriptions into medical notes."
-
     instructions = """
-    <%= @role %>
+    # Doctor Provided Context
+    <%= @context %>
 
-    The doctor has provided the following additional context about the patient:
-    <%= if is_binary(@context) do %>
-      <%= @context %>
-    <% end %>
-
-    Structure this patient visit transcription:
+    # Consultation Transcription
     <%= @transcription %>
 
-    Into the following JSON object:
+    # Medical Note Template
     <%= @schema %>
-
-    Only reply with the JSON object.
     """
 
     assigns = [
-      role: role,
       context: context,
       transcription: transcription,
       schema: Template.to_prompt(template)
