@@ -103,6 +103,8 @@ if config_env() == :prod do
     api_key: System.get_env("SPEECHMATICS_API_KEY"),
     base_url: "https://asr.api.speechmatics.com/v2"
 
+  config :ambiantcare, :mix_env, config_env()
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

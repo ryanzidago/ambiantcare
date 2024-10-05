@@ -7,18 +7,21 @@ defmodule Ambiantcare.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      AmbiantcareWeb.Telemetry,
-      Ambiantcare.Repo,
-      {DNSCluster, query: Application.get_env(:ambiantcare, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: Ambiantcare.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Ambiantcare.Finch},
-      # Start a worker by calling: Ambiantcare.Worker.start_link(arg)
-      # {Ambiantcare.Worker, arg},
-      # Start to serve requests, typically the last entry
-      AmbiantcareWeb.Endpoint
-    ]
+    env = Application.get_env(:ambiantcare, :mix_env)
+
+    children =
+      [
+        AmbiantcareWeb.Telemetry,
+        Ambiantcare.Repo,
+        {DNSCluster, query: Application.get_env(:ambiantcare, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: Ambiantcare.PubSub},
+        # Start the Finch HTTP client for sending emails
+        {Finch, name: Ambiantcare.Finch},
+        # Start a worker by calling: Ambiantcare.Worker.start_link(arg)
+        # {Ambiantcare.Worker, arg},
+        # Start to serve requests, typically the last entry
+        AmbiantcareWeb.Endpoint
+      ] ++ env_specific_children(env)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -33,4 +36,23 @@ defmodule Ambiantcare.Application do
     AmbiantcareWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  defp env_specific_children(:dev) do
+    {:ok, model_info} = Bumblebee.load_model({:hf, "openai/whisper-tiny"})
+    {:ok, featurizer} = Bumblebee.load_featurizer({:hf, "openai/whisper-tiny"})
+    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/whisper-tiny"})
+
+    {:ok, generation_config} =
+      Bumblebee.load_generation_config({:hf, "openai/whisper-tiny"})
+
+    serving =
+      Bumblebee.Audio.speech_to_text_whisper(model_info, featurizer, tokenizer, generation_config,
+        compile: [batch_size: 4],
+        defn_options: [compiler: EXLA]
+      )
+
+    [{Nx.Serving, serving: serving, name: Ambiantcare.Serving, batch_timeout: 100}]
+  end
+
+  defp env_specific_children(_), do: []
 end

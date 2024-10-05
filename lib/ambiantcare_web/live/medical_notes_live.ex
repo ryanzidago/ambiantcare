@@ -44,7 +44,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(current_action: "transcription")
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
-    maybe_resume_dedicated_endpoint(socket)
+    maybe_resume_dedicated_endpoint(socket, Application.get_env(:ambiantcare, :mix_env))
     log_values(socket)
 
     {:ok, socket}
@@ -492,8 +492,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
          },
          opts
        ) do
-    with {:ok, filename} <- write_to_file(binary, opts),
-         {:ok, transcription} <- transcribe_audio(stt_backend, filename, opts),
+    with {:ok, transcription} <- transcribe_audio(stt_backend, binary, opts),
          params <- %{
            context: consultation_context,
            transcription: transcription,
@@ -513,8 +512,26 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp transcribe_audio(stt, filename, opts) do
-    apply(stt, :generate, ["openai/whisper-large-v3-turbo", filename, opts])
+  defp transcribe_audio(HuggingFace, binary, _opts) do
+    binary = Nx.from_binary(binary, :f32)
+    output = Nx.Serving.batched_run(Ambiantcare.Serving, binary)
+    transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
+
+    dbg(output)
+    dbg(transcription)
+
+    {:ok, transcription}
+  end
+
+  defp transcribe_audio(stt, binary, opts) do
+    with {:ok, filename} <- write_to_file(binary, opts),
+         {:ok, transcription} <-
+           apply(stt, :generate, ["openai/whisper-large-v3-turbo", filename, opts]) do
+      {:ok, transcription}
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp backend_opts(HuggingFace, assigns) do
@@ -624,7 +641,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(socket) do
+  defp maybe_resume_dedicated_endpoint(_socket, :dev), do: :no_op
+
+  defp maybe_resume_dedicated_endpoint(socket, _mix_env) do
     case socket.assigns do
       %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
         Logger.debug("Resuming HuggingFace endpoint")
