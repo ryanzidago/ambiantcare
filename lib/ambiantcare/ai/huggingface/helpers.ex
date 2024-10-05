@@ -1,7 +1,7 @@
 defmodule Ambiantcare.AI.HuggingFace.Helpers do
   alias Ambiantcare.AI.HuggingFace
 
-  @audio_models ~w(openai/whisper-large-v3)
+  @audio_models ~w(openai/whisper-large-v3 openai/whisper-large-v3-turbo)
   @text_models ~w(meta-llama/Meta-Llama-3.1-8B-Instruct)
 
   def audio_models, do: @audio_models

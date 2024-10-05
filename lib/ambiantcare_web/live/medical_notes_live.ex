@@ -514,7 +514,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp transcribe_audio(stt, filename, opts) do
-    apply(stt, :generate, ["openai/whisper-large-v3", filename, opts])
+    apply(stt, :generate, ["openai/whisper-large-v3-turbo", filename, opts])
   end
 
   defp backend_opts(HuggingFace, assigns) do
@@ -629,7 +629,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
         Logger.debug("Resuming HuggingFace endpoint")
         # @ryanzidago - ensure the endpoint is always running when someone visits the page
-        _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-yse")
+        # @ryanzidago - do not hardcode the model name
+        _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx")
 
       _ ->
         :no_op

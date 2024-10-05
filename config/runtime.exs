@@ -77,6 +77,8 @@ if config_env() == :prod do
       model_endpoints: [
         open_ai_whisper_large_v3:
           System.get_env("HUGGING_FACE_DEDICATED_OPEN_AI_WHISPER_LARGE_V3_ENDPOINT"),
+        open_ai_whisper_large_v3_turbo:
+          System.get_env("HUGGING_FACE_DEDICATED_OPEN_AI_WHISPER_LARGE_V3_TURBO_ENDPOINT"),
         meta_llama_3_1_8b_instruct:
           System.get_env("HUGGING_FACE_DEDICATED_META_LLAMA_3_1_8B_INSTRUCT_ENDPOINT")
       ]

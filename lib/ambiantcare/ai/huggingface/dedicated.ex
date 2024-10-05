@@ -6,6 +6,7 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated do
 
   @dedicated_models_mapper %{
     "openai/whisper-large-v3" => :open_ai_whisper_large_v3,
+    "openai/whisper-large-v3-turbo" => :open_ai_whisper_large_v3_turbo,
     "meta-llama/Meta-Llama-3.1-8B-Instruct" => :meta_llama_3_1_8B_instruct
   }
 
