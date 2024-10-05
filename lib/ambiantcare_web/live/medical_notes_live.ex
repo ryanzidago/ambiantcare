@@ -42,9 +42,10 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign_medical_note_changeset(params)
       |> assign(url_params: params)
       |> assign(current_action: "transcription")
+      |> assign(visit_transcription_loading: false)
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
-    maybe_resume_dedicated_endpoint(socket, Application.get_env(:ambiantcare, :mix_env))
+    maybe_resume_dedicated_endpoint(socket, ai_config()[:use_local_stt])
     log_values(socket)
 
     {:ok, socket}
@@ -116,17 +117,10 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
       <div class="flex flex-col">
         <.async_result :let={visit_transcription} assign={@visit_transcription}>
-          <:loading>
-            <div class="flex flex-col items-center">
-              <.spinner />
-            </div>
-          </:loading>
           <:failed :let={_reason}>
             <span class="flex flex-col items-center">Oops, something went wrong!</span>
           </:failed>
-          <quote class="text-sm">
-            <.visit_transcription visit_transcription={visit_transcription} />
-          </quote>
+          <.visit_transcription visit_transcription={visit_transcription} />
         </.async_result>
       </div>
     </div>
@@ -138,11 +132,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   defp consultation_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
-      <%!-- <.recording_button {assigns} /> --%>
-      <%!-- <form phx-change="no_op" phx-submit="no_op" class="hidden">
-        <.live_file_input upload={@uploads.audio} />
-      </form> --%>
-
       <div class="flex flex-col">
         <.async_result :let={consultation_context} assign={@consultation_context}>
           <:loading>
@@ -175,10 +164,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
+  attr :visit_transcription_loading, :boolean, required: true
 
   defp recording_button(assigns) do
     ~H"""
-    <div class="flex flex-row items-center justify-between">
+    <div class="flex flex-row items-center gap-10">
       <.button
         type="button"
         id="microphone"
@@ -189,9 +179,17 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <%= if not @recording?, do: gettext("Start Visit"), else: gettext("End Visit") %>
       </.button>
 
-      <div :if={@recording?} class="flex flex-row items-center justify-center gap-4">
-        <div class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></div>
-        Recording
+      <div :if={@recording?} class="flex flex-row items-center justify-center gap-4 animate-pulse">
+        <div class="w-3 h-3 rounded-full bg-red-600"></div>
+        <%= gettext("Recording") %>
+      </div>
+
+      <div
+        :if={@visit_transcription_loading}
+        class="flex flex-row items-center justify-center gap-4 animate-pulse"
+      >
+        <.spinner />
+        <%= gettext("Generating the transcription ...") %>
       </div>
     </div>
     """
@@ -285,7 +283,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     ~H"""
     <.form
       for={%{}}
-      class="drop-shadow-sm"
+      class="drop-shadow-sm text-sm"
       phx-change="change_visit_transcription"
       phx-submit="generate_medical_note"
     >
@@ -433,9 +431,23 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  @impl LiveView
+  @impl true
   def handle_info({:error, reason}, socket) do
     Logger.error(reason)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
+    visit_transcription = AsyncResult.ok(result.visit_transcription)
+    medical_note_changeset = AsyncResult.ok(result.medical_note_changeset)
+
+    socket =
+      socket
+      |> assign(visit_transcription_loading: false)
+      |> assign(visit_transcription: visit_transcription)
+      |> assign(medical_note_changeset: medical_note_changeset)
+
     {:noreply, socket}
   end
 
@@ -463,9 +475,15 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
 
     socket =
-      assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
+      socket
+      |> assign(visit_transcription_loading: true)
+      |> start_async(:audio_to_structured_text, fn ->
         audio_to_structured_text(params, opts)
       end)
+
+    # assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
+    #   audio_to_structured_text(params, opts)
+    # end)
 
     {:noreply, socket}
   end
@@ -492,7 +510,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
          },
          opts
        ) do
-    with {:ok, transcription} <- transcribe_audio(stt_backend, binary, opts),
+    use_local_stt? = ai_config()[:use_local_stt]
+
+    with {:ok, transcription} <- transcribe_audio(stt_backend, use_local_stt?, binary, opts),
          params <- %{
            context: consultation_context,
            transcription: transcription,
@@ -512,7 +532,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp transcribe_audio(HuggingFace, binary, _opts) do
+  defp transcribe_audio(HuggingFace, _use_local_stt? = true, binary, _opts) do
     binary = Nx.from_binary(binary, :f32)
     output = Nx.Serving.batched_run(Ambiantcare.Serving, binary)
     transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
@@ -523,7 +543,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:ok, transcription}
   end
 
-  defp transcribe_audio(stt, binary, opts) do
+  defp transcribe_audio(stt, _use_loal_stt?, binary, opts) do
     with {:ok, filename} <- write_to_file(binary, opts),
          {:ok, transcription} <-
            apply(stt, :generate, ["openai/whisper-large-v3-turbo", filename, opts]) do
@@ -641,9 +661,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(_socket, :dev), do: :no_op
+  defp maybe_resume_dedicated_endpoint(_socket, _use_locale_stt = true), do: :no_op
 
-  defp maybe_resume_dedicated_endpoint(socket, _mix_env) do
+  defp maybe_resume_dedicated_endpoint(socket, _use_locale_stt = false) do
     case socket.assigns do
       %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
         Logger.debug("Resuming HuggingFace endpoint")
@@ -822,5 +842,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
      Intanto le consiglio di riposare di più e cercare di seguire una dieta più equilibrata.
     """
+  end
+
+  defp ai_config() do
+    Application.get_env(:ambiantcare, Ambiantcare.AI)
   end
 end

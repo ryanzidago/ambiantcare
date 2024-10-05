@@ -7,7 +7,9 @@ defmodule Ambiantcare.Application do
 
   @impl true
   def start(_type, _args) do
-    env = Application.get_env(:ambiantcare, :mix_env)
+    use_local_stt? =
+      Application.get_env(:ambiantcare, Ambiantcare.AI)[:use_local_stt]
+      |> dbg()
 
     children =
       [
@@ -21,7 +23,7 @@ defmodule Ambiantcare.Application do
         # {Ambiantcare.Worker, arg},
         # Start to serve requests, typically the last entry
         AmbiantcareWeb.Endpoint
-      ] ++ env_specific_children(env)
+      ] ++ maybe_nx_serving(use_local_stt?)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -37,7 +39,7 @@ defmodule Ambiantcare.Application do
     :ok
   end
 
-  defp env_specific_children(:dev) do
+  defp maybe_nx_serving(_use_local_stt? = true) do
     {:ok, model_info} = Bumblebee.load_model({:hf, "openai/whisper-tiny"})
     {:ok, featurizer} = Bumblebee.load_featurizer({:hf, "openai/whisper-tiny"})
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/whisper-tiny"})
@@ -54,5 +56,5 @@ defmodule Ambiantcare.Application do
     [{Nx.Serving, serving: serving, name: Ambiantcare.Serving, batch_timeout: 100}]
   end
 
-  defp env_specific_children(_), do: []
+  defp maybe_nx_serving(_), do: []
 end

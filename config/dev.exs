@@ -84,6 +84,9 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
+config :ambiantcare, Ambiantcare.AI,
+  use_local_stt: System.get_env("USE_LOCAL_STT", "true") == "true"
+
 config :ambiantcare, Ambiantcare.AI.HuggingFace,
   api_key: System.get_env("HUGGING_FACE_API_KEY"),
   deployment: System.get_env("HUGGING_FACE_DEPLOYMENT") || "dedicated",
@@ -119,5 +122,3 @@ config :ambiantcare, Ambiantcare.AI.Gladia,
 config :ambiantcare, Ambiantcare.AI.SpeechMatics,
   api_key: System.get_env("SPEECHMATICS_API_KEY"),
   base_url: "https://asr.api.speechmatics.com/v2"
-
-config :ambiantcare, :mix_env, config_env()
