@@ -28,6 +28,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   @impl LiveView
   def mount(params, _session, socket) do
+    use_local_stt? = Keyword.get(ai_config(), :use_local_stt, false)
+
     socket =
       socket
       |> assign_speech_to_text_backend(params)
@@ -46,8 +48,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(visit_transcription_loading: false)
       |> assign(medical_note_loading: false)
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
+      |> maybe_resume_dedicated_endpoint(use_local_stt?)
 
-    maybe_resume_dedicated_endpoint(socket, ai_config()[:use_local_stt])
     log_values(socket)
 
     {:ok, socket}
@@ -550,9 +552,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     output = Nx.Serving.batched_run(Ambiantcare.Serving, binary)
     transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
 
-    dbg(output)
-    dbg(transcription)
-
     {:ok, transcription}
   end
 
@@ -674,19 +673,35 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(_socket, _use_locale_stt? = true), do: :no_op
-
-  defp maybe_resume_dedicated_endpoint(socket, _use_locale_stt?) do
-    case socket.assigns do
-      %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
-        Logger.debug("Resuming HuggingFace endpoint")
-        # @ryanzidago - ensure the endpoint is always running when someone visits the page
-        # @ryanzidago - do not hardcode the model name
-        _ = HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx")
-
+  defp maybe_resume_dedicated_endpoint(
+         %{
+           assigns: %{
+             stt_backend: HuggingFace,
+             # @ryanzidago - proxy for `use_demo_transcription`
+             visit_transcription: %AsyncResult{result: nil}
+           }
+         } = socket,
+         _use_local_stt? = false
+       ) do
+    # @ryanzidago - ensure the endpoint is always running when someone visits the page
+    # @ryanzidago - do not hardcode the model name
+    with {:ok, response} =
+           HuggingFace.Dedicated.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
+         state when state != "running" <- get_in(response, ~w(status state)),
+         {:ok, _} <- HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx") do
+      put_flash(
+        socket,
+        :warning,
+        gettext("Starting the AI server. Please retry in 5 minutes ...")
+      )
+    else
       _ ->
-        :no_op
+        socket
     end
+  end
+
+  defp maybe_resume_dedicated_endpoint(socket, _use_local_stt?) do
+    socket
   end
 
   defp maybe_demo_visit_transcription(params) do
