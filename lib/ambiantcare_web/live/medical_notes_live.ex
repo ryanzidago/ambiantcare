@@ -13,6 +13,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
+  alias Ecto.Changeset
 
   alias Ambiantcare.MedicalNotes.Template
   alias Ambiantcare.MedicalNotes.MedicalNote
@@ -43,6 +44,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(url_params: params)
       |> assign(current_action: "transcription")
       |> assign(visit_transcription_loading: false)
+      |> assign(medical_note_loading: false)
       |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
 
     maybe_resume_dedicated_endpoint(socket, ai_config()[:use_local_stt])
@@ -120,7 +122,10 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           <:failed :let={_reason}>
             <span class="flex flex-col items-center">Oops, something went wrong!</span>
           </:failed>
-          <.visit_transcription visit_transcription={visit_transcription} />
+          <.visit_transcription
+            visit_transcription={visit_transcription}
+            medical_note_loading={@medical_note_loading}
+          />
         </.async_result>
       </div>
     </div>
@@ -211,9 +216,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
     ~H"""
     <.async_result :let={changeset} assign={@medical_note_changeset}>
-      <:loading>
-        <.spinner />
-      </:loading>
       <:failed :let={_reason}>
         <%= gettext("Oops, something went wrong!") %>
       </:failed>
@@ -278,6 +280,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   attr :visit_transcription, :string, required: true
+  attr :medical_note_loading, :boolean, required: true
 
   defp visit_transcription(assigns) do
     ~H"""
@@ -296,7 +299,18 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           input_class="h-[50vh]"
         />
         <div class="flex flex-row gap-10">
-          <.button type="submit" class="md:w-32"><%= gettext("Create note") %></.button>
+          <.button :if={not @medical_note_loading} type="submit" class="md:min-w-32">
+            <%= gettext("Create note") %>
+          </.button>
+          <.button
+            :if={@medical_note_loading}
+            type="button"
+            class="md:min-w-32 animate-pulse"
+            disabled
+          >
+            <.spinner />
+            <%= gettext("Generating note ...") %>
+          </.button>
           <.button
             type="button"
             class="md:w-32"
@@ -414,19 +428,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     params = %{context: context, transcription: visit_transcription, template: selected_template}
 
     socket =
-      assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
-        case query_llm(params) do
-          {:ok, medical_note_changeset} ->
-            {:ok,
-             %{
-               visit_transcription: visit_transcription,
-               medical_note_changeset: medical_note_changeset
-             }}
-
-          {:error, reason} ->
-            {:error, reason}
-        end
-      end)
+      socket
+      |> assign(medical_note_loading: true)
+      |> start_async(:generate_medical_note, fn -> query_llm(params) end)
 
     {:noreply, socket}
   end
@@ -447,6 +451,19 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(visit_transcription_loading: false)
       |> assign(visit_transcription: visit_transcription)
       |> assign(medical_note_changeset: medical_note_changeset)
+
+    {:noreply, socket}
+  end
+
+  def handle_async(
+        :generate_medical_note,
+        {:ok, {:ok, %Changeset{} = medical_note_changeset}},
+        socket
+      ) do
+    socket =
+      socket
+      |> assign(medical_note_loading: false)
+      |> assign(medical_note_changeset: AsyncResult.ok(medical_note_changeset))
 
     {:noreply, socket}
   end
@@ -480,10 +497,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> start_async(:audio_to_structured_text, fn ->
         audio_to_structured_text(params, opts)
       end)
-
-    # assign_async(socket, [:visit_transcription, :medical_note_changeset], fn ->
-    #   audio_to_structured_text(params, opts)
-    # end)
 
     {:noreply, socket}
   end
