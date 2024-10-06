@@ -873,6 +873,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp ai_config() do
-    Application.get_env(:ambiantcare, Ambiantcare.AI)
+    Application.get_env(:ambiantcare, Ambiantcare.AI, [])
   end
 end
