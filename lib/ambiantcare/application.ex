@@ -7,7 +7,7 @@ defmodule Ambiantcare.Application do
 
   @impl true
   def start(_type, _args) do
-    ai_config = Application.get_env(:ambiantcare, Ambiantcare.AI)
+    ai_config = Application.get_env(:ambiantcare, Ambiantcare.AI, [])
     use_local_stt? = Keyword.get(ai_config, :use_local_stt, false)
 
     children =
