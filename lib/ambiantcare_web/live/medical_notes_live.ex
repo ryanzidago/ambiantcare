@@ -661,9 +661,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(_socket, _use_locale_stt = true), do: :no_op
+  defp maybe_resume_dedicated_endpoint(_socket, _use_locale_stt? = true), do: :no_op
 
-  defp maybe_resume_dedicated_endpoint(socket, _use_locale_stt = false) do
+  defp maybe_resume_dedicated_endpoint(socket, _use_locale_stt?) do
     case socket.assigns do
       %{stt_backend: HuggingFace, visit_transcription: %AsyncResult{result: nil}} ->
         Logger.debug("Resuming HuggingFace endpoint")
