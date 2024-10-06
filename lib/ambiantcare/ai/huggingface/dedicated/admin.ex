@@ -19,6 +19,20 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated.Admin do
     end
   end
 
+  def get_endpoint_information(endpoint) do
+    api_endpoint = config()[:api_endpoint] <> "/endpoint/" <> config()[:namespace]
+    endpoint = api_endpoint <> "/" <> endpoint
+    response = request(:get, endpoint, [])
+
+    with {:ok, %Finch.Response{} = response} when response.status in 200..300 <- response,
+         {:ok, body} <- Jason.decode(response.body) do
+      {:ok, body}
+    else
+      {:ok, %Finch.Response{} = response} -> {:error, response}
+      {:error, _} = error -> error
+    end
+  end
+
   def resume(endpoint) do
     api_endpoint = config()[:api_endpoint] <> "/endpoint/" <> config()[:namespace]
     endpoint = "#{api_endpoint}/#{endpoint}/resume"
