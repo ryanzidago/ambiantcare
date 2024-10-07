@@ -1,11 +1,13 @@
 defmodule Ambiantcare.MedicalNotes.FieldNames do
   @names [
     :chief_complaint,
-    :history_of_present_illness,
+    :present_medical_history,
     :assessment,
-    :plan,
-    :medications,
     :past_medical_history,
+    :ongoing_therapy,
+    :therapeutic_plan,
+    :medications,
+    :physical_assessment,
     :home_medications,
     :allergies,
     :physical_examination,

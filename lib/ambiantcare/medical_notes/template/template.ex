@@ -35,7 +35,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
   def default_template_attrs do
     %{
       key: "0",
-      title: Gettext.gettext(AmbiantcareWeb.Gettext, "Default"),
+      title: Gettext.gettext(AmbiantcareWeb.Gettext, "General Medicine"),
       description: "This is the default template for medical notes",
       fields: [
         %{
@@ -49,8 +49,8 @@ defmodule Ambiantcare.MedicalNotes.Template do
           position: 0
         },
         %{
-          name: :history_of_present_illness,
-          label: "History of Present Illness",
+          name: :present_medical_history,
+          label: "Present medical history",
           description: "A detailed description of the patient's current illness",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -59,9 +59,9 @@ defmodule Ambiantcare.MedicalNotes.Template do
           position: 1
         },
         %{
-          name: :assessment,
-          label: "Assessment",
-          description: "The patient's diagnosis",
+          name: :past_medical_history,
+          label: "Past medical history",
+          description: "The patient's past medical history",
           autofill_instructions: "",
           autofill_enabled: true,
           writting_style: :prose,
@@ -69,9 +69,9 @@ defmodule Ambiantcare.MedicalNotes.Template do
           position: 2
         },
         %{
-          name: :plan,
-          label: "Plan",
-          description: "The patient's treatment plan",
+          name: :ongoing_therapy,
+          label: "Ongoing therapy",
+          description: "Ongoing therapy",
           autofill_instructions: "",
           autofill_enabled: true,
           writting_style: :prose,
@@ -79,19 +79,19 @@ defmodule Ambiantcare.MedicalNotes.Template do
           position: 3
         },
         %{
-          name: :medications,
-          label: "Medications",
-          description: "The patient's current medications",
+          name: :physical_assessment,
+          label: "Physical Assessment",
+          description: "The patient's physical assessment",
           autofill_instructions: "",
           autofill_enabled: true,
-          writting_style: :bullet,
+          writting_style: :prose,
           is_visible: true,
           position: 4
         },
         %{
-          name: :physical_examination,
-          label: "Physical Examination",
-          description: "The patient's physical examination",
+          name: :therapeutic_plan,
+          label: "Therapeutic Plan",
+          description: "The patient's therapeutic plan",
           autofill_instructions: "",
           autofill_enabled: true,
           writting_style: :prose,
