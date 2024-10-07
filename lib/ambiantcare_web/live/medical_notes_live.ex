@@ -26,6 +26,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
 
+  @accepted_audio_extensions ~w(.mp3 .flac .wav .opus)
+
   @impl LiveView
   def mount(params, _session, socket) do
     use_local_stt? = Keyword.get(ai_config(), :use_local_stt, false)
@@ -47,7 +49,13 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(current_action: "transcription")
       |> assign(visit_transcription_loading: false)
       |> assign(medical_note_loading: false)
-      |> allow_upload(:audio, accept: :any, progress: &handle_progress/3, auto_upload: true)
+      |> assign(show_audio_input_options_modal: false)
+      |> allow_upload(:audio,
+        accept: @accepted_audio_extensions,
+        progress: &handle_progress/3,
+        auto_upload: true,
+        max_file_size: 100_000_000
+      )
       |> maybe_resume_dedicated_endpoint(use_local_stt?)
 
     log_values(socket)
@@ -115,9 +123,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     ~H"""
     <div class="flex flex-col gap-10">
       <.recording_button {assigns} />
-      <form phx-change="no_op" phx-submit="no_op" class="hidden">
-        <.live_file_input upload={@uploads.audio} />
-      </form>
 
       <div class="flex flex-col">
         <.async_result :let={visit_transcription} assign={@visit_transcription}>
@@ -172,19 +177,33 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
   attr :visit_transcription_loading, :boolean, required: true
+  attr :show_audio_input_options_modal, :boolean, required: true
 
   defp recording_button(assigns) do
     ~H"""
-    <div class="flex flex-row items-center gap-10">
-      <.button
-        type="button"
-        id="microphone"
-        phx-hook={@microphone_hook}
-        data-endianness={System.endianness()}
-        class="md:min-w-32"
-      >
-        <%= if not @recording?, do: gettext("Start Visit"), else: gettext("End Visit") %>
-      </.button>
+    <div class="flex flex-row items-center gap-4">
+      <div class="flex">
+        <.button
+          type="button"
+          id="microphone"
+          phx-hook={@microphone_hook}
+          data-endianness={System.endianness()}
+          class="md:min-w-32"
+        >
+          <span :if={not @recording?}>
+            <%= gettext("Start Visit") %>
+            <button type="button" phx-click={show_modal("audio-input-options-modal")}>
+              <.icon name="flowbite-three-vertical-dots" />
+            </button>
+          </span>
+
+          <span :if={@recording?}>
+            <%= gettext("End Visit") %>
+          </span>
+        </.button>
+      </div>
+
+      <.start_visit_alternatives_modal audio_upload={@uploads.audio} />
 
       <div :if={@recording?} class="flex flex-row items-center justify-center gap-4 animate-pulse">
         <div class="w-3 h-3 rounded-full bg-red-600"></div>
@@ -199,6 +218,25 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <%= gettext("Generating the transcription ...") %>
       </div>
     </div>
+    """
+  end
+
+  defp start_visit_alternatives_modal(assigns) do
+    ~H"""
+    <.modal id="audio-input-options-modal">
+      <form phx-change={
+        %JS{}
+        |> hide_modal("audio-input-options-modal")
+        |> JS.push("no_op")
+      }>
+        <div>
+          <label>
+            <%= gettext("Upload an audio file") %>
+            <.live_file_input upload={@audio_upload} />
+          </label>
+        </div>
+      </form>
+    </.modal>
     """
   end
 
@@ -478,6 +516,13 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     selected_template = socket.assigns.selected_template
     context = socket.assigns.consultation_context.result
 
+    upload_type =
+      if Path.extname(entry.client_name) in @accepted_audio_extensions do
+        :manual_upload
+      else
+        :microphone
+      end
+
     params =
       %{}
       |> Map.put(:stt_backend, stt_backend)
@@ -491,6 +536,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> Keyword.put(:parent, self())
       |> Keyword.put(:microphone_hook, microphone_hook)
       |> Keyword.put(:locale, Gettext.get_locale(AmbiantcareWeb.Gettext))
+      |> Keyword.put(:upload_type, upload_type)
       |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
 
     socket =
@@ -547,9 +593,19 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp transcribe_audio(HuggingFace, _use_local_stt? = true, binary, _opts) do
-    binary = Nx.from_binary(binary, :f32)
-    output = Nx.Serving.batched_run(Ambiantcare.Serving, binary)
+  defp transcribe_audio(HuggingFace, _use_local_stt? = true, binary, opts) do
+    data =
+      case Keyword.get(opts, :upload_type) do
+        :manual_upload ->
+          filename = System.tmp_dir!() <> "_" <> Ecto.UUID.autogenerate()
+          :ok = File.write!(filename, binary)
+          {:file, filename}
+
+        :microphone ->
+          Nx.from_binary(binary, :f32)
+      end
+
+    output = Nx.Serving.batched_run(Ambiantcare.Serving, data)
     transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
 
     {:ok, transcription}
