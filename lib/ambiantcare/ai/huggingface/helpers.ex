@@ -19,7 +19,7 @@ defmodule Ambiantcare.AI.HuggingFace.Helpers do
     end
   end
 
-  defp expected_extensions, do: ~w(.flac)
+  defp expected_extensions, do: ~w(.mp3 .flac .wav .opus .ogg)
 
   def build_body(prompt, model, options) do
     system_prompt = Keyword.get(options, :system_prompt)
@@ -41,8 +41,19 @@ defmodule Ambiantcare.AI.HuggingFace.Helpers do
     Application.get_env(:ambiantcare, HuggingFace)
   end
 
-  def content_type(model, _opts) when model in @audio_models do
-    "audio/flac"
+  def content_type(model, opts) when model in @audio_models do
+    upload_metadata = Keyword.fetch!(opts, :upload_metadata)
+
+    case upload_metadata do
+      %{upload_type: :from_user_file_system} ->
+        upload_metadata.client_filename
+        |> Path.extname()
+        |> String.replace(".", "")
+        |> MIME.type()
+
+      _ ->
+        "audio/flac"
+    end
   end
 
   def content_type(model, opts) when model in @text_models do

@@ -18,6 +18,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias Ambiantcare.MedicalNotes.Template
   alias Ambiantcare.MedicalNotes.MedicalNote
   alias Ambiantcare.MedicalNotes.Prompts
+  alias Ambiantcare.Audio
 
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
@@ -25,8 +26,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
-
-  @accepted_audio_extensions ~w(.mp3 .flac .wav .opus)
 
   @impl LiveView
   def mount(params, _session, socket) do
@@ -40,7 +39,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign_selected_template()
       |> assign(recording?: false)
       |> assign(visit_transcription: nil)
-      |> assign(consultation_context: %AsyncResult{ok?: true, loading: false, result: nil})
+      |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign(medical_note_changeset: nil)
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(visit_transcription: maybe_demo_visit_transcription(params))
@@ -49,8 +48,15 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(current_action: "transcription")
       |> assign(visit_transcription_loading: false)
       |> assign(medical_note_loading: false)
-      |> allow_upload(:audio,
-        accept: @accepted_audio_extensions,
+      |> assign(upload_type: :from_user_microphone)
+      |> allow_upload(:audio_from_user_microphone,
+        accept: :any,
+        progress: &handle_progress/3,
+        auto_upload: true,
+        max_file_size: 100_000_000
+      )
+      |> allow_upload(:audio_from_user_file_system,
+        accept: :any,
         progress: &handle_progress/3,
         auto_upload: true,
         max_file_size: 100_000_000
@@ -98,7 +104,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <.button
           type="button"
           phx-click="toggle_action_panel"
-          phx-value-action="consultation_context"
+          phx-value-action="visit_context"
           overwrite_class={[
             "md:min-w-32 bg-blue-700 hover:bg-blue-800 shadow focus:ring-4 focus:ring-blue-300 focus:z-10 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
             "phx-submit-loading:opacity-75 rounded-r-lg py-2 px-3",
@@ -111,7 +117,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       <%= case @current_action do %>
         <% "transcription" -> %>
           <.transcription_panel {assigns} />
-        <% "consultation_context" -> %>
+        <% "visit_context" -> %>
           <.consultation_panel {assigns} />
       <% end %>
     </div>
@@ -138,13 +144,13 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     """
   end
 
-  attr :consultation_context, :string, required: true
+  attr :visit_context, :string, required: true
 
   defp consultation_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
       <div class="flex flex-col">
-        <.async_result :let={consultation_context} assign={@consultation_context}>
+        <.async_result :let={visit_context} assign={@visit_context}>
           <:loading>
             <div class="flex flex-col items-center">
               <.spinner />
@@ -154,12 +160,12 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
             <span class="flex flex-col items-center">Oops, something went wrong!</span>
           </:failed>
           <quote class="text-sm">
-            <.form for={%{}} class="drop-shadow-sm" phx-change="change_consultation_context">
+            <.form for={%{}} class="drop-shadow-sm" phx-change="change_visit_context">
               <div class="w-full flex flex-col gap-10">
                 <.input
                   type="textarea"
-                  value={consultation_context}
-                  name="consultation_context"
+                  value={visit_context}
+                  name="visit_context"
                   label={gettext("Consultation Context")}
                   placeholder={gettext("Provide additional context about the patient.")}
                   input_class="h-[50vh]"
@@ -176,9 +182,14 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
   attr :visit_transcription_loading, :boolean, required: true
+  attr :upload_type, :atom, default: nil
 
   defp recording_button(assigns) do
     ~H"""
+    <form phx-change="no_op" phx-submit="no_op" class="hidden">
+      <.live_file_input upload={@uploads.audio_from_user_microphone} />
+    </form>
+
     <div class="flex flex-row items-center gap-4">
       <div class="flex">
         <.button
@@ -191,7 +202,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           <span :if={not @recording?}>
             <%= gettext("Start Visit") %>
             <button type="button" phx-click={show_modal("audio-input-options-modal")}>
-              <.icon name="flowbite-three-vertical-dots" />
+              <.icon name="flowbite-breadcrumbs" />
             </button>
           </span>
 
@@ -201,7 +212,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         </.button>
       </div>
 
-      <.start_visit_alternatives_modal audio_upload={@uploads.audio} />
+      <.start_visit_alternatives_modal uploads={@uploads} upload_type={@upload_type} />
 
       <div :if={@recording?} class="flex flex-row items-center justify-center gap-4 animate-pulse">
         <div class="w-3 h-3 rounded-full bg-red-600"></div>
@@ -230,7 +241,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <div>
           <label>
             <%= gettext("Upload an audio file") %>
-            <.live_file_input upload={@audio_upload} />
+            <.live_file_input
+              upload={@uploads.audio_from_user_file_system}
+              phx-click="change_upload_type"
+              phx-value-upload_type="from_user_file_system"
+            />
           </label>
         </div>
       </form>
@@ -428,15 +443,25 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, assign(socket, current_action: action)}
   end
 
-  def handle_event("change_consultation_context", %{"consultation_context" => context}, socket) do
+  def handle_event("change_visit_context", %{"visit_context" => context}, socket) do
     Logger.debug("Consultation context changed to: #{context}")
 
     socket =
       assign(socket,
-        consultation_context: %AsyncResult{ok?: true, loading: false, result: context}
+        visit_context: %AsyncResult{ok?: true, loading: false, result: context}
       )
 
     {:noreply, socket}
+  end
+
+  def handle_event("change_upload_type", %{"upload_type" => upload_type}, socket) do
+    upload_type =
+      case upload_type do
+        "from_user_microphone" -> :from_user_microphone
+        "from_user_file_system" -> :from_user_file_system
+      end
+
+    {:noreply, assign(socket, upload_type: upload_type)}
   end
 
   def handle_event("no_op", _params, socket) do
@@ -462,7 +487,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         socket
       ) do
     selected_template = socket.assigns.selected_template
-    context = socket.assigns.consultation_context.result
+    context = socket.assigns.visit_context.result
     params = %{context: context, transcription: visit_transcription, template: selected_template}
 
     socket =
@@ -506,42 +531,51 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  defp handle_progress(:audio_from_user_file_system, entry, socket) do
+    handle_progress(:audio, entry, socket)
+  end
+
+  defp handle_progress(:audio_from_user_microphone, entry, socket) do
+    handle_progress(:audio, entry, socket)
+  end
+
   defp handle_progress(:audio, entry, socket) when entry.done? do
     microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
     binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
     current_visit_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
     selected_template = socket.assigns.selected_template
-    context = socket.assigns.consultation_context.result
+    context = socket.assigns.visit_context.result
+    upload_type = socket.assigns.upload_type
 
-    upload_type =
-      if Path.extname(entry.client_name) in @accepted_audio_extensions do
-        :manual_upload
-      else
-        :microphone
-      end
-
-    params =
+    stt_params =
       %{}
       |> Map.put(:stt_backend, stt_backend)
-      |> Map.put(:binary, binary)
-      |> Map.put(:current_visit_transcription, current_visit_transcription)
-      |> Map.put(:selected_template, selected_template)
-      |> Map.put(:consultation_context, context)
+      |> Map.put(:use_local_stt?, ai_config()[:use_local_stt])
+      |> Map.merge(Enum.into(backend_opts(stt_backend, socket.assigns), %{}))
 
-    opts =
-      []
-      |> Keyword.put(:parent, self())
-      |> Keyword.put(:microphone_hook, microphone_hook)
-      |> Keyword.put(:locale, Gettext.get_locale(AmbiantcareWeb.Gettext))
-      |> Keyword.put(:upload_type, upload_type)
-      |> Keyword.merge(backend_opts(stt_backend, socket.assigns))
+    upload_metadata =
+      %{}
+      |> Map.put(:binary, binary)
+      |> Map.put(:upload_type, upload_type)
+      |> Map.put(:client_filename, entry.client_name)
+      |> Map.put(:microphone_hook, microphone_hook)
+
+    context_params =
+      %{}
+      |> Map.put(:transcription, current_visit_transcription)
+      |> Map.put(:template, selected_template)
+      |> Map.put(:visit_context, context)
+      |> Map.put(:locale, Gettext.get_locale(AmbiantcareWeb.Gettext))
+
+    opts = [parent: self()]
 
     socket =
       socket
+      |> assign(upload_type: nil)
       |> assign(visit_transcription_loading: true)
       |> start_async(:audio_to_structured_text, fn ->
-        audio_to_structured_text(params, opts)
+        audio_to_structured_text(stt_params, upload_metadata, context_params, opts)
       end)
 
     {:noreply, socket}
@@ -559,30 +593,17 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp audio_to_structured_text(
-         %{
-           stt_backend: stt_backend,
-           binary: binary,
-           current_visit_transcription: current_visit_transcription,
-           consultation_context: consultation_context,
-           selected_template: template
-         },
-         opts
-       ) do
-    use_local_stt? = ai_config()[:use_local_stt]
+  defp audio_to_structured_text(stt_params, upload_metadata, context_params, opts) do
+    current_visit_transcription = context_params.transcription
 
-    with {:ok, transcription} <- transcribe_audio(stt_backend, use_local_stt?, binary, opts),
-         params <- %{
-           context: consultation_context,
-           transcription: transcription,
-           template: template
-         },
-         {:ok, medical_note_changeset} <- query_llm(params) do
+    with {:ok, transcription} <- transcribe_audio(stt_params, upload_metadata),
+         {:ok, medical_note_changeset} <- query_llm(context_params) do
       Logger.debug("*** begin transcription ***")
       Logger.debug(transcription)
       Logger.debug("*** end transcription ***")
 
       transcription = current_visit_transcription <> " " <> transcription
+
       {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
     else
       {:error, reason} ->
@@ -591,28 +612,39 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp transcribe_audio(HuggingFace, _use_local_stt? = true, binary, opts) do
-    data =
-      case Keyword.get(opts, :upload_type) do
-        :manual_upload ->
+  defp transcribe_audio(%{} = stt_params, upload_metadata) when stt_params.use_local_stt? do
+    binary = upload_metadata.binary
+    upload_type = upload_metadata.upload_type
+
+    input =
+      case upload_type do
+        :from_user_file_system ->
           filename = System.tmp_dir!() <> "_" <> Ecto.UUID.autogenerate()
           :ok = File.write!(filename, binary)
           {:file, filename}
 
-        :microphone ->
+        :from_user_microphone ->
           Nx.from_binary(binary, :f32)
       end
 
-    output = Nx.Serving.batched_run(Ambiantcare.Serving, data)
+    output = Nx.Serving.batched_run(Ambiantcare.Serving, input)
     transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
 
     {:ok, transcription}
   end
 
-  defp transcribe_audio(stt, _use_loal_stt?, binary, opts) do
-    with {:ok, filename} <- write_to_file(binary, opts),
+  defp transcribe_audio(stt_params, upload_metadata) do
+    stt_backend = stt_params.stt_backend
+
+    opts =
+      stt_params
+      |> Map.take([:deployment])
+      |> Map.to_list()
+      |> Keyword.merge(upload_metadata: upload_metadata)
+
+    with {:ok, filename} <- write_to_file(upload_metadata),
          {:ok, transcription} <-
-           apply(stt, :generate, ["openai/whisper-large-v3-turbo", filename, opts]) do
+           apply(stt_backend, :generate, ["openai/whisper-large-v3-turbo", filename, opts]) do
       {:ok, transcription}
     else
       {:error, reason} ->
@@ -632,19 +664,28 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     []
   end
 
-  defp write_to_file(binary, opts) do
-    audio =
-      case Keyword.fetch!(opts, :microphone_hook) do
-        "Microphone" -> :opus
-        "StreamMicrophone" -> :raw_audio
+  defp write_to_file(upload_metadata) do
+    binary = upload_metadata.binary
+
+    audio_format =
+      case upload_metadata do
+        %{upload_type: :from_user_file_system, client_filename: client_filename} ->
+          Path.extname(client_filename)
+
+        %{upload_type: :from_user_microphone, microphone_hook: "Microphone"} ->
+          ".opus"
+
+        %{upload_type: :from_user_microphone, microphone_hook: "StreamMicrophone"} ->
+          "raw_audio"
       end
 
-    filename = build_filename(audio)
+    filename = build_filename(audio_format)
 
     audio_convert_fn =
-      case audio do
-        :opus -> fn filename -> Ambiantcare.Audio.opus_to_flac(filename) end
-        :raw_audio -> fn filename -> Ambiantcare.Audio.raw_to_flac(filename) end
+      case audio_format do
+        "opus" -> fn filename -> Audio.opus_to_flac(filename) end
+        "raw_audio" -> fn filename -> Audio.raw_to_flac(filename) end
+        _ -> fn filename -> {:ok, filename} end
       end
 
     with :ok <- File.write(filename, binary),
@@ -653,32 +694,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     else
       {:error, _} = error -> error
     end
-  end
-
-  defp build_filename(:raw_audio) do
-    tmp_dir = System.tmp_dir!()
-
-    datetime =
-      DateTime.utc_now()
-      |> DateTime.truncate(:second)
-      |> DateTime.to_string()
-      |> String.replace(":", "_")
-      |> String.replace(" ", "_")
-
-    _filename = "#{tmp_dir}/audio_#{datetime}"
-  end
-
-  defp build_filename(:opus) do
-    tmp_dir = System.tmp_dir!()
-
-    datetime =
-      DateTime.utc_now()
-      |> DateTime.truncate(:second)
-      |> DateTime.to_string()
-      |> String.replace(":", "_")
-      |> String.replace(" ", "_")
-
-    _filename = "#{tmp_dir}/audio_#{datetime}.opus"
   end
 
   defp build_filename(:transcription) do
@@ -692,6 +707,22 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> String.replace(" ", "_")
 
     "#{tmp_dir}/transcription_#{datetime}.txt"
+  end
+
+  # @ryanzidago - assuming opus is raw audio without any extensions
+  defp build_filename("raw_audio"), do: build_filename("")
+
+  defp build_filename(extension) do
+    tmp_dir = System.tmp_dir!()
+
+    datetime =
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+      |> DateTime.to_string()
+      |> String.replace(":", "_")
+      |> String.replace(" ", "_")
+
+    _filename = "#{tmp_dir}/audio_#{datetime}#{extension}"
   end
 
   defp maybe_send_to_parent(opts, message) do
@@ -717,10 +748,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     Logger.debug("*** result ***")
     Logger.debug(inspect(result))
 
-    selected_template = Map.fetch!(params, :template)
-
     with {:ok, response} <- result,
-         {:ok, medical_note_changeset} <- response_to_changeset(response, selected_template) do
+         {:ok, template} <- Map.fetch(params, :template),
+         {:ok, medical_note_changeset} <- response_to_changeset(response, template) do
       {:ok, medical_note_changeset}
     else
       {:error, reason} -> {:error, reason}

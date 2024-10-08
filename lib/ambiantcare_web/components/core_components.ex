@@ -624,7 +624,7 @@ defmodule AmbiantcareWeb.CoreComponents do
     """
   end
 
-  def icon(%{name: "flowbite-three-vertical-dots"} = assigns) do
+  def icon(%{name: "flowbite-breadcrumbs"} = assigns) do
     ~H"""
     <svg
       class={["w-5 h-5", @class]}

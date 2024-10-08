@@ -56,7 +56,7 @@ const Microphone = {
             this.getEndianness(),
             this.el.dataset.endianness
           );
-          this.upload("audio", [new Blob([buffer])]);
+          this.upload("audio_from_user_microphone", [new Blob([buffer])]);
         });
       });
     });

@@ -105,7 +105,7 @@ const StreamMicrophone = {
     if (this.audioChunks.length < 1) return;
 
     const audioBlob = new Blob(this.audioChunks);
-    this.upload("audio", [audioBlob]);
+    this.upload("audio_from_user_microphone", [audioBlob]);
     this.audioChunks = [];
   },
 
