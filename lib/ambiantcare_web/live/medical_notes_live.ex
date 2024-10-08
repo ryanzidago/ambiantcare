@@ -730,13 +730,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp maybe_resume_dedicated_endpoint(
-         %{
-           assigns: %{
-             stt_backend: HuggingFace,
-             # @ryanzidago - proxy for `use_demo_transcription`
-             visit_transcription: %AsyncResult{result: nil}
-           }
-         } = socket,
+         %{assigns: %{stt_backend: HuggingFace}} = socket,
          _use_local_stt? = false
        ) do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
