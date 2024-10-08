@@ -49,7 +49,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(current_action: "transcription")
       |> assign(visit_transcription_loading: false)
       |> assign(medical_note_loading: false)
-      |> assign(show_audio_input_options_modal: false)
       |> allow_upload(:audio,
         accept: @accepted_audio_extensions,
         progress: &handle_progress/3,
@@ -177,7 +176,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
   attr :visit_transcription_loading, :boolean, required: true
-  attr :show_audio_input_options_modal, :boolean, required: true
 
   defp recording_button(assigns) do
     ~H"""
