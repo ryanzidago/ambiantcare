@@ -675,16 +675,17 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         %{upload_type: :from_user_microphone, microphone_hook: "Microphone"} ->
           ".opus"
 
+        # raw audio from the microphone
         %{upload_type: :from_user_microphone, microphone_hook: "StreamMicrophone"} ->
-          "raw_audio"
+          ""
       end
 
     filename = build_filename(audio_format)
 
     audio_convert_fn =
       case audio_format do
-        "opus" -> fn filename -> Audio.opus_to_flac(filename) end
-        "raw_audio" -> fn filename -> Audio.raw_to_flac(filename) end
+        ".opus" -> fn filename -> Audio.opus_to_flac(filename) end
+        "" -> fn filename -> Audio.raw_to_flac(filename) end
         _ -> fn filename -> {:ok, filename} end
       end
 
