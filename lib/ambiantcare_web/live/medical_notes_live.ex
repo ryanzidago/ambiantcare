@@ -13,6 +13,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
+  alias Phoenix.LiveView.UploadEntry
   alias Ecto.Changeset
 
   alias Ambiantcare.MedicalNotes.Template
@@ -26,6 +27,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
+
+  @static_dir Path.join(~w(priv static))
 
   @impl LiveView
   def mount(params, _session, socket) do
@@ -49,15 +52,16 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign(visit_transcription_loading: false)
       |> assign(medical_note_loading: false)
       |> assign(upload_type: :from_user_microphone)
+      |> assign(selected_pre_recorded_audio_file: nil)
       |> allow_upload(:audio_from_user_microphone,
         accept: :any,
-        progress: &handle_progress/3,
+        progress: &process_audio/3,
         auto_upload: true,
         max_file_size: 100_000_000
       )
       |> allow_upload(:audio_from_user_file_system,
         accept: :any,
-        progress: &handle_progress/3,
+        progress: &process_audio/3,
         auto_upload: true,
         max_file_size: 100_000_000
       )
@@ -175,6 +179,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :microphone_hook, :string, required: true
   attr :visit_transcription_loading, :boolean, required: true
   attr :upload_type, :atom, default: nil
+  attr :selected_pre_recorded_audio_file, :string, default: nil
 
   defp recording_button(assigns) do
     ~H"""
@@ -204,7 +209,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         </.button>
       </div>
 
-      <.start_visit_alternatives_modal uploads={@uploads} upload_type={@upload_type} />
+      <.start_visit_alternatives_modal
+        uploads={@uploads}
+        upload_type={@upload_type}
+        selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+      />
 
       <div :if={@recording?} class="flex flex-row items-center justify-center gap-4 animate-pulse">
         <div class="w-3 h-3 rounded-full bg-red-600"></div>
@@ -239,24 +248,65 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp start_visit_alternatives_modal(assigns) do
+    assigns =
+      assign(assigns,
+        pre_recorded_audio_files_options: [
+          {gettext("Dietetician visit"), "/audio/diet.mp3"}
+        ]
+      )
+
     ~H"""
     <.modal id="audio-input-options-modal">
-      <form phx-change={
-        %JS{}
-        |> hide_modal("audio-input-options-modal")
-        |> JS.push("no_op")
-      }>
-        <div>
-          <label>
-            <%= gettext("Upload an audio file") %>
+      <div class="flex flex-col gap-10">
+        <.form
+          for={%{}}
+          phx-change={
+            %JS{}
+            |> hide_modal("audio-input-options-modal")
+            |> JS.push("no_op")
+          }
+        >
+          <div class="flex flex-col gap-2">
+            <.label><%= gettext("Upload an audio file from your device") %></.label>
             <.live_file_input
               upload={@uploads.audio_from_user_file_system}
               phx-click="change_upload_type"
               phx-value-upload_type="from_user_file_system"
+              class="rounded-md"
             />
-          </label>
-        </div>
-      </form>
+          </div>
+        </.form>
+
+        <.simple_form
+          for={%{}}
+          phx-change="change_pre_recorded_audio_file"
+          phx-submit={
+            %JS{}
+            |> hide_modal("audio-input-options-modal")
+            |> JS.push("submit_pre_recorded_audio_file")
+          }
+        >
+          <.input
+            label={gettext("Or select one of the examples")}
+            type="select"
+            name="pre_recorded_audio_file"
+            prompt={gettext("")}
+            value={@selected_pre_recorded_audio_file}
+            options={@pre_recorded_audio_files_options}
+            class="shadow"
+          />
+          <div :if={@selected_pre_recorded_audio_file}>
+            <audio controls class="rounded-md shadow">
+              <source src={@selected_pre_recorded_audio_file} type="audio/mpeg" />
+              <%= gettext("Your browser does not support the audio element.") %>
+            </audio>
+          </div>
+          <:actions>
+            <.button type="submit"><%= gettext("Save") %></.button>
+            <.button type="button"><%= gettext("Cancel") %></.button>
+          </:actions>
+        </.simple_form>
+      </div>
     </.modal>
     """
   end
@@ -479,6 +529,38 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  def handle_event("change_pre_recorded_audio_file", %{"pre_recorded_audio_file" => ""}, socket) do
+    socket = assign(socket, selected_pre_recorded_audio_file: nil)
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "change_pre_recorded_audio_file",
+        %{"pre_recorded_audio_file" => pre_recorded_audio_file},
+        socket
+      ) do
+    socket =
+      socket
+      |> assign(selected_pre_recorded_audio_file: pre_recorded_audio_file)
+      |> assign(upload_type: :from_user_file_system)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "submit_pre_recorded_audio_file",
+        %{"pre_recorded_audio_file" => pre_recorded_audio_file},
+        socket
+      ) do
+    socket =
+      socket
+      |> assign(selected_pre_recorded_audio_file: nil)
+      |> assign(upload_type: :from_user_file_system)
+
+    {:noreply, _socket} =
+      process_audio(:audio_from_user_file_system, pre_recorded_audio_file, socket)
+  end
+
   def handle_event(
         "change_visit_transcription",
         %{"visit_transcription" => visit_transcription},
@@ -539,17 +621,30 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  defp handle_progress(:audio_from_user_file_system, entry, socket) do
-    handle_progress(:audio, entry, socket)
+  defp process_audio(:audio_from_user_file_system, filename, socket) when is_binary(filename) do
+    filename = Path.join([@static_dir, filename])
+    binary = File.read!(filename)
+
+    process_audio(filename, binary, socket)
   end
 
-  defp handle_progress(:audio_from_user_microphone, entry, socket) do
-    handle_progress(:audio, entry, socket)
-  end
-
-  defp handle_progress(:audio, entry, socket) when entry.done? do
-    microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
+  defp process_audio(:audio_from_user_file_system, %UploadEntry{} = entry, socket)
+       when entry.done? do
+    filename = entry.client_name
     binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
+    process_audio(filename, binary, socket)
+  end
+
+  defp process_audio(:audio_from_user_microphone, %UploadEntry{} = entry, socket)
+       when entry.done? do
+    filename = entry.client_name
+    binary = consume_uploaded_entry(socket, entry, fn %{path: path} -> File.read(path) end)
+    process_audio(filename, binary, socket)
+  end
+
+  defp process_audio(filename, binary, %{} = socket)
+       when is_binary(filename) and is_binary(binary) do
+    microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
     current_visit_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
     selected_template = socket.assigns.selected_template
@@ -566,7 +661,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       %{}
       |> Map.put(:binary, binary)
       |> Map.put(:upload_type, upload_type)
-      |> Map.put(:client_filename, entry.client_name)
+      |> Map.put(:client_filename, filename)
       |> Map.put(:microphone_hook, microphone_hook)
 
     context_params =
@@ -589,7 +684,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
-  defp handle_progress(:audio, _entry, socket) do
+  defp process_audio(_key, _entry, socket) do
     {:noreply, socket}
   end
 
