@@ -219,6 +219,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <%= gettext("Recording") %>
       </div>
 
+      <.upload_progress_bar entries={@uploads.audio_from_user_file_system.entries} />
+
       <div
         :if={@visit_transcription_loading}
         class="flex flex-row items-center justify-center gap-4 animate-pulse"
@@ -226,6 +228,20 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         <.spinner />
         <%= gettext("Generating the transcription ...") %>
       </div>
+    </div>
+    """
+  end
+
+  attr :entries, :list, required: true
+
+  defp upload_progress_bar(assigns) do
+    ~H"""
+    <div :for={entry <- @entries} class="flex flex-row gap-4 animate-pulse">
+      <.spinner />
+      <span><%= gettext("Uploading file ...") %></span>
+      <progress value={entry.progress} max="100" class="rounded-sm shadow-md">
+        <%= entry.progress %>%
+      </progress>
     </div>
     """
   end
