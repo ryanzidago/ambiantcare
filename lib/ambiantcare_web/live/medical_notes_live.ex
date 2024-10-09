@@ -236,7 +236,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   defp upload_progress_bar(assigns) do
     ~H"""
-    <div :for={entry <- @entries} class="flex flex-row gap-4 animate-pulse">
+    <div :for={entry <- @entries} class="flex flex-row items-center gap-4 animate-pulse">
       <.spinner />
       <span><%= gettext("Uploading file ...") %></span>
       <progress value={entry.progress} max="100" class="rounded-sm shadow-md">
