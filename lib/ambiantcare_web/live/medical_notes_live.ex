@@ -30,8 +30,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   @impl LiveView
   def mount(params, _session, socket) do
-    use_local_stt? = Keyword.get(ai_config(), :use_local_stt, false)
-
     socket =
       socket
       |> assign_speech_to_text_backend(params)
@@ -39,16 +37,14 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       |> assign_templates_by_id()
       |> assign_selected_template()
       |> assign(recording?: false)
-      |> assign(visit_transcription: nil)
+      |> assign(visit_transcription: %AsyncResult{ok?: true, loading: false, result: nil})
+      |> assign(visit_transcription_loading: false)
       |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
-      |> assign(medical_note_changeset: nil)
-      |> assign(microphone_hook: Microphone.from_params(params))
-      |> assign(visit_transcription: maybe_demo_visit_transcription(params))
       |> assign_medical_note_changeset(params)
+      |> assign(medical_note_loading: false)
+      |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(url_params: params)
       |> assign(current_action: "transcription")
-      |> assign(visit_transcription_loading: false)
-      |> assign(medical_note_loading: false)
       |> assign(upload_type: :from_user_microphone)
       |> assign(selected_pre_recorded_audio_file: nil)
       |> allow_upload(:audio_from_user_microphone,
@@ -58,12 +54,12 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         max_file_size: 100_000_000
       )
       |> allow_upload(:audio_from_user_file_system,
-        accept: :any,
+        accept: ~w(.mp3 .flac),
         progress: &process_audio/3,
         auto_upload: true,
         max_file_size: 100_000_000
       )
-      |> maybe_resume_dedicated_endpoint(use_local_stt?)
+      |> maybe_resume_dedicated_endpoint()
 
     log_values(socket)
 
@@ -652,7 +648,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     stt_params =
       %{}
       |> Map.put(:stt_backend, stt_backend)
-      |> Map.put(:use_local_stt?, ai_config()[:use_local_stt])
+      |> Map.put(:use_local_stt?, use_local_stt?())
       |> Map.merge(Enum.into(backend_opts(stt_backend, socket.assigns), %{}))
 
     upload_metadata =
@@ -859,13 +855,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(
-         %{assigns: %{stt_backend: HuggingFace}} = socket,
-         _use_local_stt? = false
-       ) do
+  defp maybe_resume_dedicated_endpoint(%{assigns: %{stt_backend: HuggingFace}} = socket) do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
     # @ryanzidago - do not hardcode the model name
-    with {:ok, response} =
+    with false <- use_local_stt?(),
+         {:ok, response} =
            HuggingFace.Dedicated.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
          state when state != "running" <- get_in(response, ~w(status state)),
          {:ok, _} <- HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx") do
@@ -877,19 +871,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     else
       _ ->
         socket
-    end
-  end
-
-  defp maybe_resume_dedicated_endpoint(socket, _use_local_stt?) do
-    socket
-  end
-
-  defp maybe_demo_visit_transcription(params) do
-    locale = Gettext.get_locale(AmbiantcareWeb.Gettext)
-
-    case Map.get(params, "use_demo_transcription") do
-      "true" -> demo_async_visit_transctiption(locale)
-      _ -> %AsyncResult{ok?: true, loading: false, result: nil}
     end
   end
 
@@ -949,14 +930,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     assign(socket, medical_note_changeset: changeset)
   end
 
-  def demo_async_visit_transctiption(locale \\ :en) do
-    %AsyncResult{
-      ok?: true,
-      loading: false,
-      result: demo_visit_transcription(locale)
-    }
-  end
-
   defp response_to_changeset(response, template) do
     template_fields_by_name = Map.new(template.fields, &{&1.name, &1})
 
@@ -976,86 +949,4 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
     {:ok, changeset}
   end
-
-  defp demo_visit_transcription(locale)
-
-  defp demo_visit_transcription("en") do
-    """
-    Cardiologist: Good morning, Mr. Rossi. I see you're here for a follow-up. How have you been feeling since your last visit?
-
-    Patient (Mr. Rossi): Good morning, Doctor. I've been alright, but I've noticed that I'm getting more short of breath lately, especially when I climb stairs or walk for a long time.
-
-    Cardiologist: I see. How long has this been happening?
-
-    Patient: It started about two months ago, but it's gotten worse in the last few weeks.
-
-    Cardiologist: Have you experienced any chest pain, palpitations, or dizziness?
-
-    Patient: I haven't had any chest pain, but I do feel my heart racing sometimes, especially when I'm short of breath. I haven't felt dizzy, though.
-
-    Cardiologist: Have you noticed any swelling in your legs or ankles?
-
-    Patient: Yes, actually. My ankles have been swelling by the end of the day, especially if I've been on my feet a lot.
-
-    Cardiologist: Thank you for sharing that. Let's go over your medications. Are you still taking the lisinopril and the aspirin that I prescribed last time?
-
-    Patient: Yes, I take both of them every day, as you told me. I haven't missed a dose.
-
-    Cardiologist: That's good to hear. And how's your diet and exercise routine going?
-
-    Patient: I've been trying to eat healthier, cutting down on salt and fats, as you suggested. I walk about 30 minutes most days, but lately, it's been harder because of the shortness of breath.
-
-    Cardiologist: Understood. Let's check your blood pressure and listen to your heart.
-
-    [The cardiologist performs a physical examination.]
-
-    Cardiologist: Your blood pressure is slightly elevated today at 140/90, and I hear a bit of fluid buildup in your lungs. I'm concerned that your symptoms might be related to heart failure, which could be causing the shortness of breath and swelling.
-
-    Patient: Heart failure? That sounds serious.
-
-    Cardiologist: It's something we need to monitor closely, but with the right treatment, we can manage it. I want to order an echocardiogram to get a better look at how your heart is functioning. We might also adjust your medications to help reduce the fluid buildup.
-
-    Patient: Okay, Doctor. What should I do in the meantime?
-
-    Cardiologist: Continue taking your current medications, but avoid excessive salt and try to elevate your legs when you’re sitting down to help reduce the swelling. We'll also schedule you for the echocardiogram as soon as possible. Once we have the results, we can discuss the next steps.
-
-    Patient: Thank you, Doctor. I appreciate it.
-
-    Cardiologist: You're welcome, Mr. Rossi. If you notice any worsening symptoms—like severe shortness of breath, chest pain, or lightheadedness—contact me immediately or go to the emergency room. I'll see you again after we have the test results.
-
-    Patient: I will. Thanks again.
-
-    Cardiologist: Take care, Mr. Rossi.
-    """
-  end
-
-  defp demo_visit_transcription("it") do
-    """
-     Come si sente oggi?
-
-     Non tanto bene, dottore.
-     Ho avuto un forte mal di testa per tre giorni consecutivi e ultimamente mi sento molto stanco.
-
-     Capisco. Ha notato altri sintomi? Febbre, nausea o problemi di vista?
-
-     No, niente febbre o nausea, ma a volte vedo delle macchie scure davanti agli occhi, soprattutto quando mi alzo rapidamente.
-
-     Ha cambiato qualcosa nella sua routine, come dieta o orari di sonno?
-
-     In effetti, ho dormito meno del solito e ho mangiato più cibo da asporto nelle ultime settimane a causa del lavoro.
-
-     Potrebbe influire, ma vorrei comunque fare qualche controllo. La pressione sanguigna sembra un po' alta. Ha una storia familiare di ipertensione?
-
-     Sì, mio padre soffre di ipertensione da anni. Va bene, faremo qualche esame del sangue per escludere eventuali altre cause.
-
-     Intanto le consiglio di riposare di più e cercare di seguire una dieta più equilibrata.
-    """
-  end
-
-  defp ai_config() do
-    Application.get_env(:ambiantcare, Ambiantcare.AI, [])
-  end
-
-  defp priv_dir, do: Application.app_dir(:ambiantcare, "priv")
-  defp static_dir, do: Path.join(priv_dir(), "static")
 end

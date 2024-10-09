@@ -392,8 +392,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
     query_params = [
       huggingface_deployment: "dedicated",
       microphone_hook: "Microphone",
-      stt_backend: "huggingface",
-      use_demo_transcription: true
+      stt_backend: "huggingface"
     ]
 
     assigns =

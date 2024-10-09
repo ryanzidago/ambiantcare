@@ -33,4 +33,15 @@ defmodule AmbiantcareWeb.MedicalNotesLive.Helpers do
       %{name: String.to_existing_atom(key), value: value}
     end)
   end
+
+  def use_local_stt? do
+    Keyword.get(ai_config(), :use_local_stt, false)
+  end
+
+  defp ai_config() do
+    Application.get_env(:ambiantcare, Ambiantcare.AI, [])
+  end
+
+  def static_dir, do: Path.join(priv_dir(), "static")
+  def priv_dir, do: Application.app_dir(:ambiantcare, "priv")
 end
