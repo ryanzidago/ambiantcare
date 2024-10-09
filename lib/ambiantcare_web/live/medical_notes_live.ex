@@ -93,11 +93,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           type="button"
           phx-click="toggle_action_panel"
           phx-value-action="transcription"
-          overwrite_class={[
-            "md:min-w-32 bg-blue-700 hover:bg-blue-800 shadow focus:ring-4 focus:ring-blue-300 focus:z-10 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
-            "phx-submit-loading:opacity-75 rounded-l-lg py-2 px-3",
-            "text-sm font-semibold leading-6 text-white active:text-white/80"
-          ]}
+          class="rounded-none rounded-l-lg"
         >
           <%= gettext("Transcription") %>
         </.button>
@@ -105,11 +101,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           type="button"
           phx-click="toggle_action_panel"
           phx-value-action="visit_context"
-          overwrite_class={[
-            "md:min-w-32 bg-blue-700 hover:bg-blue-800 shadow focus:ring-4 focus:ring-blue-300 focus:z-10 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
-            "phx-submit-loading:opacity-75 rounded-r-lg py-2 px-3",
-            "text-sm font-semibold leading-6 text-white active:text-white/80"
-          ]}
+          class="rounded-none rounded-r-lg"
         >
           <%= gettext("Context") %>
         </.button>
