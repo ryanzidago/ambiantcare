@@ -28,7 +28,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
 
-  @static_dir Path.join(~w(priv static))
+  @priv_dir Application.app_dir(:ambiantcare, "priv")
+  @static_dir Path.join(@priv_dir, "static")
 
   @impl LiveView
   def mount(params, _session, socket) do
@@ -622,7 +623,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp process_audio(:audio_from_user_file_system, filename, socket) when is_binary(filename) do
-    filename = Path.join([@static_dir, filename])
+    filename = Path.join(@static_dir, filename)
     binary = File.read!(filename)
 
     process_audio(filename, binary, socket)
