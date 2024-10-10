@@ -241,6 +241,7 @@ defmodule AmbiantcareWeb.CoreComponents do
         "bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
         "phx-submit-loading:opacity-75 rounded-lg py-2 px-3 md:min-w-32",
         "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "transition-all transform duration-200 hover:shadow-sm",
         @class
       ]}
       {@rest}

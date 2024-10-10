@@ -192,7 +192,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         >
           <span :if={not @recording?}>
             <%= gettext("Start Visit") %>
-            <button type="button" phx-click={show_modal("audio-input-options-modal")}>
+            <button
+              type="button"
+              class="transition-all transform duration-200 hover:scale-110"
+              phx-click={show_modal("audio-input-options-modal")}
+            >
               <.icon name="flowbite-breadcrumbs" />
             </button>
           </span>
@@ -445,7 +449,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           </.button>
           <.button
             type="button"
-            class="md:min-w-32"
+            class="md:min-w-32 text-white"
             phx-click={
               JS.dispatch("phx:copy",
                 detail: %{
