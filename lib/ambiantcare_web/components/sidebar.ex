@@ -38,6 +38,13 @@ defmodule AmbiantcareWeb.Sidebar do
   attr :template_options, :list, required: true, doc: "The available templates"
   attr :template, :map, required: true, doc: "The current template"
 
+  #  JS.toggle_class(
+  #     "hidden sm:block",
+  #     to: "#default-sidebar",
+  #     transition: "",
+  #     time: 0
+  #   )
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -46,11 +53,12 @@ defmodule AmbiantcareWeb.Sidebar do
         type="button"
         class="inline-flex items-center p-2 mt-2 ms-3 text-sm w-10 rounded-lg hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         phx-click={
-          JS.toggle_class(
-            "hidden sm:block",
+          %JS{}
+          |> JS.toggle(
             to: "#default-sidebar",
-            transition: "",
-            time: 0
+            time: 100,
+            in: {"transition-all transform ease-in-out duration-200", "opacity-0", "opacity-100"},
+            out: {"transition-all transform ease-in-out duration-200", "opacity-100", "opacity-0"}
           )
         }
       >
@@ -71,7 +79,7 @@ defmodule AmbiantcareWeb.Sidebar do
         </svg>
       </button>
 
-      <aside id="default-sidebar" class="w-44 h-screen hidden sm:visible" aria-label="Sidenav">
+      <aside id="default-sidebar" class="w-44 h-screen hidden" aria-label="Sidenav">
         <div class="overflow-y-auto py-5 px-3 h-full bg-white rounded-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <Branding.logo class="mb-20" />
           <div class="flex flex-col gap-2">
