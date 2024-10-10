@@ -242,6 +242,7 @@ defmodule AmbiantcareWeb.CoreComponents do
         "phx-submit-loading:opacity-75 rounded-lg py-2 px-3 md:min-w-32",
         "text-sm font-semibold leading-6 text-white active:text-white/80",
         "transition-all transform duration-200 hover:shadow-sm",
+        "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-700",
         @class
       ]}
       {@rest}

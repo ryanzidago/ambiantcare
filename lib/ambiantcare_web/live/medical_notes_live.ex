@@ -300,7 +300,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
             </audio>
           </div>
           <:actions>
-            <.button type="submit"><%= gettext("Save") %></.button>
+            <.button type="submit" disabled={is_nil(@selected_pre_recorded_audio_file)}>
+              <%= gettext("Save") %>
+            </.button>
             <.button
               type="button"
               phx-click={
