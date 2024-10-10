@@ -297,7 +297,19 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           </div>
           <:actions>
             <.button type="submit"><%= gettext("Save") %></.button>
-            <.button type="button"><%= gettext("Cancel") %></.button>
+            <.button
+              type="button"
+              phx-click={
+                %JS{}
+                |> hide_modal("audio-input-options-modal")
+                |> JS.push(
+                  "change_pre_recorded_audio_file",
+                  value: %{"pre_recorded_audio_file" => ""}
+                )
+              }
+            >
+              <%= gettext("Cancel") %>
+            </.button>
           </:actions>
         </.simple_form>
       </div>
@@ -524,7 +536,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   def handle_event("change_pre_recorded_audio_file", %{"pre_recorded_audio_file" => ""}, socket) do
-    socket = assign(socket, selected_pre_recorded_audio_file: nil)
+    socket =
+      socket
+      |> assign(selected_pre_recorded_audio_file: nil)
+      |> assign(upload_type: :from_user_microphone)
+
     {:noreply, socket}
   end
 
