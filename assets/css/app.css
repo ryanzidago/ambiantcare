@@ -3,3 +3,11 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+input[type=file]::file-selector-button {
+  @apply border-none bg-blue-700 hover:bg-blue-800 phx-submit-loading:opacity-75 rounded-l-lg py-2 px-3 md:min-w-32 text-sm font-semibold leading-6 text-white active:text-white/80 transition-all transform duration-200 hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-700;
+}
+
+input[type=file] {
+  @apply block w-full rounded-md border border-gray-300 bg-white hover:shadow-sm focus:border-zinc-400 focus:ring-0 focus:outline-none text-sm font-light cursor-pointer
+}

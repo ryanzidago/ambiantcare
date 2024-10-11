@@ -270,7 +270,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
               upload={@uploads.audio_from_user_file_system}
               phx-click="change_upload_type"
               phx-value-upload_type="from_user_file_system"
-              class="rounded-md"
             />
           </div>
         </.form>
