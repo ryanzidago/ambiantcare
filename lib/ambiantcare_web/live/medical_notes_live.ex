@@ -290,17 +290,20 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
             label={gettext("Or select one of the examples")}
             type="select"
             name="pre_recorded_audio_file"
-            prompt={gettext("")}
+            prompt=""
             value={@selected_pre_recorded_audio_file}
             options={@pre_recorded_audio_files_options}
             class="shadow"
           />
-          <div :if={@selected_pre_recorded_audio_file}>
-            <audio controls class="rounded-md shadow">
-              <source src={@selected_pre_recorded_audio_file} type="audio/mpeg" />
-              <%= gettext("Your browser does not support the audio element.") %>
-            </audio>
-          </div>
+          <audio
+            :if={@selected_pre_recorded_audio_file}
+            id={"audio-controls-#{@selected_pre_recorded_audio_file}"}
+            controls
+            class="rounded-md shadow"
+          >
+            <source src={@selected_pre_recorded_audio_file} type="audio/mpeg" />
+            <%= gettext("Your browser does not support the audio element.") %>
+          </audio>
           <:actions>
             <.button type="submit" disabled={is_nil(@selected_pre_recorded_audio_file)}>
               <%= gettext("Save") %>
@@ -554,7 +557,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   def handle_event(
         "change_pre_recorded_audio_file",
-        %{"pre_recorded_audio_file" => pre_recorded_audio_file},
+        %{"pre_recorded_audio_file" => pre_recorded_audio_file} = _params,
         socket
       ) do
     socket =
