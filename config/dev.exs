@@ -66,11 +66,13 @@ config :ambiantcare, AmbiantcareWeb.Endpoint,
 config :ambiantcare, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console, format: "[$level] $message\n", truncate: :infinity
+
+config :logger, truncate: :infinity
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
-config :phoenix, :stacktrace_depth, 20
+config :phoenix, :stacktrace_depth, 50
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
