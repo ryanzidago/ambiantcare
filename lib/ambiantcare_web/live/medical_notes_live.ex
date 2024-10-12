@@ -248,8 +248,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   defp start_visit_alternatives_modal(assigns) do
     pre_recorded_audio_files_options = [
-      {gettext("Dietetician visit"), "/audio/diet.mp3"},
-      {gettext("Generalist visit"), "/audio/generalist.mp3"}
+      {gettext("Generalist 1 visit"), "/audio/generalist_1.mp3"},
+      {gettext("Generalist 2 visit"), "/audio/generalist_2.mp3"}
     ]
 
     assigns =
