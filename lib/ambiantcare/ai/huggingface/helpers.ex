@@ -15,7 +15,7 @@ defmodule Ambiantcare.AI.HuggingFace.Helpers do
     else
       {:error,
        invalid_extension:
-         "Invalid file extension #{extension}, expected one of #{inspect(expected_extensions())}"}
+         "Invalid file extension, expected one of #{inspect(expected_extensions())}, got: #{extension}"}
     end
   end
 
