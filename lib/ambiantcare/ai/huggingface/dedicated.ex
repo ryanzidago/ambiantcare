@@ -19,7 +19,7 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated do
     with :ok <- validate_extension(filename),
          {:ok, file} <- File.read(filename),
          {:ok, response} <- request(:post, endpoint, file, content_type: content_type),
-         {:ok, response} <- parse_response(response) do
+         {:ok, response} <- parse_response(response, filename: filename) do
       {:ok, response}
     else
       {:error, _} = error -> error
@@ -44,10 +44,10 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated do
 
     :post
     |> Finch.build(endpoint, headers, body)
-    |> Finch.request(Ambiantcare.Finch, receive_timeout: 60_000 * 10)
+    |> Finch.request(Ambiantcare.Finch, receive_timeout: 60_000 * 30)
   end
 
-  defp parse_response(%Finch.Response{} = response) do
+  defp parse_response(%Finch.Response{} = response, opts \\ []) do
     with response when response.status == 200 <- response,
          {:ok, body} <- Jason.decode(response.body),
          {:ok, response} <- Map.fetch(body, "text") do
@@ -63,8 +63,12 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated do
            "Failed to decode response #{inspect(response)} due to #{inspect(reason)}"}
 
       %Finch.Response{} = response when response.status != 200 ->
-        {:error,
-         request_failed: "Request failed with status #{response.status} and body #{response.body}"}
+        filename = Keyword.get(opts, :filename)
+
+        error = "Request failed with status #{response.status} and body #{response.body}"
+        error = if filename, do: "#{error}, for filename #{filename}", else: error
+
+        {:error, request_failed: error}
     end
   end
 
