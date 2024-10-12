@@ -51,6 +51,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         accept: :any,
         progress: &process_audio/3,
         auto_upload: true,
+        max_entries: 10,
         max_file_size: 100_000_000
       )
       |> allow_upload(:audio_from_user_file_system,
@@ -696,7 +697,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
     socket =
       socket
-      |> assign(upload_type: nil)
       |> assign(visit_transcription_loading: true)
       |> start_async(:audio_to_structured_text, fn ->
         audio_to_structured_text(stt_params, upload_metadata, context_params, opts)
@@ -790,35 +790,41 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   defp write_to_file(upload_metadata) do
     binary = upload_metadata.binary
-
-    audio_format =
-      case upload_metadata do
-        %{upload_type: :from_user_file_system, client_filename: client_filename} ->
-          Path.extname(client_filename)
-
-        %{upload_type: :from_user_microphone, microphone_hook: "Microphone"} ->
-          ".opus"
-
-        # raw audio from the microphone
-        %{upload_type: :from_user_microphone, microphone_hook: "StreamMicrophone"} ->
-          ""
-      end
-
+    audio_format = audio_format(upload_metadata)
     filename = build_filename(audio_format)
 
-    audio_convert_fn =
-      case audio_format do
-        ".opus" -> fn filename -> Audio.opus_to_flac(filename) end
-        "" -> fn filename -> Audio.raw_to_flac(filename) end
-        _ -> fn filename -> {:ok, filename} end
-      end
-
     with :ok <- File.write(filename, binary),
-         {:ok, filename} <- audio_convert_fn.(filename) do
+         {:ok, filename} <- maybe_convert_audio(filename, audio_format) do
+      id =
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.to_iso8601()
+        |> String.replace(":", "-")
+        |> String.replace("Z", "")
+
+      File.write!("dump/#{id}.pcm", binary)
       {:ok, filename}
     else
       {:error, _} = error -> error
     end
+  end
+
+  defp audio_format(upload_metadata) do
+    case upload_metadata do
+      %{upload_type: :from_user_file_system, client_filename: client_filename} ->
+        Path.extname(client_filename)
+
+      _ ->
+        ".pcm"
+    end
+  end
+
+  defp maybe_convert_audio(filename, ".pcm") do
+    Audio.pcm_to_flac(filename)
+  end
+
+  defp maybe_convert_audio(filename, _) do
+    {:ok, filename}
   end
 
   defp build_filename(:transcription) do
