@@ -43,3 +43,5 @@ npm-debug.log
 # https://hexdocs.pm/dialyxir/readme.html#continuous-integration
 /priv/plts/*.plt
 /priv/plts/*.plt.hash
+
+.DS_Store
