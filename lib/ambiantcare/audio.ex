@@ -10,7 +10,6 @@ defmodule Ambiantcare.Audio do
     args = [
       "-i",
       input_filename,
-      # "-f", "ogg",
       "-c:a",
       "flac",
       "-ar",
@@ -24,7 +23,7 @@ defmodule Ambiantcare.Audio do
     execute(args, output_filename)
   end
 
-  def opus_to_flac(input_filename, opts \\ []) do
+  def pcm_to_flac(input_filename, opts \\ []) do
     [filename_without_extension, _extension] = String.split(input_filename, ".")
 
     input_format = Keyword.get(opts, :input_format, "f32le")
