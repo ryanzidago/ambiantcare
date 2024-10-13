@@ -91,13 +91,13 @@ msgid "Template"
 msgstr "Modello"
 
 msgid "Chief Complaint"
-msgstr "Motivo della Visita"
+msgstr "Motivo della visita"
 
 msgid "Assessment"
 msgstr "Valutazione"
 
 msgid "History of Present Illness"
-msgstr "Storia della Malattia Attuale"
+msgstr "Anamnesi Patologica Prossima"
 
 msgid "Medications"
 msgstr "Farmaci in corso"
@@ -115,13 +115,13 @@ msgid "Gastroenterology"
 msgstr "Gastroenterologia"
 
 msgid "Present Medical History"
-msgstr "Storia Medica Attuale"
+msgstr "Anamnesi Patologica Prossima"
 
 msgid "Past Medical History"
-msgstr "Storia Medica Passata"
+msgstr "Anamnesi Patologica Passata"
 
 msgid "Home Medications"
-msgstr "Farmaci a Casa"
+msgstr "Farmaci al domicilio"
 
 msgid "Allergies"
 msgstr "Allergie"
@@ -131,7 +131,7 @@ msgid "Conclusions"
 msgstr "Conclusioni"
 
 msgid "Therapeutic Advices"
-msgstr "Consigli Terapeutici"
+msgstr "Consigli terapeutici"
 
 #: lib/ambiantcare_web/live/medical_notes/helpers.ex:11
 #, elixir-autogen, elixir-format
@@ -141,7 +141,7 @@ msgstr "Nota medica"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:426
 #, elixir-autogen, elixir-format
 msgid "Create note"
-msgstr "Crea nota"
+msgstr "Genera nota"
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:343
 #, elixir-autogen, elixir-format
