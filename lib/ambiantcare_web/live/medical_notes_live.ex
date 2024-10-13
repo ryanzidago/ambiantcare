@@ -129,7 +129,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
             selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
           />
         <% "visit_context" -> %>
-          <.consultation_panel {assigns} />
+          <.consultation_panel visit_context={@visit_context} />
       <% end %>
     </div>
     """
