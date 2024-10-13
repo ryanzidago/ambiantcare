@@ -72,7 +72,18 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     ~H"""
     <div class="grid lg:grid-cols-2 align-center gap-40 lg:gap-10 lg:p-20 p-10">
       <div class="lg:col-span-1">
-        <.action_panel {assigns} />
+        <.action_panel
+          current_action={@current_action}
+          visit_transcription={@visit_transcription}
+          visit_transcription_loading={@visit_transcription_loading}
+          visit_context={@visit_context}
+          medical_note_loading={@medical_note_loading}
+          uploads={@uploads}
+          upload_type={@upload_type}
+          microphone_hook={@microphone_hook}
+          recording?={@recording?}
+          selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+        />
       </div>
       <div class="lg:col-span-1 lg:overflow-y-auto lg:px-8">
         <.medical_note
@@ -107,7 +118,16 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       </div>
       <%= case @current_action do %>
         <% "transcription" -> %>
-          <.transcription_panel {assigns} />
+          <.transcription_panel
+            visit_transcription={@visit_transcription}
+            visit_transcription_loading={@visit_transcription_loading}
+            medical_note_loading={@medical_note_loading}
+            uploads={@uploads}
+            upload_type={@upload_type}
+            microphone_hook={@microphone_hook}
+            recording?={@recording?}
+            selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+          />
         <% "visit_context" -> %>
           <.consultation_panel {assigns} />
       <% end %>
@@ -118,7 +138,14 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   defp transcription_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
-      <.recording_button {assigns} />
+      <.recording_button
+        recording?={@recording?}
+        microphone_hook={@microphone_hook}
+        visit_transcription_loading={@visit_transcription_loading}
+        uploads={@uploads}
+        upload_type={@upload_type}
+        selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+      />
 
       <div class="flex flex-col">
         <.async_result :let={visit_transcription} assign={@visit_transcription}>
@@ -173,6 +200,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
   attr :visit_transcription_loading, :boolean, required: true
+  attr :uploads, :any, required: true
   attr :upload_type, :atom, default: nil
   attr :selected_pre_recorded_audio_file, :string, default: nil
 
@@ -412,6 +440,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :medical_note_loading, :boolean, required: true
 
   defp visit_transcription(assigns) do
+    dbg(assigns.visit_transcription)
+
     ~H"""
     <.form
       for={%{}}
