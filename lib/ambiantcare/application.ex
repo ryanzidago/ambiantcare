@@ -39,12 +39,12 @@ defmodule Ambiantcare.Application do
   end
 
   defp maybe_nx_serving(_use_local_stt? = true) do
-    {:ok, model_info} = Bumblebee.load_model({:hf, "openai/whisper-tiny"})
-    {:ok, featurizer} = Bumblebee.load_featurizer({:hf, "openai/whisper-tiny"})
-    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/whisper-tiny"})
+    {:ok, model_info} = Bumblebee.load_model({:hf, "openai/whisper-base"})
+    {:ok, featurizer} = Bumblebee.load_featurizer({:hf, "openai/whisper-base"})
+    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/whisper-base"})
 
     {:ok, generation_config} =
-      Bumblebee.load_generation_config({:hf, "openai/whisper-tiny"})
+      Bumblebee.load_generation_config({:hf, "openai/whisper-base"})
 
     serving =
       Bumblebee.Audio.speech_to_text_whisper(model_info, featurizer, tokenizer, generation_config,
