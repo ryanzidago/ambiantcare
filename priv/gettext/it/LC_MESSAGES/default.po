@@ -25,7 +25,7 @@ msgstr "Tentativo di riconnessione"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:205
 #, elixir-autogen, elixir-format
 msgid "End Visit"
-msgstr "Termina Visita"
+msgstr "Termina visita"
 
 #: lib/ambiantcare_web/components/core_components.ex:158
 #, elixir-autogen, elixir-format
@@ -35,7 +35,7 @@ msgstr "Errore!"
 #: lib/ambiantcare_web/components/core_components.ex:179
 #, elixir-autogen, elixir-format
 msgid "Hang in there while we get back on track"
-msgstr "Resisti mentre torniamo in carreggiata"
+msgstr "Attendi mentre torniamo in carreggiata"
 
 #: lib/ambiantcare_web/components/core_components.ex:174
 #, elixir-autogen, elixir-format
@@ -45,7 +45,7 @@ msgstr "Qualcosa è andato storto!"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:194
 #, elixir-autogen, elixir-format
 msgid "Start Visit"
-msgstr "Inizia Visita"
+msgstr "Inizia visita"
 
 #: lib/ambiantcare_web/components/core_components.ex:156
 #, elixir-autogen, elixir-format
@@ -61,12 +61,12 @@ msgstr "Non riusciamo a trovare la connessione internet"
 #: lib/ambiantcare_web/components/core_components.ex:136
 #, elixir-autogen, elixir-format
 msgid "close"
-msgstr "chiudi"
+msgstr "Chiudi"
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:421
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
-msgstr "Trascrizione della Visita"
+msgstr "Trascrizione della visita"
 
 #: lib/ambiantcare_web/components/sidebar.ex:106
 #, elixir-autogen, elixir-format
@@ -83,12 +83,12 @@ msgstr "Scarica la nota"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:463
 #, elixir-autogen, elixir-format
 msgid "Copy"
-msgstr "Copia"
+msgstr "Copia la nota"
 
 #: lib/ambiantcare_web/components/sidebar.ex:121
 #, elixir-autogen, elixir-format
 msgid "Template"
-msgstr "Modello"
+msgstr "Specialità"
 
 msgid "Chief Complaint"
 msgstr "Motivo della visita"
@@ -106,7 +106,7 @@ msgid "Physical Examination"
 msgstr "Esame Obiettivo"
 
 msgid "Plan"
-msgstr "Consigli terapeutici"
+msgstr "Piano terapeutico"
 
 msgid "Default"
 msgstr "Predefinito"
@@ -131,7 +131,7 @@ msgid "Conclusions"
 msgstr "Conclusioni"
 
 msgid "Therapeutic Advices"
-msgstr "Consigli terapeutici"
+msgstr "Piano terapeutico"
 
 #: lib/ambiantcare_web/live/medical_notes/helpers.ex:11
 #, elixir-autogen, elixir-format
@@ -163,12 +163,12 @@ msgstr "Informazioni"
 #: lib/ambiantcare_web/live/landing_page_live.ex:106
 #, elixir-autogen, elixir-format
 msgid "Automated medical notes for clinicians"
-msgstr "Note mediche automatizzate per i medici"
+msgstr "L'Intelligenza Artificiale al tuo servizio. "
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:426
 #, elixir-autogen, elixir-format
 msgid "Book a demo"
-msgstr "Prenota una demo"
+msgstr "Prenota una dimostrazione"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:207
 #, elixir-autogen, elixir-format
@@ -214,17 +214,17 @@ msgstr "Il nostro copilota aiuta i medici a generare note mediche da trascrizion
 #: lib/ambiantcare_web/live/landing_page_live.ex:191
 #, elixir-autogen, elixir-format
 msgid "Our copilot will generate a medical notes in minutes. You can edit and download them."
-msgstr "Il nostro copilota genererà note mediche in pochi minuti. Puoi modificarle e scaricarle."
+msgstr "Il nostro assistente IA genererà un riepilogo della visita in meno di un minuto. Alla fine della visita potrai modificare e scaricare il riepilogo con un semplice clic."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:109
 #, elixir-autogen, elixir-format
 msgid "Press a button and generate medical notes in minutes instead of hours."
-msgstr "Premi un pulsante e genera note mediche in pochi minuti invece che in ore."
+msgstr "Dì addio alla burocrazia. Il nostro assistente IA ti aiuta a creare un riepilogo delle informazioni della visita in pochi minuti."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:288
 #, elixir-autogen, elixir-format
 msgid "Spend more time with your patients and less time on paperwork."
-msgstr "Dedica più tempo ai tuoi pazienti e meno tempo alla burocrazia."
+msgstr "Concentrati sui tuoi pazienti e lascia all'IA la burocrazia."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:30
 #, elixir-autogen, elixir-format
@@ -234,17 +234,17 @@ msgstr "Team"
 #: lib/ambiantcare_web/live/landing_page_live.ex:409
 #, elixir-autogen, elixir-format
 msgid "Try for free"
-msgstr "Prova gratuitamente"
+msgstr "Provalo gratuitamente"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:182
 #, elixir-autogen, elixir-format
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
-msgstr "Durante la registrazione, procedi come di consueto e lascia che ci occupiamo del resto."
+msgstr "Durante la registrazione, procedi normalmente e lascia che ci occupiamo della burocrazia."
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:159
 #, elixir-autogen, elixir-format
 msgid "Consultation Context"
-msgstr "Contesto della consultazione"
+msgstr "Contesto della visita"
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:104
 #, elixir-autogen, elixir-format
@@ -254,7 +254,7 @@ msgstr "Contesto"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:160
 #, elixir-autogen, elixir-format
 msgid "Provide additional context about the patient."
-msgstr "Fornisci ulteriore contesto sul paziente."
+msgstr "Fornisci ulteriori informazioni importanti sul paziente."
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:96
 #, elixir-autogen, elixir-format, fuzzy
@@ -264,7 +264,7 @@ msgstr "Trascrizione"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:435
 #, elixir-autogen, elixir-format
 msgid "Generating note ..."
-msgstr "Generazione della nota in corso ..."
+msgstr "Stiamo generando un riepilogo della visita..."
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:228
 #, elixir-autogen, elixir-format
@@ -279,7 +279,7 @@ msgstr "Registrazione"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:891
 #, elixir-autogen, elixir-format
 msgid "Starting the AI server. Please retry in 5 minutes ..."
-msgstr "Avvio del server AI. Riprova tra 5 minuti ..."
+msgstr "Stiamo avviando il server. Ritorna tra 5 minuti ..."
 
 #: lib/ambiantcare_web/components/core_components.ex:157
 #, elixir-autogen, elixir-format
@@ -299,7 +299,7 @@ msgstr "Annulla"
 #: lib/ambiantcare_web/live/medical_notes_live.ex:252
 #, elixir-autogen, elixir-format
 msgid "Dietetician visit"
-msgstr "Visita dietetica"
+msgstr "Consulenza Nutrizionale"
 
 #: lib/ambiantcare_web/live/medical_notes_live.ex:288
 #, elixir-autogen, elixir-format
