@@ -221,19 +221,21 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         >
           <span :if={not @recording?}>
             <%= gettext("Start Visit") %>
-            <button
-              type="button"
-              class="transition-all transform duration-200 hover:scale-110"
-              phx-click={show_modal("audio-input-options-modal")}
-            >
-              <.icon name="flowbite-breadcrumbs" />
-            </button>
           </span>
 
           <span :if={@recording?}>
             <%= gettext("End Visit") %>
           </span>
         </.button>
+
+        <button
+          :if={not @recording?}
+          type="button"
+          class="transition-all transform duration-200 hover:scale-110"
+          phx-click={show_modal("audio-input-options-modal")}
+        >
+          <.icon name="flowbite-breadcrumbs" />
+        </button>
       </div>
 
       <.start_visit_alternatives_modal
@@ -440,8 +442,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :medical_note_loading, :boolean, required: true
 
   defp visit_transcription(assigns) do
-    dbg(assigns.visit_transcription)
-
     ~H"""
     <.form
       for={%{}}
