@@ -430,7 +430,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       assigns
       |> assign(input_type: Atom.to_string(template_field.input_type))
       |> assign(name: name)
-      |> assign(label: Gettext.gettext(AmbiantcareWeb.Gettext, template_field.label))
+      |> assign(label: template_field.label)
       |> assign(value: value)
 
     ~H"""
