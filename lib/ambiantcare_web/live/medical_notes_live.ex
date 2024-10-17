@@ -299,7 +299,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           }
         >
           <div class="flex flex-col gap-2">
-            <.label><%= gettext("Upload an audio file from your device") %></.label>
+            <.label for={@uploads.audio_from_user_file_system.ref}>
+              <%= gettext("Upload an audio file from your device") %>
+            </.label>
             <.live_file_input
               upload={@uploads.audio_from_user_file_system}
               phx-click="change_upload_type"
