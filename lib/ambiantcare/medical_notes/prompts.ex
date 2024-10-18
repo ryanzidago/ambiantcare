@@ -5,28 +5,20 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
 
   alias Ambiantcare.MedicalNotes.Template
 
-  def compose(params) do
+  def user(params) do
     context = Map.get(params, :context)
     transcription = Map.fetch!(params, :transcription)
     template = Map.fetch!(params, :template)
 
-    instructions = """
+    """
     # Doctor Provided Context
-    <%= @context %>
+    #{context}
 
     # Consultation Transcription
-    <%= @transcription %>
+    #{transcription}
 
     # Medical Note Template
-    <%= @schema %>
+    #{Template.to_prompt(template)}
     """
-
-    assigns = [
-      context: context,
-      transcription: transcription,
-      schema: Template.to_prompt(template)
-    ]
-
-    EEx.eval_string(instructions, assigns: assigns)
   end
 end

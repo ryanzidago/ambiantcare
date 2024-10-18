@@ -1,5 +1,6 @@
 defmodule Ambiantcare.MedicalNotes.Template do
   use Ecto.Schema
+  use Gettext, backend: AmbiantcareWeb.Gettext
 
   alias __MODULE__
 
@@ -35,12 +36,12 @@ defmodule Ambiantcare.MedicalNotes.Template do
   def default_template_attrs do
     %{
       key: "0",
-      title: Gettext.gettext(AmbiantcareWeb.Gettext, "General Medicine"),
+      title: gettext("General Medicine"),
       description: "This is the default template for medical notes",
       fields: [
         %{
           name: :chief_complaint,
-          label: "Chief Complaint",
+          label: gettext("Chief Complaint"),
           description: "The main reason for the patient's visit",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -50,7 +51,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :present_medical_history,
-          label: "Present medical history",
+          label: gettext("Present medical history"),
           description: "A detailed description of the patient's current illness",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -60,7 +61,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :past_medical_history,
-          label: "Past medical history",
+          label: gettext("Past medical history"),
           description: "The patient's past medical history",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -70,7 +71,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :ongoing_therapy,
-          label: "Ongoing therapy",
+          label: gettext("Ongoing therapy"),
           description: "Ongoing therapy",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -80,7 +81,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :physical_assessment,
-          label: "Physical Assessment",
+          label: gettext("Physical Assessment"),
           description: "The patient's physical assessment",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -90,7 +91,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :therapeutic_plan,
-          label: "Therapeutic Plan",
+          label: gettext("Therapeutic Plan"),
           description: "The patient's therapeutic plan",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -111,12 +112,12 @@ defmodule Ambiantcare.MedicalNotes.Template do
   def gastroenterology_template_attrs do
     %{
       key: "1",
-      title: Gettext.gettext(AmbiantcareWeb.Gettext, "Gastroenterology"),
+      title: gettext("Gastroenterology"),
       description: "This is the default template for gastroenterology notes",
       fields: [
         %{
           name: :chief_complaint,
-          label: "Present Medical History",
+          label: gettext("Present Medical History"),
           description: "The patient's current medical history",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -126,7 +127,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :past_medical_history,
-          label: "Past Medical History",
+          label: gettext("Past Medical History"),
           description: "The patient's past medical history",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -136,7 +137,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :home_medications,
-          label: "Home Medications",
+          label: gettext("Home Medications"),
           description: "The patient's current medications",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -146,7 +147,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :allergies,
-          label: "Allergies",
+          label: gettext("Allergies"),
           description: "The patient's allergies",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -156,7 +157,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :physical_examination,
-          label: "Physical Examination",
+          label: gettext("Physical Examination"),
           description: "The patient's physical examination",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -166,7 +167,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :conclusions,
-          label: "Conclusions",
+          label: gettext("Conclusions"),
           description: "The patient's diagnosis",
           autofill_instructions: "",
           autofill_enabled: true,
@@ -176,7 +177,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           name: :therapeutic_advices,
-          label: "Therapeutic Advices",
+          label: gettext("Therapeutic Advices"),
           description: "The patient's treatment plan",
           autofill_instructions: "",
           autofill_enabled: true,

@@ -5,14 +5,15 @@ defmodule Ambiantcare.AI.Mistral do
   alias __MODULE__
 
   @agent_endpoint "/v1/agents/completions"
+  @chat_completion_endpoint "/v1/chat/completions"
 
   @doc """
   Generates a response using the Mistral backend.
   """
   def generate(model, prompt, options)
       when is_binary(prompt) and is_binary(model) and is_list(options) do
-    with {:ok, body} <- build_body(prompt, model, options),
-         {:ok, response} <- request(:post, @agent_endpoint, body),
+    with {:ok, body} <- build_body(model, prompt, options),
+         {:ok, response} <- request(:post, endpoint(model), body),
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
@@ -21,35 +22,57 @@ defmodule Ambiantcare.AI.Mistral do
     end
   end
 
-  defp build_body(prompt, _model, options) do
-    # system_prompt = Keyword.get(options, :system_prompt)
+  defp build_body("agent", prompt, options) do
     stream = Keyword.get(options, :stream, false)
-    # format = Keyword.get(options, :format, "json")
     random_seed = Keyword.get(options, :random_seed, 0)
 
     messages = [
-      # %{
-      #   "role" => "system",
-      #   "content" => system_prompt
-      # },
       %{
         "role" => "user",
         "content" => prompt
       }
     ]
 
-    # format = %{"type" => format}
-
     body =
       %{}
       |> Map.put("messages", messages)
       |> Map.put("stream", stream)
-      # |> Map.put("response_format", format)
       |> Map.put("random_seed", random_seed)
       |> Map.put("agent_id", agent(:medical_note_agent_id))
 
     Jason.encode(body)
   end
+
+  defp build_body(model, user_prompt, opts) do
+    system_prompt = Keyword.fetch!(opts, :system_prompt)
+    stream = Keyword.get(opts, :stream, false)
+    temperature = Keyword.get(opts, :temperature, 0.0)
+    response_format = Keyword.get(opts, :format, "json_object")
+
+    messages = [
+      %{
+        "role" => "system",
+        "content" => system_prompt
+      },
+      %{
+        "role" => "user",
+        "content" => user_prompt
+      }
+    ]
+
+    body =
+      %{}
+      |> Map.put("model", model)
+      |> Map.put("messages", messages)
+      |> Map.put("stream", stream)
+      |> Map.put("response_format", %{"type" => response_format})
+      |> Map.put("temperature", temperature)
+
+    Jason.encode(body)
+  end
+
+  defp endpoint("agent"), do: @agent_endpoint
+  defp endpoint(_model), do: @chat_completion_endpoint
 
   defp request(:post, endpoint, body) do
     :post
