@@ -901,13 +901,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp query_llm(%{} = params) do
-    system_prompt = Prompts.system("structure_medical_note.v1")
     user_prompt = Prompts.user(params)
-
-    result =
-      Ambiantcare.AI.Mistral.generate("mistral-small-latest", user_prompt,
-        system_prompt: system_prompt
-      )
+    result = Ambiantcare.AI.LLMs.generate("medical_notes/v1_0", user_prompt)
 
     Logger.debug("*** prompt ***")
     Logger.debug(user_prompt)

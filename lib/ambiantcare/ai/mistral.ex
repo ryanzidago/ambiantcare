@@ -67,7 +67,6 @@ defmodule Ambiantcare.AI.Mistral do
       |> Map.put("stream", stream)
       |> Map.put("response_format", %{"type" => response_format})
       |> Map.put("temperature", temperature)
-      |> dbg()
 
     Jason.encode(body)
   end

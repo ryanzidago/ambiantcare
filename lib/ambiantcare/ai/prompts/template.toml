@@ -1,0 +1,32 @@
+[metadata]
+title = ""
+version = ""
+
+[config]
+backend = ""
+model = ""
+temperature = 0.0
+
+[prompt]
+text = """
+...
+"""
+
+[[prompt.examples]]
+input = """
+<Example Input>
+...
+"""
+output = """
+<Example Output>
+...
+"""
+
+[[prompt.examples]]
+input = """
+<Example Input>
+...
+"""
+output = """
+...
+"""
