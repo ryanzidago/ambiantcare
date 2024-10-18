@@ -8,6 +8,7 @@ defmodule AmbiantcareWeb.PageController do
   end
 
   def index(conn, _params) do
-    redirect(conn, to: ~p"/en")
+    locale = get_locale(conn)
+    redirect(conn, to: ~p"/#{locale}")
   end
 end

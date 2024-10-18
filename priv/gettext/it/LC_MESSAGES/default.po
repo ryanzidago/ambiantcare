@@ -63,7 +63,7 @@ msgstr "Non riusciamo a trovare la connessione internet"
 msgid "close"
 msgstr "chiudi"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:457
+#: lib/ambiantcare_web/live/medical_notes_live.ex:459
 #, elixir-autogen, elixir-format
 msgid "Visit Transcription"
 msgstr "Trascrizione della Visita"
@@ -73,14 +73,14 @@ msgstr "Trascrizione della Visita"
 msgid "Language"
 msgstr "Lingua"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:400
-#: lib/ambiantcare_web/live/medical_notes_live.ex:486
+#: lib/ambiantcare_web/live/medical_notes_live.ex:402
+#: lib/ambiantcare_web/live/medical_notes_live.ex:488
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr "Scarica la nota"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:413
-#: lib/ambiantcare_web/live/medical_notes_live.ex:499
+#: lib/ambiantcare_web/live/medical_notes_live.ex:415
+#: lib/ambiantcare_web/live/medical_notes_live.ex:501
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr "Copia"
@@ -155,12 +155,12 @@ msgstr "Consigli terapeutici"
 msgid "Medical Note"
 msgstr "Nota medica"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:462
+#: lib/ambiantcare_web/live/medical_notes_live.ex:464
 #, elixir-autogen, elixir-format
 msgid "Create note"
 msgstr "Genera nota"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:379
+#: lib/ambiantcare_web/live/medical_notes_live.ex:381
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
 msgstr "Ops, qualcosa è andato storto!"
@@ -277,7 +277,7 @@ msgstr "Fornisci ulteriore contesto sul paziente."
 msgid "Transcription"
 msgstr "Trascrizione"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:471
+#: lib/ambiantcare_web/live/medical_notes_live.ex:473
 #, elixir-autogen, elixir-format
 msgid "Generating note ..."
 msgstr "Generazione della nota in corso ..."
@@ -292,7 +292,7 @@ msgstr "Generazione della trascrizione in corso ..."
 msgid "Recording"
 msgstr "Registrazione"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:932
+#: lib/ambiantcare_web/live/medical_notes_live.ex:934
 #, elixir-autogen, elixir-format
 msgid "Starting the AI server. Please retry in 5 minutes ..."
 msgstr "Avvio del server AI. Riprova tra 5 minuti ..."
@@ -307,27 +307,27 @@ msgstr "Attenzione!"
 msgid "Uploading file ..."
 msgstr "Caricamento del file in corso ..."
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:353
+#: lib/ambiantcare_web/live/medical_notes_live.ex:355
 #, elixir-autogen, elixir-format
 msgid "Cancel"
 msgstr "Annulla"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:321
+#: lib/ambiantcare_web/live/medical_notes_live.ex:323
 #, elixir-autogen, elixir-format
 msgid "Or select one of the examples"
 msgstr "Oppure seleziona uno degli esempi"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:340
+#: lib/ambiantcare_web/live/medical_notes_live.ex:342
 #, elixir-autogen, elixir-format
 msgid "Save"
 msgstr "Salva"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:302
+#: lib/ambiantcare_web/live/medical_notes_live.ex:303
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Upload an audio file from your device"
 msgstr "Carica un file audio dal tuo dispositivo"
 
-#: lib/ambiantcare_web/live/medical_notes_live.ex:336
+#: lib/ambiantcare_web/live/medical_notes_live.ex:338
 #, elixir-autogen, elixir-format
 msgid "Your browser does not support the audio element."
 msgstr "Il tuo browser non supporta l'elemento audio."
@@ -376,3 +376,300 @@ msgstr "Storia della malattia attuale"
 #, elixir-autogen, elixir-format
 msgid "Therapeutic Plan"
 msgstr "Consigli terapeutici"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:143
+#, elixir-autogen, elixir-format
+msgid "A link to confirm your email change has been sent to the new address."
+msgstr "Un link per confermare il cambio di email è stato inviato al nuovo indirizzo."
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:10
+#, elixir-autogen, elixir-format
+msgid "Account Settings"
+msgstr "Impostazioni dell'account"
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:14
+#, elixir-autogen, elixir-format
+msgid "Already registered?"
+msgstr "Già registrato?"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:34
+#, elixir-autogen, elixir-format
+msgid "Change Email"
+msgstr "Cambia email"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:77
+#, elixir-autogen, elixir-format
+msgid "Change Password"
+msgstr "Cambia password"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:33
+#: lib/ambiantcare_web/live/user_settings_live.ex:76
+#, elixir-autogen, elixir-format
+msgid "Changing..."
+msgstr "In corso di modifica..."
+
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:10
+#, elixir-autogen, elixir-format
+msgid "Confirm Account"
+msgstr "Conferma account"
+
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:16
+#, elixir-autogen, elixir-format
+msgid "Confirm my account"
+msgstr "Conferma il mio account"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:64
+#, elixir-autogen, elixir-format
+msgid "Confirm new password"
+msgstr "Conferma nuova password"
+
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:15
+#, elixir-autogen, elixir-format
+msgid "Confirming..."
+msgstr "Conferma in corso..."
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:43
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Create an account"
+msgstr "Crea un account"
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:42
+#, elixir-autogen, elixir-format
+msgid "Creating account..."
+msgstr "Creazione account in corso..."
+
+#: lib/ambiantcare_web/live/user_login_live.ex:11
+#, elixir-autogen, elixir-format
+msgid "Don't have an account?"
+msgstr "Non hai un account?"
+
+#: lib/ambiantcare_web/live/user_login_live.ex:28
+#: lib/ambiantcare_web/live/user_registration_live.ex:38
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr "Email"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:95
+#, elixir-autogen, elixir-format
+msgid "Email change link is invalid or it has expired."
+msgstr "Il link per il cambio email non è valido o è scaduto."
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:92
+#, elixir-autogen, elixir-format
+msgid "Email changed successfully."
+msgstr "Email cambiata con successo."
+
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:11
+#: lib/ambiantcare_web/live/user_login_live.ex:34
+#, elixir-autogen, elixir-format
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly."
+msgstr "Se la tua email è nel nostro sistema e non è stata ancora confermata, riceverai presto un'email con le istruzioni."
+
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:46
+#, elixir-autogen, elixir-format
+msgid "If your email is in our system, you will receive instructions to reset your password shortly."
+msgstr "Se la tua email è nel nostro sistema, riceverai presto le istruzioni per reimpostare la password."
+
+#: lib/ambiantcare_web/components/layouts/root.html.heex:51
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:26
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:23
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:25
+#: lib/ambiantcare_web/live/user_login_live.ex:39
+#: lib/ambiantcare_web/live/user_registration_live.ex:19
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:38
+#, elixir-autogen, elixir-format
+msgid "Log in"
+msgstr "Accedi"
+
+#: lib/ambiantcare_web/live/user_login_live.ex:9
+#, elixir-autogen, elixir-format
+msgid "Log in to account"
+msgstr "Accedi all'account"
+
+#: lib/ambiantcare_web/live/user_login_live.ex:38
+#, elixir-autogen, elixir-format
+msgid "Logging in..."
+msgstr "Accesso in corso..."
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:11
+#, elixir-autogen, elixir-format
+msgid "Manage your account email address and password settings"
+msgstr "Gestisci le impostazioni dell'email e della password del tuo account"
+
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:22
+#: lib/ambiantcare_web/live/user_settings_live.ex:58
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr "Nuova password"
+
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:11
+#, elixir-autogen, elixir-format
+msgid "No confirmation instructions received?"
+msgstr "Non hai ricevuto le istruzioni di conferma?"
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:35
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:19
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Oops, something went wrong! Please check the errors below."
+msgstr "Ops, qualcosa è andato storto! Controlla gli errori qui sotto."
+
+#: lib/ambiantcare_web/live/user_login_live.ex:29
+#: lib/ambiantcare_web/live/user_registration_live.ex:39
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr "Password"
+
+#: lib/ambiantcare_web/components/layouts/root.html.heex:43
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:25
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:22
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:24
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:37
+#, elixir-autogen, elixir-format
+msgid "Register"
+msgstr "Registrati"
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:12
+#, elixir-autogen, elixir-format
+msgid "Register for an account"
+msgstr "Registrati per un account"
+
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:10
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:31
+#, elixir-autogen, elixir-format
+msgid "Reset Password"
+msgstr "Reimposta password"
+
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:88
+#, elixir-autogen, elixir-format
+msgid "Reset password link is invalid or it has expired."
+msgstr "Il link per la reimpostazione della password non è valido o è scaduto."
+
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:30
+#, elixir-autogen, elixir-format
+msgid "Resetting..."
+msgstr "Reimpostazione in corso..."
+
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:19
+#, elixir-autogen, elixir-format
+msgid "Send password reset instructions"
+msgstr "Invia istruzioni per reimpostare la password"
+
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:18
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:18
+#, elixir-autogen, elixir-format
+msgid "Sending..."
+msgstr "Invio in corso..."
+
+#: lib/ambiantcare_web/live/user_login_live.ex:16
+#, elixir-autogen, elixir-format
+msgid "Sign up"
+msgstr "Iscriviti"
+
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:58
+#, elixir-autogen, elixir-format
+msgid "User confirmation link is invalid or it has expired."
+msgstr "Il link di conferma dell'utente non è valido o è scaduto."
+
+#: lib/ambiantcare_web/live/user_confirmation_live.ex:43
+#, elixir-autogen, elixir-format
+msgid "User confirmed successfully."
+msgstr "Utente confermato con successo."
+
+#: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:12
+#, elixir-autogen, elixir-format
+msgid "We'll send a new confirmation link to your inbox"
+msgstr "Ti invieremo un nuovo link di conferma nella tua casella di posta"
+
+#: lib/ambiantcare_web/live/user_forgot_password_live.ex:12
+#, elixir-autogen, elixir-format
+msgid "We'll send a password reset link to your inbox"
+msgstr "Ti invieremo un link per reimpostare la password nella tua casella di posta"
+
+#: lib/ambiantcare_web/live/user_login_live.ex:18
+#, elixir-autogen, elixir-format
+msgid "for an account now."
+msgstr "per un account ora."
+
+#: lib/ambiantcare_web/live/user_registration_live.ex:21
+#, elixir-autogen, elixir-format
+msgid "to your account now."
+msgstr "al tuo account ora."
+
+#: lib/ambiantcare_web/components/layouts/root.html.heex:34
+#, elixir-autogen, elixir-format
+msgid "Log out"
+msgstr "Disconnetti"
+
+#: lib/ambiantcare_web/components/layouts/root.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: lib/ambiantcare_web/user_auth.ex:164
+#: lib/ambiantcare_web/user_auth.ex:215
+#, elixir-autogen, elixir-format
+msgid "You must log in to access this page."
+msgstr "Devi effettuare l'accesso per accedere a questa pagina."
+
+#: lib/ambiantcare_web/live/user_login_live.ex:32
+#, elixir-autogen, elixir-format
+msgid "Keep me logged in"
+msgstr "Mantienimi connesso"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:26
+#, elixir-autogen, elixir-format
+msgid "Confirmation instructions"
+msgstr "Istruzioni di conferma"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:30
+#: lib/ambiantcare/accounts/user_notifier.ex:50
+#: lib/ambiantcare/accounts/user_notifier.ex:70
+#, elixir-autogen, elixir-format
+msgid "Hi"
+msgstr "Ciao"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:36
+#, elixir-autogen, elixir-format
+msgid "If you didn't create an account with us, please ignore this."
+msgstr "Se non hai creato un account con noi, ignora questo messaggio."
+
+#: lib/ambiantcare/accounts/user_notifier.ex:56
+#: lib/ambiantcare/accounts/user_notifier.ex:76
+#, elixir-autogen, elixir-format
+msgid "If you didn't request this change, please ignore this."
+msgstr "Se non hai richiesto questa modifica, ignora questo messaggio."
+
+#: lib/ambiantcare_web/live/user_reset_password_live.ex:68
+#, elixir-autogen, elixir-format
+msgid "Password reset successfully."
+msgstr "Password reimpostata con successo."
+
+#: lib/ambiantcare/accounts/user_notifier.ex:46
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Reset password instructions"
+msgstr "Istruzioni per reimpostare la password"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:66
+#, elixir-autogen, elixir-format
+msgid "Update email instructions"
+msgstr "Istruzioni per aggiornare l'email"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:72
+#, elixir-autogen, elixir-format
+msgid "You can change your email by visiting the URL below:"
+msgstr "Puoi cambiare la tua email visitando l'URL qui sotto:"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:32
+#, elixir-autogen, elixir-format
+msgid "You can confirm your account by visiting the URL below:"
+msgstr "Puoi confermare il tuo account visitando l'URL qui sotto:"
+
+#: lib/ambiantcare/accounts/user_notifier.ex:52
+#, elixir-autogen, elixir-format
+msgid "You can reset your password by visiting the URL below:"
+msgstr "Puoi reimpostare la tua password visitando l'URL qui sotto:"
