@@ -678,3 +678,28 @@ msgstr "Puoi reimpostare la tua password visitando l'URL qui sotto:"
 #, elixir-autogen, elixir-format
 msgid "Current password"
 msgstr "Password attuale"
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:9
+#, elixir-autogen, elixir-format
+msgid "Account created successfully!"
+msgstr "Account creato con successo!"
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:38
+#, elixir-autogen, elixir-format
+msgid "Invalid email or password"
+msgstr "Email o password non validi"
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:46
+#, elixir-autogen, elixir-format
+msgid "Logged out successfully."
+msgstr "Disconnessione avvenuta con successo"
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:17
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Password updated successfully!"
+msgstr "Password reimpostata con successo."
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:23
+#, elixir-autogen, elixir-format
+msgid "Welcome back!"
+msgstr "Bentornato!"

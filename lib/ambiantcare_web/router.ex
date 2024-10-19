@@ -2,6 +2,7 @@ defmodule AmbiantcareWeb.Router do
   use AmbiantcareWeb, :router
 
   import AmbiantcareWeb.UserAuth
+  import AmbiantcareWeb.UserLocale, only: [put_locale: 2]
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -11,6 +12,7 @@ defmodule AmbiantcareWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :put_locale
   end
 
   pipeline :api do

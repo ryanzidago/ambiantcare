@@ -1,6 +1,6 @@
 defmodule AmbiantcareWeb.Hooks.SetLocale do
   @moduledoc """
-  Module responsible for setting the locale.
+  Module responsible for setting the locale in LiveViews.
   """
   import Phoenix.Component, only: [assign: 2]
   import Phoenix.LiveView, only: [redirect: 2]

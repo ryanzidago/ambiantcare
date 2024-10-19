@@ -677,3 +677,28 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "Current password"
 msgstr ""
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:9
+#, elixir-autogen, elixir-format
+msgid "Account created successfully!"
+msgstr ""
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:38
+#, elixir-autogen, elixir-format
+msgid "Invalid email or password"
+msgstr ""
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:46
+#, elixir-autogen, elixir-format
+msgid "Logged out successfully."
+msgstr ""
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:17
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Password updated successfully!"
+msgstr ""
+
+#: lib/ambiantcare_web/controllers/user_session_controller.ex:23
+#, elixir-autogen, elixir-format
+msgid "Welcome back!"
+msgstr ""
