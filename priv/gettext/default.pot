@@ -703,3 +703,18 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "Welcome back!"
 msgstr ""
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:166
+#, elixir-autogen, elixir-format
+msgid "1. Record"
+msgstr ""
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:180
+#, elixir-autogen, elixir-format
+msgid "2. Consult"
+msgstr ""
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:189
+#, elixir-autogen, elixir-format
+msgid "3. Generate"
+msgstr ""
