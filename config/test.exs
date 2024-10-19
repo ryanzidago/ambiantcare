@@ -1,5 +1,8 @@
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :argon2_elixir, t_cost: 1, m_cost: 8
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -21,7 +24,7 @@ config :ambiantcare, AmbiantcareWeb.Endpoint,
   server: false
 
 # In test we don't send emails
-config :ambiantcare, Ambiantcare.Mailer, adapter: Swoosh.Adapters.Test
+config :ambiantcare, AmbiantcareWeb.TransactionalMailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false

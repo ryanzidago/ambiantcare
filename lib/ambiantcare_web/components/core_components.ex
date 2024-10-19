@@ -31,7 +31,7 @@ defmodule AmbiantcareWeb.CoreComponents do
   JS commands may be passed to the `:on_cancel` to configure
   the closing/cancel event, for example:
 
-      <.modal id="confirm" on_cancel={JS.navigate(~p"/posts")}>
+      <.modal id="confirm" on_cancel={JS.navigate(~p"/en/posts")}>
         This is another modal.
       </.modal>
 
@@ -564,7 +564,7 @@ defmodule AmbiantcareWeb.CoreComponents do
 
   ## Examples
 
-      <.back navigate={~p"/posts"}>Back to posts</.back>
+      <.back navigate={~p"/en/posts"}>Back to posts</.back>
   """
   attr :navigate, :any, required: true
   slot :inner_block, required: true

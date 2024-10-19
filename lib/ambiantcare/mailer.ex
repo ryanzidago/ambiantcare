@@ -1,3 +1,0 @@
-defmodule Ambiantcare.Mailer do
-  use Swoosh.Mailer, otp_app: :ambiantcare
-end

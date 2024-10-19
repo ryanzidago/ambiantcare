@@ -44,6 +44,7 @@ defmodule AmbiantcareWeb do
 
       import Plug.Conn
       import AmbiantcareWeb.Gettext
+      import AmbiantcareWeb.UserLocale, only: [get_locale: 1]
 
       unquote(verified_routes())
     end
