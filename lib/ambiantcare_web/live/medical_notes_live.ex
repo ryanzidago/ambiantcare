@@ -221,19 +221,21 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
         >
           <span :if={not @recording?}>
             <%= gettext("Start Visit") %>
-            <button
-              type="button"
-              class="transition-all transform duration-200 hover:scale-110"
-              phx-click={show_modal("audio-input-options-modal")}
-            >
-              <.icon name="flowbite-breadcrumbs" />
-            </button>
           </span>
 
           <span :if={@recording?}>
             <%= gettext("End Visit") %>
           </span>
         </.button>
+
+        <button
+          :if={not @recording?}
+          type="button"
+          class="transition-all transform duration-200 hover:scale-110"
+          phx-click={show_modal("audio-input-options-modal")}
+        >
+          <.icon name="flowbite-breadcrumbs" />
+        </button>
       </div>
 
       <.start_visit_alternatives_modal
@@ -297,7 +299,9 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           }
         >
           <div class="flex flex-col gap-2">
-            <.label><%= gettext("Upload an audio file from your device") %></.label>
+            <.label for={@uploads.audio_from_user_file_system.ref}>
+              <%= gettext("Upload an audio file from your device") %>
+            </.label>
             <.live_file_input
               upload={@uploads.audio_from_user_file_system}
               phx-click="change_upload_type"
@@ -428,7 +432,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
       assigns
       |> assign(input_type: Atom.to_string(template_field.input_type))
       |> assign(name: name)
-      |> assign(label: Gettext.gettext(AmbiantcareWeb.Gettext, template_field.label))
+      |> assign(label: template_field.label)
       |> assign(value: value)
 
     ~H"""
@@ -440,8 +444,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   attr :medical_note_loading, :boolean, required: true
 
   defp visit_transcription(assigns) do
-    dbg(assigns.visit_transcription)
-
     ~H"""
     <.form
       for={%{}}
@@ -901,11 +903,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   defp query_llm(%{} = params) do
-    prompt = Prompts.compose(params)
-    result = Ambiantcare.AI.Mistral.generate("", prompt, [])
+    user_prompt = Prompts.user(params)
+    result = Ambiantcare.AI.LLMs.generate("medical_notes/v1_0", user_prompt)
 
     Logger.debug("*** prompt ***")
-    Logger.debug(prompt)
+    Logger.debug(user_prompt)
     Logger.debug("*** result ***")
     Logger.debug(inspect(result))
 

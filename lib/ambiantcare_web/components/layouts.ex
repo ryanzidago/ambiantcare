@@ -9,6 +9,7 @@ defmodule AmbiantcareWeb.Layouts do
   `use AmbiantcareWeb, :live_view`.
   """
   use AmbiantcareWeb, :html
+  use Gettext, backend: AmbiantcareWeb.Gettext
 
   alias AmbiantcareWeb.Sidebar
 
