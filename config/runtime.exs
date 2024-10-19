@@ -141,7 +141,7 @@ if config_env() == :prod do
   # Also, you may need to configure the Swoosh API client of your choice if you
   # are not using SMTP. Here is an example of the configuration:
   #
-  #     config :ambiantcare, Ambiantcare.Mailer,
+  #     config :ambiantcare, AmbiantcareWeb.TransactionalMailer,
   #       adapter: Swoosh.Adapters.Mailgun,
   #       api_key: System.get_env("MAILGUN_API_KEY"),
   #       domain: System.get_env("MAILGUN_DOMAIN")
@@ -152,4 +152,10 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  config :ambiantcare, AmbiantcareWeb.TransactionalMailer,
+    adapter: Swoosh.Adapters.Scaleway,
+    api_client: Swoosh.ApiClient.Finch,
+    finch_name: Ambiantcare.Finch,
+    project_id: System.fetch_env!("SCW_PROJECT_ID"),
+    secret_key: System.fetch_env!("SCW_TRANSACTIONAL_MAILER_SECRET_KEY")
 end

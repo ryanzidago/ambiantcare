@@ -3,18 +3,18 @@ defmodule Ambiantcare.Accounts.UserNotifier do
 
   import Swoosh.Email
 
-  alias Ambiantcare.Mailer
+  alias AmbiantcareWeb.TransactionalMailer
 
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do
     email =
       new()
       |> to(recipient)
-      |> from({"Ambiantcare", "contact@example.com"})
+      |> from({"Ambiantcare", "no-reply@ambiant.care"})
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
+    with {:ok, _metadata} <- TransactionalMailer.deliver(email) do
       {:ok, email}
     end
   end
@@ -24,9 +24,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
   """
   def deliver_confirmation_instructions(user, url) do
     deliver(user.email, gettext("Confirmation instructions"), """
-
-    ==============================
-
     #{gettext("Hi")} #{user.email},
 
     #{gettext("You can confirm your account by visiting the URL below:")}
@@ -34,8 +31,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
     #{url}
 
     #{gettext("If you didn't create an account with us, please ignore this.")}
-
-    ==============================
     """)
   end
 
@@ -44,9 +39,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
   """
   def deliver_reset_password_instructions(user, url) do
     deliver(user.email, gettext("Reset password instructions"), """
-
-    ==============================
-
     #{gettext("Hi")} #{user.email},
 
     #{gettext("You can reset your password by visiting the URL below:")}
@@ -54,8 +46,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
     #{url}
 
     #{gettext("If you didn't request this change, please ignore this.")}
-
-    ==============================
     """)
   end
 
@@ -64,9 +54,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
   """
   def deliver_update_email_instructions(user, url) do
     deliver(user.email, gettext("Update email instructions"), """
-
-    ==============================
-
     #{gettext("Hi")} #{user.email},
 
     #{gettext("You can change your email by visiting the URL below:")}
@@ -74,8 +61,6 @@ defmodule Ambiantcare.Accounts.UserNotifier do
     #{url}
 
     #{gettext("If you didn't request this change, please ignore this.")}
-
-    ==============================
     """)
   end
 end
