@@ -687,7 +687,7 @@ msgstr "Account creato con successo!"
 #: lib/ambiantcare_web/controllers/user_session_controller.ex:36
 #, elixir-autogen, elixir-format
 msgid "Invalid email or password"
-msgstr "Email o password non validi!"
+msgstr "Email o password non validi"
 
 #: lib/ambiantcare_web/controllers/user_session_controller.ex:44
 #, elixir-autogen, elixir-format
