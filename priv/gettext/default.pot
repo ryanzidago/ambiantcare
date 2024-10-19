@@ -626,20 +626,20 @@ msgstr ""
 msgid "Confirmation instructions"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:30
-#: lib/ambiantcare/accounts/user_notifier.ex:50
-#: lib/ambiantcare/accounts/user_notifier.ex:70
+#: lib/ambiantcare/accounts/user_notifier.ex:27
+#: lib/ambiantcare/accounts/user_notifier.ex:42
+#: lib/ambiantcare/accounts/user_notifier.ex:57
 #, elixir-autogen, elixir-format
 msgid "Hi"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:36
+#: lib/ambiantcare/accounts/user_notifier.ex:33
 #, elixir-autogen, elixir-format
 msgid "If you didn't create an account with us, please ignore this."
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:56
-#: lib/ambiantcare/accounts/user_notifier.ex:76
+#: lib/ambiantcare/accounts/user_notifier.ex:48
+#: lib/ambiantcare/accounts/user_notifier.ex:63
 #, elixir-autogen, elixir-format
 msgid "If you didn't request this change, please ignore this."
 msgstr ""
@@ -649,27 +649,32 @@ msgstr ""
 msgid "Password reset successfully."
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:46
+#: lib/ambiantcare/accounts/user_notifier.ex:41
 #, elixir-autogen, elixir-format
 msgid "Reset password instructions"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:66
+#: lib/ambiantcare/accounts/user_notifier.ex:56
 #, elixir-autogen, elixir-format
 msgid "Update email instructions"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:72
+#: lib/ambiantcare/accounts/user_notifier.ex:59
 #, elixir-autogen, elixir-format
 msgid "You can change your email by visiting the URL below:"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:32
+#: lib/ambiantcare/accounts/user_notifier.ex:29
 #, elixir-autogen, elixir-format
 msgid "You can confirm your account by visiting the URL below:"
 msgstr ""
 
-#: lib/ambiantcare/accounts/user_notifier.ex:52
+#: lib/ambiantcare/accounts/user_notifier.ex:44
 #, elixir-autogen, elixir-format
 msgid "You can reset your password by visiting the URL below:"
+msgstr ""
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:28
+#, elixir-autogen, elixir-format
+msgid "Current password"
 msgstr ""
