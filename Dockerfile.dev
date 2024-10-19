@@ -1,0 +1,69 @@
+# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
+# instead of Alpine to avoid DNS resolution issues in production.
+#
+# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
+# https://hub.docker.com/_/ubuntu?tab=tags
+#
+# This file is based on these images:
+#
+#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
+#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20240701-slim - for the release image
+#   - https://pkgs.org/ - resource for finding needed packages
+#   - Ex: hexpm/elixir:1.17.2-erlang-27.0-debian-bullseye-20240701-slim
+#
+ARG ELIXIR_VERSION=1.17.2
+ARG OTP_VERSION=27.0
+ARG DEBIAN_VERSION=bullseye-20240701-slim
+ARG IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+
+FROM ${IMAGE}
+
+# install build dependencies
+RUN apt-get update -y && apt-get install -y build-essential git ffmpeg curl inotify-tools \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+# install Node.js and Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn
+
+RUN mkdir /app
+WORKDIR /app
+
+RUN addgroup \
+    --gid "1000" \
+    ambiantcare
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/home/ambiantcare/" \
+    --ingroup "ambiantcare" \
+    --uid "1000" \
+    ambiantcare
+
+RUN chown -R ambiantcare:ambiantcare /app
+
+# Create necessary directories and set permissions
+RUN mkdir -p /data/cache/xla /data/cache/bumblebee && \
+    chown -R ambiantcare:ambiantcare /data
+
+# Create a temporary directory for the application
+RUN mkdir -p /tmp/ambiantcare && chown -R ambiantcare:ambiantcare /tmp/ambiantcare
+ENV TMPDIR /tmp/ambiantcare
+
+# Set env vars
+# https://github.com/fly-apps/bumblebee-model-harness/blob/89e541cfff29617506bbd1c80ffa824a5bb20fc5/Dockerfile
+ENV BUMBLEBEE_CACHE_DIR "/data/cache/bumblebee"
+ENV XLA_CACHE_DIR "/data/cache/xla"
+# enable history in IEx shell
+ENV ERL_AFLAGS "-kernel shell_history enabled"
+
+# Set the HOME environment variable
+ENV HOME=/home/ambiantcare
+
+USER ambiantcare
+
+# install hex + rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force

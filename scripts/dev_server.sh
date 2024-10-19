@@ -3,4 +3,6 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-export $(cat .env) && mix format && iex -S mix phx.server
+export $(cat .env) \
+&& mix format \
+&& iex --erl "-kernel shell_history enabled" -S mix phx.server
