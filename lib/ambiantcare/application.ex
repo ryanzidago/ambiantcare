@@ -18,8 +18,7 @@ defmodule Ambiantcare.Application do
         {Phoenix.PubSub, name: Ambiantcare.PubSub},
         # Start the Finch HTTP client for sending emails
         {Finch, name: Ambiantcare.Finch},
-        # Start a worker by calling: Ambiantcare.Worker.start_link(arg)
-        # {Ambiantcare.Worker, arg},
+        {Oban, Application.fetch_env!(:ambiantcare, Oban)},
         # Start to serve requests, typically the last entry
         AmbiantcareWeb.Endpoint
       ] ++ maybe_nx_serving(use_local_stt?)

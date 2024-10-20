@@ -68,7 +68,9 @@ defmodule Ambiantcare.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:bumblebee, "~> 0.5.3", only: [:dev, :test]},
       {:exla, ">= 0.0.0", only: [:dev, :test]},
-      {:toml, "~> 0.7"}
+      {:toml, "~> 0.7"},
+      {:oban, "~> 2.18"},
+      {:tzdata, "~> 1.1"}
     ]
   end
 

@@ -67,6 +67,31 @@ config :mime, :types, %{
   "audio/flac" => ~w(flac)
 }
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
+hourly_jobs = [
+  # every day, at 00:00
+  {
+    "0 0 * * *",
+    Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker,
+    args: %{"action" => "scale_to_zero"}
+  },
+  # every day, at 06:00
+  {
+    "22 20 * * *",
+    Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker,
+    args: %{"action" => "resume"}
+  }
+]
+
+config :ambiantcare, Oban,
+  engine: Oban.Engines.Basic,
+  queues: [default: 10],
+  plugins: [
+    {Oban.Plugins.Cron, crontab: hourly_jobs, timezone: "Europe/Rome"}
+  ],
+  repo: Ambiantcare.Repo
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
