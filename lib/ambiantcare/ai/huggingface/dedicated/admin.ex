@@ -69,6 +69,36 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated.Admin do
     end)
   end
 
+  @spec scale_to_zero(String.t()) :: {:ok, map()} | {:error, Finch.Response.t()} | {:error, map()}
+  def scale_to_zero(endpoint) do
+    api_endpoint =
+      Path.join([
+        config!(:api_endpoint),
+        "endpoint",
+        config!(:namespace),
+        endpoint,
+        "scale-to-zero"
+      ])
+
+    response = request(:post, api_endpoint, "", [])
+
+    with {:ok, %Finch.Response{} = response} when response.status in 200..300 <- response,
+         {:ok, body} <- Jason.decode(response.body),
+         %{"status" => %{"state" => state}} = body when state in ~w(pending scaledToZero) <- body do
+      {:ok, body}
+    else
+      {:ok, %Finch.Response{} = response} ->
+        {:error, response}
+
+      {:error, error} ->
+        {:error, error}
+    end
+  end
+
+  defp config!(key) do
+    Keyword.fetch!(config(), key)
+  end
+
   defp config do
     :ambiantcare
     |> Application.fetch_env!(Ambiantcare.AI.HuggingFace)

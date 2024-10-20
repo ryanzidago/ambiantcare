@@ -163,7 +163,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
         <div class="mt-8 lg:mt-12 space-y-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 md:gap-12 md:space-y-0">
           <div>
             <.microphone_icon />
-            <h3 class="mb-2 text-xl font-bold dark:text-white "><%= gettext("1. Record")%></h3>
+            <h3 class="mb-2 text-xl font-bold dark:text-white "><%= gettext("1. Record") %></h3>
             <p class="mb-4 text-gray-500 dark:text-gray-400">
               <%= gettext("Get your patient's consent and record the consultation.") %>
             </p>
@@ -177,7 +177,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
           </div>
           <div>
             <.ambiantcare_icon />
-            <h3 class="mb-2 text-xl font-bold dark:text-white"><%= gettext("2. Consult")%></h3>
+            <h3 class="mb-2 text-xl font-bold dark:text-white"><%= gettext("2. Consult") %></h3>
             <p class="mb-4 text-gray-500 dark:text-gray-400">
               <%= gettext(
                 "While the recording is happeninig, proceed as usual and let us handle the rest."
@@ -186,7 +186,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
           </div>
           <div>
             <.approval_check_icon />
-            <h3 class="mb-2 text-xl font-bold dark:text-white"><%=gettext("3. Generate") %></h3>
+            <h3 class="mb-2 text-xl font-bold dark:text-white"><%= gettext("3. Generate") %></h3>
             <p class="mb-4 text-gray-500 dark:text-gray-400">
               <%= gettext(
                 "Our copilot will generate a medical notes in minutes. You can edit and download them."
