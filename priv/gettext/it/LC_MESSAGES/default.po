@@ -702,7 +702,7 @@ msgstr "Password reimpostata con successo."
 #: lib/ambiantcare_web/controllers/user_session_controller.ex:21
 #, elixir-autogen, elixir-format
 msgid "Welcome back!"
-msgstr "Bentornato!"
+msgstr "Bentornato"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:166
 #, elixir-autogen, elixir-format
