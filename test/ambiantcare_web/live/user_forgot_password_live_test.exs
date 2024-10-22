@@ -3,6 +3,7 @@ defmodule AmbiantcareWeb.UserForgotPasswordLiveTest do
 
   import Phoenix.LiveViewTest
   import Ambiantcare.AccountsFixtures
+  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 0]
 
   alias Ambiantcare.Accounts
   alias Ambiantcare.Repo
@@ -21,10 +22,7 @@ defmodule AmbiantcareWeb.UserForgotPasswordLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/en/users/reset_password")
-        |> follow_redirect(
-          conn,
-          ~p"/en/medical-notes?huggingface_deployment=dedicated&microphone_hook=Microphone&stt_backend=huggingface"
-        )
+        |> follow_redirect(conn, medical_notes_path())
 
       assert {:ok, _conn} = result
     end
