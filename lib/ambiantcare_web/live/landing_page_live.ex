@@ -4,6 +4,8 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   alias AmbiantcareWeb.Components.Branding
 
+  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 1]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket, layout: {AmbiantcareWeb.Layouts, :landing_page}}
@@ -387,22 +389,18 @@ defmodule AmbiantcareWeb.LandingPageLive do
   end
 
   defp self_served_demo_cta(assigns) do
-    locale = Gettext.get_locale(AmbiantcareWeb.Gettext)
-
-    query_params = [
-      huggingface_deployment: "dedicated",
-      microphone_hook: "Microphone",
-      stt_backend: "huggingface"
-    ]
+    medical_notes_path =
+      AmbiantcareWeb.Gettext
+      |> Gettext.get_locale()
+      |> medical_notes_path()
 
     assigns =
       assigns
-      |> assign(locale: locale)
-      |> assign(query_params: query_params)
+      |> assign(medical_notes_path: medical_notes_path)
 
     ~H"""
     <.link
-      href={~p"/#{@locale}/medical-notes?#{@query_params}"}
+      href={@medical_notes_path}
       target="_blank"
       class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mr-2 dark:bg-blue-600 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800"
     >

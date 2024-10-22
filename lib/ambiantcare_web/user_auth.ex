@@ -5,6 +5,7 @@ defmodule AmbiantcareWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
   import AmbiantcareWeb.UserLocale, only: [get_locale: 1]
+  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 1]
 
   alias Ambiantcare.Accounts
 
@@ -232,14 +233,8 @@ defmodule AmbiantcareWeb.UserAuth do
   defp maybe_store_return_to(conn), do: conn
 
   defp signed_in_path(conn) do
-    locale = get_locale(conn)
-
-    query_params = [
-      huggingface_deployment: "dedicated",
-      microphone_hook: "Microphone",
-      stt_backend: "huggingface"
-    ]
-
-    ~p"/#{locale}/medical-notes?#{query_params}"
+    conn
+    |> get_locale()
+    |> medical_notes_path()
   end
 end

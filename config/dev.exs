@@ -84,7 +84,9 @@ config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
 # Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
+config :swoosh, adapter: Swoosh.Adapters.Local, api_client: false
+
+config :ambiantcare, AmbiantcareWeb.TransactionalMailer, adapter: Swoosh.Adapters.Local
 
 config :ambiantcare, Ambiantcare.AI,
   use_local_stt: System.get_env("USE_LOCAL_STT", "true") == "true"
