@@ -8,9 +8,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   require Logger
 
-  import Ecto.Changeset
-  import AmbiantcareWeb.MedicalNotesLive.Helpers
-
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
   alias Phoenix.LiveView.UploadEntry
@@ -20,6 +17,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias Ambiantcare.MedicalNotes.MedicalNote
   alias Ambiantcare.MedicalNotes.Prompts
   alias Ambiantcare.Audio
+  alias Ambiantcare.Accounts
 
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
@@ -27,11 +25,17 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
+  alias AmbiantcareWeb.Components.Branding
+
+  import Ecto.Changeset
+  import AmbiantcareWeb.MedicalNotesLive.Helpers
 
   @impl LiveView
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket =
       socket
+      |> assign(session: session)
+      |> assign_current_user(session)
       |> assign_speech_to_text_backend(params)
       |> assign_huggingface_deployment(params)
       |> assign_templates_by_id()
@@ -70,8 +74,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="grid lg:grid-cols-2 align-center gap-40 lg:gap-10 lg:p-20 p-10">
-      <div class="lg:col-span-1">
+    <div class="grid md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 align-center min-h-full gap-10">
+      <div class="order-last md:order-first  md:col-span-2 lg:col-span-2 xl:col-span-2 bg-gray-100">
+        <.sidebar current_user={@current_user} locale={@locale} />
+      </div>
+      <div class="order-first md:order-last md:col-span-6 lg:col-span-6 xl:col-span-6 p-10">
         <.action_panel
           current_action={@current_action}
           visit_transcription={@visit_transcription}
@@ -83,10 +90,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           microphone_hook={@microphone_hook}
           recording?={@recording?}
           selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
-        />
-      </div>
-      <div class="lg:col-span-1 lg:overflow-y-auto lg:px-8">
-        <.medical_note
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
         />
@@ -95,43 +98,124 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     """
   end
 
-  defp action_panel(assigns) do
+  defp sidebar(assigns) do
+    ~H"""
+    <div class="flex flex-col justify-between h-full">
+      <Branding.logo class="py-14" />
+      <ul class="flex flex-col items-start gap-4 p-4 sm:px-6 lg:px-8 align-bottom justify-end border">
+        <%= if @current_user do %>
+          <li class="text-[0.8125rem] text-zinc-900">
+            <%= @current_user.email %>
+          </li>
+          <li>
+            <.link
+              phx-click="toggle_action_panel"
+              phx-value-action="settings"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Settings") %>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Log out") %>
+            </.link>
+          </li>
+        <% else %>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/register"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Register") %>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/log_in"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Log in") %>
+            </.link>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    """
+  end
+
+  defp action_panel(assigns)
+       when assigns.current_action in ~w(transcription visit_context medical_note) do
+    assigns =
+      assign(assigns,
+        action_panel_items: [
+          {"transcription", gettext("Transcription")},
+          {"visit_context", gettext("Context")},
+          {"medical_note", gettext("Medical Note")}
+        ]
+      )
+
     ~H"""
     <div class="flex flex-col gap-10">
-      <div class="inline-flex" role="group">
-        <.button
-          type="button"
-          phx-click="toggle_action_panel"
-          phx-value-action="transcription"
-          class="rounded-none rounded-l-lg"
+      <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+        <li
+          :for={{action, label} <- @action_panel_items}
+          class={[
+            "rounded-none",
+            "first:rounded-l-lg",
+            "last:rounded-r-lg"
+          ]}
         >
-          <%= gettext("Transcription") %>
-        </.button>
-        <.button
-          type="button"
-          phx-click="toggle_action_panel"
-          phx-value-action="visit_context"
-          class="rounded-none rounded-r-lg"
-        >
-          <%= gettext("Context") %>
-        </.button>
-      </div>
-      <%= case @current_action do %>
-        <% "transcription" -> %>
-          <.transcription_panel
-            visit_transcription={@visit_transcription}
-            visit_transcription_loading={@visit_transcription_loading}
-            medical_note_loading={@medical_note_loading}
-            uploads={@uploads}
-            upload_type={@upload_type}
-            microphone_hook={@microphone_hook}
-            recording?={@recording?}
-            selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
-          />
-        <% "visit_context" -> %>
-          <.consultation_panel visit_context={@visit_context} />
-      <% end %>
+          <.link
+            class={[
+              "inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300 focus:text-blue-600",
+              if(action == @current_action,
+                do: "text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500 shadow-sm"
+              )
+            ]}
+            phx-click="toggle_action_panel"
+            phx-value-action={action}
+          >
+            <%= label %>
+          </.link>
+        </li>
+      </ul>
+      <.action_panel_item {assigns} />
     </div>
+    """
+  end
+
+  defp action_panel_item(assigns) when assigns.current_action == "transcription" do
+    ~H"""
+    <.transcription_panel
+      visit_transcription={@visit_transcription}
+      visit_transcription_loading={@visit_transcription_loading}
+      medical_note_loading={@medical_note_loading}
+      uploads={@uploads}
+      upload_type={@upload_type}
+      microphone_hook={@microphone_hook}
+      recording?={@recording?}
+      selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+    />
+    """
+  end
+
+  defp action_panel_item(assigns) when assigns.current_action == "visit_context" do
+    ~H"""
+    <.consultation_panel visit_context={@visit_context} />
+    """
+  end
+
+  defp action_panel_item(assigns) when assigns.current_action == "medical_note" do
+    ~H"""
+    <.medical_note
+      medical_note_changeset={@medical_note_changeset}
+      selected_template={@selected_template}
+    />
     """
   end
 
@@ -547,6 +631,10 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_action_panel", %{"action" => "settings"}, socket) do
+    {:noreply, push_navigate(socket, to: "/#{socket.assigns.locale}/users/settings")}
+  end
+
   def handle_event("toggle_action_panel", %{"action" => action}, socket) do
     {:noreply, assign(socket, current_action: action)}
   end
@@ -739,6 +827,15 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   defp process_audio(_key, _entry, socket) do
     {:noreply, socket}
+  end
+
+  defp assign_current_user(socket, %{"user_token" => user_token} = _session) do
+    current_user = Accounts.get_user_by_session_token(user_token)
+    assign(socket, current_user: current_user)
+  end
+
+  defp assign_current_user(socket, _session) do
+    assign(socket, current_user: nil)
   end
 
   defp assign_huggingface_deployment(socket, params) do

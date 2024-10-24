@@ -11,7 +11,5 @@ defmodule AmbiantcareWeb.Layouts do
   use AmbiantcareWeb, :html
   use Gettext, backend: AmbiantcareWeb.Gettext
 
-  alias AmbiantcareWeb.Sidebar
-
   embed_templates "layouts/*"
 end
