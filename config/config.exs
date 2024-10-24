@@ -78,7 +78,7 @@ hourly_jobs = [
   },
   # every day, at 06:00
   {
-    "22 20 * * *",
+    "0 6 * * *",
     Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker,
     args: %{"action" => "resume"}
   }
