@@ -675,6 +675,12 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
     {:noreply, socket}
   end
 
+  def handle_async(task, {:ok, {:error, error}}, socket) do
+    error = gettext("Task %{task} failed with error: %{error}", task: task, error: error)
+    socket = put_flash(socket, :error)
+    {:noreply, socket}
+  end
+
   defp process_audio(:audio_from_user_file_system, filename, socket) when is_binary(filename) do
     filename = Path.join(static_dir(), filename)
     binary = File.read!(filename)
