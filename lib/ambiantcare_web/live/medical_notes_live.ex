@@ -26,6 +26,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias AmbiantcareWeb.Microphone
   alias AmbiantcareWeb.Hooks.SetLocale
   alias AmbiantcareWeb.Components.Branding
+  alias AmbiantcareWeb.Components.Shell
 
   import Ecto.Changeset
   import AmbiantcareWeb.MedicalNotesLive.Helpers
@@ -74,11 +75,11 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div class="grid md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 align-center min-h-full gap-10">
-      <div class="order-last md:order-first  md:col-span-2 lg:col-span-2 xl:col-span-2 bg-gray-100">
+    <Shell.with_sidebar {assigns}>
+      <:sidebar>
         <.sidebar current_user={@current_user} locale={@locale} />
-      </div>
-      <div class="order-first md:order-last md:col-span-6 lg:col-span-6 xl:col-span-6 p-10">
+      </:sidebar>
+      <:main>
         <.action_panel
           current_action={@current_action}
           visit_transcription={@visit_transcription}
@@ -93,8 +94,8 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
         />
-      </div>
-    </div>
+      </:main>
+    </Shell.with_sidebar>
     """
   end
 
