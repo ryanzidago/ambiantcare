@@ -1,5 +1,6 @@
 defmodule Ambiantcare.AI.LLMs do
-  @base_path Path.join(~w(lib ambiantcare ai prompts))
+  @priv_dir :code.priv_dir(:ambiantcare)
+  @base_path Path.join([@priv_dir, "prompts"])
   @extension ".toml"
   @temperature 0.0
 
