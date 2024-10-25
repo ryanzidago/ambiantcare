@@ -4,10 +4,16 @@ defmodule AmbiantcareWeb.UserLocale do
   @doc """
   Gets the locale from the conn's parameter, if not from the conn's sesssion, if not, from Gettext.
   """
-  @spec get_locale(Plug.Conn.t()) :: String.t()
+  @spec get_locale(Plug.Conn.t() | map() | any()) :: String.t()
   def get_locale(%Plug.Conn{} = conn) do
     Map.get(conn.params, "locale") ||
       get_session(conn, :locale) ||
+      Gettext.get_locale(AmbiantcareWeb.Gettext)
+  end
+
+  def get_locale(%{} = params) when is_map(params) do
+    Map.get(params, "locale") ||
+      Map.get(params, :locale) ||
       Gettext.get_locale(AmbiantcareWeb.Gettext)
   end
 
