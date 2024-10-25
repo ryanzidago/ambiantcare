@@ -827,14 +827,6 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
     with :ok <- File.write(filename, binary),
          {:ok, filename} <- maybe_convert_audio(filename, audio_format) do
-      id =
-        DateTime.utc_now()
-        |> DateTime.truncate(:second)
-        |> DateTime.to_iso8601()
-        |> String.replace(":", "-")
-        |> String.replace("Z", "")
-
-      File.write!("dump/#{id}.pcm", binary)
       {:ok, filename}
     else
       {:error, _} = error -> error
