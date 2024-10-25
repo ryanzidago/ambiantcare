@@ -4,81 +4,160 @@ defmodule AmbiantcareWeb.UserSettingsLive do
 
   alias Ambiantcare.Accounts
 
+  alias AmbiantcareWeb.Components.Branding
+  alias AmbiantcareWeb.Components.Shell
+
   def render(assigns) do
     ~H"""
-    <.header class="text-center">
-      <%= gettext("Account Settings") %>
-      <:subtitle><%= gettext("Manage your account email address and password settings") %></:subtitle>
-    </.header>
+    <Shell.with_sidebar>
+      <:sidebar>
+        <.sidebar current_user={@current_user} locale={@locale} />
+      </:sidebar>
+      <:main>
+        <.settings
+          current_user={@current_user}
+          current_email={@current_email}
+          current_password={@current_password}
+          email_form={@email_form}
+          email_form_current_password={@email_form_current_password}
+          password_form={@password_form}
+          locale={@locale}
+          trigger_submit={@trigger_submit}
+        />
+      </:main>
+    </Shell.with_sidebar>
+    """
+  end
 
-    <div class="space-y-12 divide-y">
-      <div>
-        <.simple_form
-          for={@email_form}
-          id="email_form"
-          phx-submit="update_email"
-          phx-change="validate_email"
-        >
-          <.input field={@email_form[:email]} type="email" label="Email" required />
-          <.input
-            field={@email_form[:current_password]}
-            name="current_password"
-            id="current_password_for_email"
-            type="password"
-            label={gettext("Current password")}
-            value={@email_form_current_password}
-            required
-          />
-          <:actions>
-            <.button phx-disable-with={gettext("Changing...")}>
-              <%= gettext("Change Email") %>
-            </.button>
-          </:actions>
-        </.simple_form>
+  defp settings(assigns) do
+    ~H"""
+    <div>
+      <.header class="text-center">
+        <%= gettext("Account Settings") %>
+        <:subtitle>
+          <%= gettext("Manage your account email address and password settings") %>
+        </:subtitle>
+      </.header>
+
+      <div class="space-y-12 divide-y">
+        <div>
+          <.simple_form
+            for={@email_form}
+            id="email_form"
+            phx-submit="update_email"
+            phx-change="validate_email"
+          >
+            <.input field={@email_form[:email]} type="email" label="Email" required />
+            <.input
+              field={@email_form[:current_password]}
+              name="current_password"
+              id="current_password_for_email"
+              type="password"
+              label={gettext("Current password")}
+              value={@email_form_current_password}
+              required
+            />
+            <:actions>
+              <.button phx-disable-with={gettext("Changing...")}>
+                <%= gettext("Change Email") %>
+              </.button>
+            </:actions>
+          </.simple_form>
+        </div>
+        <div>
+          <.simple_form
+            for={@password_form}
+            id="password_form"
+            action={~p"/#{@locale}/users/log_in?_action=password_updated"}
+            method="post"
+            phx-change="validate_password"
+            phx-submit="update_password"
+            phx-trigger-action={@trigger_submit}
+          >
+            <input
+              name={@password_form[:email].name}
+              type="hidden"
+              id="hidden_user_email"
+              value={@current_email}
+            />
+            <.input
+              field={@password_form[:password]}
+              type="password"
+              label={gettext("New password")}
+              required
+            />
+            <.input
+              field={@password_form[:password_confirmation]}
+              type="password"
+              label={gettext("Confirm new password")}
+            />
+            <.input
+              field={@password_form[:current_password]}
+              name="current_password"
+              type="password"
+              label="Current password"
+              id="current_password_for_password"
+              value={@current_password}
+              required
+            />
+            <:actions>
+              <.button phx-disable-with={gettext("Changing...")}>
+                <%= gettext("Change Password") %>
+              </.button>
+            </:actions>
+          </.simple_form>
+        </div>
       </div>
-      <div>
-        <.simple_form
-          for={@password_form}
-          id="password_form"
-          action={~p"/#{@locale}/users/log_in?_action=password_updated"}
-          method="post"
-          phx-change="validate_password"
-          phx-submit="update_password"
-          phx-trigger-action={@trigger_submit}
-        >
-          <input
-            name={@password_form[:email].name}
-            type="hidden"
-            id="hidden_user_email"
-            value={@current_email}
-          />
-          <.input
-            field={@password_form[:password]}
-            type="password"
-            label={gettext("New password")}
-            required
-          />
-          <.input
-            field={@password_form[:password_confirmation]}
-            type="password"
-            label={gettext("Confirm new password")}
-          />
-          <.input
-            field={@password_form[:current_password]}
-            name="current_password"
-            type="password"
-            label="Current password"
-            id="current_password_for_password"
-            value={@current_password}
-            required
-          />
-          <:actions>
-            <.button phx-disable-with={gettext("Changing...")}>
-              <%= gettext("Change Password") %>
-            </.button>
-          </:actions>
-        </.simple_form>
-      </div>
+    </div>
+    """
+  end
+
+  defp sidebar(assigns) do
+    ~H"""
+    <div class="flex flex-col justify-between h-full">
+      <Branding.logo class="py-14" />
+      <ul class="flex flex-col items-start gap-4 p-4 sm:px-6 lg:px-8 align-bottom justify-end border">
+        <%= if @current_user do %>
+          <li class="text-[0.8125rem] text-zinc-900">
+            <%= @current_user.email %>
+          </li>
+          <li>
+            <.link
+              phx-click="toggle_action_panel"
+              phx-value-action="medical_notes"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Medical Notes") %>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Log out") %>
+            </.link>
+          </li>
+        <% else %>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/register"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Register") %>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/#{@locale}/users/log_in"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              <%= gettext("Log in") %>
+            </.link>
+          </li>
+        <% end %>
+      </ul>
     </div>
     """
   end
@@ -176,5 +255,10 @@ defmodule AmbiantcareWeb.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  def handle_event("toggle_action_panel", %{"action" => "medical_notes"}, socket) do
+    path = AmbiantcareWeb.Utils.Path.medical_notes_path(socket.assigns.locale)
+    {:noreply, push_navigate(socket, to: path)}
   end
 end

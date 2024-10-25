@@ -60,6 +60,7 @@ defmodule AmbiantcareWeb.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
+      layout: {AmbiantcareWeb.Layouts, :authentication},
       on_mount: [{AmbiantcareWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
@@ -89,6 +90,7 @@ defmodule AmbiantcareWeb.Router do
     delete "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,
+      layout: {AmbiantcareWeb.Layouts, :authentication},
       on_mount: [{AmbiantcareWeb.UserAuth, :mount_current_user}] do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
