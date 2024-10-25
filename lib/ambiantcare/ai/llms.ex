@@ -1,11 +1,9 @@
 defmodule Ambiantcare.AI.LLMs do
-  @priv_dir :code.priv_dir(:ambiantcare)
-  @base_path Path.join([@priv_dir, "prompts"])
   @extension ".toml"
   @temperature 0.0
 
   def generate(filepath, user_prompt) when is_binary(filepath) and is_binary(user_prompt) do
-    filepath = Path.join(@base_path, filepath) <> @extension
+    filepath = Path.join(base_path(), filepath) <> @extension
 
     case Toml.decode_file(filepath) do
       {:ok, config} ->
@@ -46,4 +44,7 @@ defmodule Ambiantcare.AI.LLMs do
   defp build_example(%{"input" => input, "output" => output}) do
     input <> "\n" <> output
   end
+
+  defp priv_dir, do: :code.priv_dir(:ambiantcare)
+  defp base_path, do: Path.join([priv_dir(), "prompts"])
 end
