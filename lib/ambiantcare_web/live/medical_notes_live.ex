@@ -677,7 +677,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   def handle_async(task, {:ok, {:error, error}}, socket) do
     error = gettext("Task %{task} failed with error: %{error}", task: task, error: error)
-    socket = put_flash(socket, :error)
+    socket = put_flash(socket, :error, error)
     {:noreply, socket}
   end
 
