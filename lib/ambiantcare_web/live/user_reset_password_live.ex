@@ -23,7 +23,7 @@ defmodule AmbiantcareWeb.UserResetPasswordLive do
         <.input
           field={@form[:password_confirmation]}
           type="password"
-          label="Confirm new password"
+          label={gettext("Confirm new password")}
           required
         />
         <:actions>
