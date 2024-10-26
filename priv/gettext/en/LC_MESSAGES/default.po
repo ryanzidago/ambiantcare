@@ -21,7 +21,7 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:312
+#: lib/ambiantcare_web/live/consultations_live.ex:317
 #, elixir-autogen, elixir-format
 msgid "End Consultation"
 msgstr ""
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:308
+#: lib/ambiantcare_web/live/consultations_live.ex:313
 #, elixir-autogen, elixir-format
 msgid "Start Consultation"
 msgstr ""
@@ -62,7 +62,7 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:544
+#: lib/ambiantcare_web/live/consultations_live.ex:549
 #, elixir-autogen, elixir-format
 msgid "Consultation Transcription"
 msgstr ""
@@ -72,14 +72,14 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:487
-#: lib/ambiantcare_web/live/consultations_live.ex:573
+#: lib/ambiantcare_web/live/consultations_live.ex:492
+#: lib/ambiantcare_web/live/consultations_live.ex:578
 #, elixir-autogen, elixir-format
 msgid "Download"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:500
-#: lib/ambiantcare_web/live/consultations_live.ex:586
+#: lib/ambiantcare_web/live/consultations_live.ex:505
+#: lib/ambiantcare_web/live/consultations_live.ex:591
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr ""
@@ -150,17 +150,17 @@ msgid "Therapeutic Advices"
 msgstr ""
 
 #: lib/ambiantcare_web/live/consultations/helpers.ex:11
-#: lib/ambiantcare_web/live/consultations_live.ex:159
+#: lib/ambiantcare_web/live/consultations_live.ex:164
 #, elixir-autogen, elixir-format
 msgid "Medical Note"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:549
+#: lib/ambiantcare_web/live/consultations_live.ex:554
 #, elixir-autogen, elixir-format
 msgid "Create note"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:466
+#: lib/ambiantcare_web/live/consultations_live.ex:471
 #, elixir-autogen, elixir-format
 msgid "Oops, something went wrong!"
 msgstr ""
@@ -257,42 +257,42 @@ msgstr ""
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:272
+#: lib/ambiantcare_web/live/consultations_live.ex:277
 #, elixir-autogen, elixir-format
 msgid "Consultation Context"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:158
+#: lib/ambiantcare_web/live/consultations_live.ex:163
 #, elixir-autogen, elixir-format
 msgid "Context"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:273
+#: lib/ambiantcare_web/live/consultations_live.ex:278
 #, elixir-autogen, elixir-format
 msgid "Provide additional context about the patient."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:157
+#: lib/ambiantcare_web/live/consultations_live.ex:162
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Transcription"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:558
+#: lib/ambiantcare_web/live/consultations_live.ex:563
 #, elixir-autogen, elixir-format
 msgid "Generating note ..."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:344
+#: lib/ambiantcare_web/live/consultations_live.ex:349
 #, elixir-autogen, elixir-format
 msgid "Generating the transcription ..."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:334
+#: lib/ambiantcare_web/live/consultations_live.ex:339
 #, elixir-autogen, elixir-format
 msgid "Recording"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:1044
+#: lib/ambiantcare_web/live/consultations_live.ex:1087
 #, elixir-autogen, elixir-format
 msgid "Starting the AI server. Please retry in 5 minutes ..."
 msgstr ""
@@ -302,32 +302,32 @@ msgstr ""
 msgid "Warning!"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:356
+#: lib/ambiantcare_web/live/consultations_live.ex:361
 #, elixir-autogen, elixir-format
 msgid "Uploading file ..."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:440
+#: lib/ambiantcare_web/live/consultations_live.ex:445
 #, elixir-autogen, elixir-format
 msgid "Cancel"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:408
+#: lib/ambiantcare_web/live/consultations_live.ex:413
 #, elixir-autogen, elixir-format
 msgid "Or select one of the examples"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:427
+#: lib/ambiantcare_web/live/consultations_live.ex:432
 #, elixir-autogen, elixir-format
 msgid "Save"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:388
+#: lib/ambiantcare_web/live/consultations_live.ex:393
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Upload an audio file from your device"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:423
+#: lib/ambiantcare_web/live/consultations_live.ex:428
 #, elixir-autogen, elixir-format
 msgid "Your browser does not support the audio element."
 msgstr ""
@@ -342,12 +342,12 @@ msgstr ""
 msgid "General Medicine"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:366
+#: lib/ambiantcare_web/live/consultations_live.ex:371
 #, elixir-autogen, elixir-format
 msgid "Generalist 1 visit"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:367
+#: lib/ambiantcare_web/live/consultations_live.ex:372
 #, elixir-autogen, elixir-format
 msgid "Generalist 2 visit"
 msgstr ""
@@ -476,7 +476,7 @@ msgstr ""
 msgid "If your email is in our system, you will receive instructions to reset your password shortly."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:143
+#: lib/ambiantcare_web/live/consultations_live.ex:148
 #: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:26
 #: lib/ambiantcare_web/live/user_confirmation_live.ex:25
 #: lib/ambiantcare_web/live/user_forgot_password_live.ex:25
@@ -526,7 +526,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:135
+#: lib/ambiantcare_web/live/consultations_live.ex:140
 #: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:25
 #: lib/ambiantcare_web/live/user_confirmation_live.ex:24
 #: lib/ambiantcare_web/live/user_forgot_password_live.ex:24
@@ -603,13 +603,13 @@ msgstr ""
 msgid "to your account now."
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:126
+#: lib/ambiantcare_web/live/consultations_live.ex:131
 #: lib/ambiantcare_web/live/user_settings_live.ex:139
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:117
+#: lib/ambiantcare_web/live/consultations_live.ex:122
 #, elixir-autogen, elixir-format
 msgid "Settings"
 msgstr ""
@@ -728,12 +728,13 @@ msgstr ""
 msgid "Medical Notes"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:778
+#: lib/ambiantcare_web/live/consultations_live.ex:808
 #, elixir-autogen, elixir-format
 msgid "Task %{task} failed with error: %{error}"
 msgstr ""
 
-#: lib/ambiantcare/consultations/consultation.ex:45
+#: lib/ambiantcare/consultations/consultation.ex:47
+#: lib/ambiantcare/consultations/consultation.ex:53
 #, elixir-autogen, elixir-format
 msgid "My consultation"
 msgstr ""
