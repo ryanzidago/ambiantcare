@@ -42,8 +42,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       |> assign_templates_by_id()
       |> assign_selected_template()
       |> assign(recording?: false)
-      |> assign(visit_transcription: %AsyncResult{ok?: true, loading: false, result: nil})
-      |> assign(visit_transcription_loading: false)
+      |> assign(consultation_transcription: %AsyncResult{ok?: true, loading: false, result: nil})
+      |> assign(consultation_transcription_loading: false)
       |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign_medical_note_changeset(params)
       |> assign(medical_note_loading: false)
@@ -82,8 +82,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <:main>
         <.action_panel
           current_action={@current_action}
-          visit_transcription={@visit_transcription}
-          visit_transcription_loading={@visit_transcription_loading}
+          consultation_transcription={@consultation_transcription}
+          consultation_transcription_loading={@consultation_transcription_loading}
           visit_context={@visit_context}
           medical_note_loading={@medical_note_loading}
           uploads={@uploads}
@@ -193,8 +193,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp action_panel_item(assigns) when assigns.current_action == "transcription" do
     ~H"""
     <.transcription_panel
-      visit_transcription={@visit_transcription}
-      visit_transcription_loading={@visit_transcription_loading}
+      consultation_transcription={@consultation_transcription}
+      consultation_transcription_loading={@consultation_transcription_loading}
       medical_note_loading={@medical_note_loading}
       uploads={@uploads}
       upload_type={@upload_type}
@@ -226,19 +226,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <.recording_button
         recording?={@recording?}
         microphone_hook={@microphone_hook}
-        visit_transcription_loading={@visit_transcription_loading}
+        consultation_transcription_loading={@consultation_transcription_loading}
         uploads={@uploads}
         upload_type={@upload_type}
         selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
       />
 
       <div class="flex flex-col">
-        <.async_result :let={visit_transcription} assign={@visit_transcription}>
+        <.async_result :let={consultation_transcription} assign={@consultation_transcription}>
           <:failed :let={_reason}>
             <span class="flex flex-col items-center">Oops, something went wrong!</span>
           </:failed>
-          <.visit_transcription
-            visit_transcription={visit_transcription}
+          <.consultation_transcription
+            consultation_transcription={consultation_transcription}
             medical_note_loading={@medical_note_loading}
           />
         </.async_result>
@@ -284,7 +284,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   attr :recording?, :boolean, required: true
   attr :microphone_hook, :string, required: true
-  attr :visit_transcription_loading, :boolean, required: true
+  attr :consultation_transcription_loading, :boolean, required: true
   attr :uploads, :any, required: true
   attr :upload_type, :atom, default: nil
   attr :selected_pre_recorded_audio_file, :string, default: nil
@@ -305,11 +305,11 @@ defmodule AmbiantcareWeb.ConsultationsLive do
           class="md:min-w-32"
         >
           <span :if={not @recording?}>
-            <%= gettext("Start Visit") %>
+            <%= gettext("Start Consultation") %>
           </span>
 
           <span :if={@recording?}>
-            <%= gettext("End Visit") %>
+            <%= gettext("End Consultation") %>
           </span>
         </.button>
 
@@ -337,7 +337,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <.upload_progress_bar entries={@uploads.audio_from_user_file_system.entries} />
 
       <div
-        :if={@visit_transcription_loading}
+        :if={@consultation_transcription_loading}
         class="flex flex-row items-center justify-center gap-4 animate-pulse"
       >
         <.spinner />
@@ -525,23 +525,23 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
-  attr :visit_transcription, :string, required: true
+  attr :consultation_transcription, :string, required: true
   attr :medical_note_loading, :boolean, required: true
 
-  defp visit_transcription(assigns) do
+  defp consultation_transcription(assigns) do
     ~H"""
     <.form
       for={%{}}
       class="drop-shadow-sm text-sm"
-      phx-change="change_visit_transcription"
+      phx-change="change_consultation_transcription"
       phx-submit="generate_medical_note"
     >
       <div class="w-full flex flex-col gap-10">
         <.input
           type="textarea"
-          value={@visit_transcription}
-          name="visit_transcription"
-          label={gettext("Visit Transcription")}
+          value={@consultation_transcription}
+          name="consultation_transcription"
+          label={gettext("Consultation Transcription")}
           input_class="h-[50vh]"
         />
         <div class="flex flex-row gap-10">
@@ -563,7 +563,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             phx-click={
               JS.dispatch("phx:download",
                 detail: %{
-                  data: @visit_transcription,
+                  data: @consultation_transcription,
                   filename: "transcription.txt",
                   type: "text/plain"
                 }
@@ -578,7 +578,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             phx-click={
               JS.dispatch("phx:copy",
                 detail: %{
-                  text: @visit_transcription
+                  text: @consultation_transcription
                 }
               )
             }
@@ -705,23 +705,33 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   def handle_event(
-        "change_visit_transcription",
-        %{"visit_transcription" => visit_transcription},
+        "change_consultation_transcription",
+        %{"consultation_transcription" => consultation_transcription},
         socket
       ) do
-    visit_transcription = %AsyncResult{ok?: true, loading: false, result: visit_transcription}
-    socket = assign(socket, visit_transcription: visit_transcription)
+    consultation_transcription = %AsyncResult{
+      ok?: true,
+      loading: false,
+      result: consultation_transcription
+    }
+
+    socket = assign(socket, consultation_transcription: consultation_transcription)
     {:noreply, socket}
   end
 
   def handle_event(
         "generate_medical_note",
-        %{"visit_transcription" => visit_transcription},
+        %{"consultation_transcription" => consultation_transcription},
         socket
       ) do
     selected_template = socket.assigns.selected_template
     context = socket.assigns.visit_context.result
-    params = %{context: context, transcription: visit_transcription, template: selected_template}
+
+    params = %{
+      context: context,
+      transcription: consultation_transcription,
+      template: selected_template
+    }
 
     socket =
       socket
@@ -739,13 +749,13 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   @impl true
   def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
-    visit_transcription = AsyncResult.ok(result.visit_transcription)
+    consultation_transcription = AsyncResult.ok(result.consultation_transcription)
     medical_note_changeset = AsyncResult.ok(result.medical_note_changeset)
 
     socket =
       socket
-      |> assign(visit_transcription_loading: false)
-      |> assign(visit_transcription: visit_transcription)
+      |> assign(consultation_transcription_loading: false)
+      |> assign(consultation_transcription: consultation_transcription)
       |> assign(medical_note_changeset: medical_note_changeset)
 
     {:noreply, socket}
@@ -794,7 +804,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp process_audio(filename, binary, %{} = socket)
        when is_binary(filename) and is_binary(binary) do
     microphone_hook = Map.fetch!(socket.assigns, :microphone_hook)
-    current_visit_transcription = get_current_transcription(socket)
+    current_consultation_transcription = get_current_transcription(socket)
     stt_backend = socket.assigns.stt_backend
     selected_template = socket.assigns.selected_template
     context = socket.assigns.visit_context.result
@@ -815,7 +825,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
     context_params =
       %{}
-      |> Map.put(:transcription, current_visit_transcription)
+      |> Map.put(:transcription, current_consultation_transcription)
       |> Map.put(:template, selected_template)
       |> Map.put(:visit_context, context)
       |> Map.put(:locale, Gettext.get_locale(AmbiantcareWeb.Gettext))
@@ -824,7 +834,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
     socket =
       socket
-      |> assign(visit_transcription_loading: true)
+      |> assign(consultation_transcription_loading: true)
       |> start_async(:audio_to_structured_text, fn ->
         audio_to_structured_text(stt_params, upload_metadata, context_params, opts)
       end)
@@ -854,7 +864,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp audio_to_structured_text(stt_params, upload_metadata, context_params, opts) do
-    current_visit_transcription = context_params.transcription
+    current_consultation_transcription = context_params.transcription
 
     with {:ok, transcription} <- transcribe_audio(stt_params, upload_metadata),
          {:ok, medical_note_changeset} <- query_llm(context_params) do
@@ -862,9 +872,13 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       Logger.debug(transcription)
       Logger.debug("*** end transcription ***")
 
-      transcription = current_visit_transcription <> " " <> transcription
+      transcription = current_consultation_transcription <> " " <> transcription
 
-      {:ok, %{visit_transcription: transcription, medical_note_changeset: medical_note_changeset}}
+      {:ok,
+       %{
+         consultation_transcription: transcription,
+         medical_note_changeset: medical_note_changeset
+       }}
     else
       {:error, reason} ->
         maybe_send_to_parent(opts, {:error, reason})
@@ -989,7 +1003,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp get_current_transcription(%{} = socket) do
-    case Map.get(socket.assigns, :visit_transcription) do
+    case Map.get(socket.assigns, :consultation_transcription) do
       %AsyncResult{ok?: true, result: result} when is_binary(result) ->
         result
 

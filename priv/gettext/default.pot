@@ -23,7 +23,7 @@ msgstr ""
 
 #: lib/ambiantcare_web/live/consultations_live.ex:312
 #, elixir-autogen, elixir-format
-msgid "End Visit"
+msgid "End Consultation"
 msgstr ""
 
 #: lib/ambiantcare_web/components/core_components.ex:158
@@ -43,7 +43,7 @@ msgstr ""
 
 #: lib/ambiantcare_web/live/consultations_live.ex:308
 #, elixir-autogen, elixir-format
-msgid "Start Visit"
+msgid "Start Consultation"
 msgstr ""
 
 #: lib/ambiantcare_web/components/core_components.ex:156
@@ -64,7 +64,7 @@ msgstr ""
 
 #: lib/ambiantcare_web/live/consultations_live.ex:544
 #, elixir-autogen, elixir-format
-msgid "Visit Transcription"
+msgid "Consultation Transcription"
 msgstr ""
 
 #: lib/ambiantcare_web/components/sidebar.ex:106
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Recording"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:1030
+#: lib/ambiantcare_web/live/consultations_live.ex:1044
 #, elixir-autogen, elixir-format
 msgid "Starting the AI server. Please retry in 5 minutes ..."
 msgstr ""
@@ -729,7 +729,12 @@ msgstr ""
 msgid "Medical Notes"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:768
+#: lib/ambiantcare_web/live/consultations_live.ex:778
 #, elixir-autogen, elixir-format
 msgid "Task %{task} failed with error: %{error}"
+msgstr ""
+
+#: lib/ambiantcare/consultations/consultation.ex:45
+#, elixir-autogen, elixir-format
+msgid "My consultation"
 msgstr ""
