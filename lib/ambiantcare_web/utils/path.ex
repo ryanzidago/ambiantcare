@@ -9,6 +9,6 @@ defmodule AmbiantcareWeb.Utils.Path do
       stt_backend: "huggingface"
     ]
 
-    ~p"/#{locale}/medical-notes?#{query_params}"
+    ~p"/#{locale}/consultations?#{query_params}"
   end
 end

@@ -15,7 +15,7 @@ defmodule AmbiantcareWeb.UserSessionControllerTest do
         })
 
       assert get_session(conn, :user_token)
-      assert redirected_to(conn) =~ ~p"/en/medical-notes"
+      assert redirected_to(conn) =~ ~p"/en/consultations"
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/en")
@@ -36,7 +36,7 @@ defmodule AmbiantcareWeb.UserSessionControllerTest do
         })
 
       assert conn.resp_cookies["_ambiantcare_web_user_remember_me"]
-      assert redirected_to(conn) =~ ~p"/en/medical-notes"
+      assert redirected_to(conn) =~ ~p"/en/consultations"
     end
 
     test "logs the user in with return to", %{conn: conn, user: user} do
@@ -65,7 +65,7 @@ defmodule AmbiantcareWeb.UserSessionControllerTest do
           }
         })
 
-      assert redirected_to(conn) =~ ~p"/en/medical-notes"
+      assert redirected_to(conn) =~ ~p"/en/consultations"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Account created successfully"
     end
 

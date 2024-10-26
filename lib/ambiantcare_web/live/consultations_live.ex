@@ -1,4 +1,4 @@
-defmodule AmbiantcareWeb.MedicalNotesLive do
+defmodule AmbiantcareWeb.ConsultationsLive do
   @doc """
   LiveView managing the medical notes form and visit recording.
   """
@@ -29,7 +29,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   alias AmbiantcareWeb.Components.Shell
 
   import Ecto.Changeset
-  import AmbiantcareWeb.MedicalNotesLive.Helpers
+  import AmbiantcareWeb.ConsultationsLive.Helpers
 
   @impl LiveView
   def mount(params, session, socket) do
@@ -628,7 +628,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
   end
 
   def handle_event("change_locale", %{"locale" => locale}, socket) do
-    socket = SetLocale.set(socket, locale, "/medical-notes")
+    socket = SetLocale.set(socket, locale, "/consultations")
     {:noreply, socket}
   end
 
@@ -1037,7 +1037,7 @@ defmodule AmbiantcareWeb.MedicalNotesLive do
 
   defp log_values(socket) do
     keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
-    Logger.info("AmbiantcareWeb.MedicalNotesLive mounted with: #{inspect(keys)}")
+    Logger.info("AmbiantcareWeb.ConsultationsLive mounted with: #{inspect(keys)}")
   end
 
   defp assign_speech_to_text_backend(socket, %{"stt_backend" => "huggingface"}) do

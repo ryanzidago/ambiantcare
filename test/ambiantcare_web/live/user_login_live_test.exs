@@ -20,7 +20,7 @@ defmodule AmbiantcareWeb.UserLoginLiveTest do
         |> live(~p"/en/users/log_in")
         |> follow_redirect(
           conn,
-          "/en/medical-notes?huggingface_deployment=dedicated&microphone_hook=Microphone&stt_backend=huggingface"
+          "/en/consultations?huggingface_deployment=dedicated&microphone_hook=Microphone&stt_backend=huggingface"
         )
 
       assert {:ok, _conn} = result
@@ -39,7 +39,7 @@ defmodule AmbiantcareWeb.UserLoginLiveTest do
 
       conn = submit_form(form, conn)
 
-      assert redirected_to(conn) =~ ~p"/en/medical-notes"
+      assert redirected_to(conn) =~ ~p"/en/consultations"
     end
 
     test "redirects to login page with a flash error if there are no valid credentials", %{

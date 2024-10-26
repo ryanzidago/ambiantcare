@@ -1,4 +1,4 @@
-defmodule AmbiantcareWeb.MedicalNotesLive.Helpers do
+defmodule AmbiantcareWeb.ConsultationsLive.Helpers do
   use Gettext, backend: AmbiantcareWeb.Gettext
 
   alias Ecto.Changeset
