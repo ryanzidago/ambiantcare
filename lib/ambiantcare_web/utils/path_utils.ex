@@ -13,7 +13,11 @@ defmodule AmbiantcareWeb.Utils.PathUtils do
   def consultation_path(consultation, locale \\ Gettext.get_locale(AmbiantcareWeb.Gettext))
 
   def consultation_path(%Consultation{} = consultation, locale) do
-    ~p"/#{locale}/consultations/#{consultation.id}?#{query_params()}"
+    consultation_path(consultation.id, locale)
+  end
+
+  def consultation_path(consultation_id, locale) do
+    ~p"/#{locale}/consultations/#{consultation_id}?#{query_params()}"
   end
 
   @spec query_params() :: Keyword.t()

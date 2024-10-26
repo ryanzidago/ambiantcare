@@ -887,9 +887,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     {:noreply, socket}
   end
 
-  def handle_event("navigate_to_consultation", _params, socket) do
-    consultation = socket.assigns.consultation
-    socket = push_navigate(socket, to: PathUtils.consultation_path(consultation))
+  def handle_event("navigate_to_consultation", %{"consultation_id" => consultation_id}, socket) do
+    socket = push_navigate(socket, to: PathUtils.consultation_path(consultation_id))
     {:noreply, socket}
   end
 
