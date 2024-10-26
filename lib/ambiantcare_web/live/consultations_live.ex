@@ -18,6 +18,9 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Ambiantcare.MedicalNotes.Prompts
   alias Ambiantcare.Audio
   alias Ambiantcare.Accounts
+  alias Ambiantcare.Consultations
+  alias Ambiantcare.Consultations.Consultation
+  alias AmbiantcareWeb.Utils.PathUtils
 
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
@@ -37,12 +40,14 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       socket
       |> assign(session: session)
       |> assign_current_user(session)
+      |> assign_consultation(params)
+      # @ryanzidago - refactor this to avoid derived state
+      |> assign_consultation_transcription()
       |> assign_speech_to_text_backend(params)
       |> assign_huggingface_deployment(params)
       |> assign_templates_by_id()
       |> assign_selected_template()
       |> assign(recording?: false)
-      |> assign(consultation_transcription: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign(consultation_transcription_loading: false)
       |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign_medical_note_changeset(params)
@@ -749,14 +754,39 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   @impl true
   def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
-    consultation_transcription = AsyncResult.ok(result.consultation_transcription)
-    medical_note_changeset = AsyncResult.ok(result.medical_note_changeset)
+    current_user = socket.assigns.current_user
+    consultation = socket.assigns.consultation
+    consultation_transcription = result.consultation_transcription
+    medical_note_changeset = result.medical_note_changeset
+
+    attrs = %{
+      label: consultation.label,
+      transcription: consultation_transcription,
+      user_id: current_user.id,
+      end_datetime: DateTime.utc_now()
+    }
+
+    socket =
+      case Consultations.create_or_update_consultation(current_user, consultation, attrs) do
+        {:ok, %Consultation{} = consultation} ->
+          push_navigate(socket, to: PathUtils.consultation_path(consultation))
+
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to save the consultation: %{reason}", reason: reason)
+
+          socket
+          |> put_flash(:error, message)
+          |> assign(consultation_transcription_loading: false)
+      end
 
     socket =
       socket
       |> assign(consultation_transcription_loading: false)
-      |> assign(consultation_transcription: consultation_transcription)
-      |> assign(medical_note_changeset: medical_note_changeset)
+      |> assign(consultation_transcription: AsyncResult.ok(consultation_transcription))
+      |> assign(medical_note_changeset: AsyncResult.ok(medical_note_changeset))
 
     {:noreply, socket}
   end
@@ -851,8 +881,21 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     assign(socket, current_user: current_user)
   end
 
-  defp assign_current_user(socket, _session) do
-    assign(socket, current_user: nil)
+  defp assign_consultation(socket, %{"consultation_id" => consultation_id}) do
+    current_user = socket.assigns.current_user
+    consultation = Consultations.get_consultation(current_user, consultation_id)
+    assign(socket, consultation: consultation)
+  end
+
+  defp assign_consultation(socket, _params) do
+    consultation = Consultation.default()
+    assign(socket, consultation: consultation)
+  end
+
+  defp assign_consultation_transcription(socket) do
+    consultation = socket.assigns.consultation
+    transcription = %AsyncResult{ok?: true, loading: false, result: consultation.transcription}
+    assign(socket, consultation_transcription: transcription)
   end
 
   defp assign_huggingface_deployment(socket, params) do
