@@ -72,7 +72,9 @@ defmodule Ambiantcare.MixProject do
       {:toml, "~> 0.7"},
       {:oban, "~> 2.18"},
       {:tzdata, "~> 1.1"},
-      {:ex_machina, "~> 2.8.0", only: :test}
+      {:ex_machina, "~> 2.8.0", only: :test},
+      {:ex_cldr, "~> 2.0"},
+      {:ex_cldr_dates_times, "~> 2.0"}
     ]
   end
 
