@@ -29,7 +29,6 @@ defmodule AmbiantcareWeb.Router do
     pipe_through :browser
 
     live "/", LandingPageLive, :home
-    live "/medical-notes", MedicalNotesLive, :index
   end
 
   # Other scopes may use custom stacks.
