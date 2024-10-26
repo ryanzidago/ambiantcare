@@ -258,7 +258,7 @@ defmodule AmbiantcareWeb.UserSettingsLive do
   end
 
   def handle_event("toggle_action_panel", %{"action" => "medical_notes"}, socket) do
-    path = AmbiantcareWeb.Utils.Path.medical_notes_path(socket.assigns.locale)
+    path = AmbiantcareWeb.Utils.PathUtils.consultations_path(socket.assigns.locale)
     {:noreply, push_navigate(socket, to: path)}
   end
 end

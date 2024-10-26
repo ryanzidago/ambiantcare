@@ -5,7 +5,7 @@ defmodule AmbiantcareWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
   import AmbiantcareWeb.UserLocale, only: [get_locale: 1]
-  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 1]
+  import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
 
   alias Ambiantcare.Accounts
 
@@ -235,6 +235,6 @@ defmodule AmbiantcareWeb.UserAuth do
   defp signed_in_path(conn) do
     conn
     |> get_locale()
-    |> medical_notes_path()
+    |> consultations_path()
   end
 end

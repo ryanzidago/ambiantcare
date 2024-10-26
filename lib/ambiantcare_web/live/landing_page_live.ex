@@ -4,7 +4,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   alias AmbiantcareWeb.Components.Branding
 
-  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 1]
+  import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -389,18 +389,18 @@ defmodule AmbiantcareWeb.LandingPageLive do
   end
 
   defp self_served_demo_cta(assigns) do
-    medical_notes_path =
+    consultations_path =
       AmbiantcareWeb.Gettext
       |> Gettext.get_locale()
-      |> medical_notes_path()
+      |> consultations_path()
 
     assigns =
       assigns
-      |> assign(medical_notes_path: medical_notes_path)
+      |> assign(consultations_path: consultations_path)
 
     ~H"""
     <.link
-      href={@medical_notes_path}
+      href={@consultations_path}
       target="_blank"
       class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mr-2 dark:bg-blue-600 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800"
     >

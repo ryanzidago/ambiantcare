@@ -4,7 +4,7 @@ defmodule AmbiantcareWeb.UserConfirmationLive do
 
   alias Ambiantcare.Accounts
 
-  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 1]
+  import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
 
   def render(%{live_action: :edit} = assigns) do
     ~H"""
@@ -43,7 +43,7 @@ defmodule AmbiantcareWeb.UserConfirmationLive do
         {:noreply,
          socket
          |> put_flash(:info, gettext("User confirmed successfully."))
-         |> redirect(to: medical_notes_path(locale))}
+         |> redirect(to: consultations_path(locale))}
 
       :error ->
         # If there is a current user and the account was already confirmed,

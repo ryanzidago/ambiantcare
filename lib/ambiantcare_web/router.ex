@@ -59,6 +59,7 @@ defmodule AmbiantcareWeb.Router do
     # @ryanzidago redirect to consultations for now; route to be deprecated in the future
     get "/medical-notes", PageController, :medical_notes
     live "/consultations", ConsultationsLive, :index
+    live "/consultations/:consultation_id", ConsultationsLive, :show
 
     live_session :require_authenticated_user,
       on_mount: [{AmbiantcareWeb.UserAuth, :ensure_authenticated}] do

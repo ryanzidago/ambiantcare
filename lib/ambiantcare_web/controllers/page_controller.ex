@@ -1,7 +1,7 @@
 defmodule AmbiantcareWeb.PageController do
   use AmbiantcareWeb, :controller
 
-  alias AmbiantcareWeb.Utils
+  alias AmbiantcareWeb.Utils.PathUtils
 
   def home(conn, _params) do
     # The home page is often custom made,
@@ -18,7 +18,7 @@ defmodule AmbiantcareWeb.PageController do
     path =
       conn
       |> get_locale()
-      |> Utils.Path.medical_notes_path()
+      |> PathUtils.consultations_path()
 
     redirect(conn, to: path)
   end
