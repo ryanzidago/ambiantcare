@@ -12,12 +12,18 @@ defmodule AmbiantcareWeb.Components.Shell do
 
   def with_sidebar(assigns) do
     ~H"""
-    <div class="grid md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 align-center min-h-full gap-10">
-      <div class="order-last md:order-first  md:col-span-2 lg:col-span-2 xl:col-span-2 bg-gray-100">
+    <div class="flex flex-col lg:flex-row min-h-full gap-40">
+      <%!-- Sidebar: Fixed width on desktop, full width on mobile --%>
+      <div class="order-last lg:order-first w-full lg:w-[350px] lg:flex-shrink-0 bg-white border-r border-gray-200">
         <%= render_slot(@sidebar) %>
       </div>
-      <div class="order-first md:order-last md:col-span-6 lg:col-span-6 xl:col-span-6 p-10">
-        <%= render_slot(@main) %>
+
+      <%!-- Main content wrapper: Centers content on wide screens --%>
+      <div class="order-first lg:order-last flex-grow flex">
+        <%!-- Main content: Constrained width for optimal readability --%>
+        <div class="w-full max-w-3xl px-4 sm:px-6 lg:px-8 py-6">
+          <%= render_slot(@main) %>
+        </div>
       </div>
     </div>
     """
