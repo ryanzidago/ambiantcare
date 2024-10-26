@@ -24,7 +24,7 @@ msgstr "Tentativo di riconnessione"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:312
 #, elixir-autogen, elixir-format
-msgid "End Visit"
+msgid "End Consultation"
 msgstr "Termina visita"
 
 #: lib/ambiantcare_web/components/core_components.ex:158
@@ -44,7 +44,7 @@ msgstr "Qualcosa è andato storto!"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:308
 #, elixir-autogen, elixir-format
-msgid "Start Visit"
+msgid "Start Consultation"
 msgstr "Inizia visita"
 
 #: lib/ambiantcare_web/components/core_components.ex:156
@@ -65,7 +65,7 @@ msgstr "Chiudi"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:544
 #, elixir-autogen, elixir-format
-msgid "Visit Transcription"
+msgid "Consultation Transcription"
 msgstr "Trascrizione della visita"
 
 #: lib/ambiantcare_web/components/sidebar.ex:106
@@ -293,7 +293,7 @@ msgstr "Generazione della trascrizione in corso ..."
 msgid "Recording"
 msgstr "Registrazione"
 
-#: lib/ambiantcare_web/live/consultations_live.ex:1030
+#: lib/ambiantcare_web/live/consultations_live.ex:1044
 #, elixir-autogen, elixir-format
 msgid "Starting the AI server. Please retry in 5 minutes ..."
 msgstr "Stiamo avviando il server. Ritorna tra 5 minuti ..."
@@ -346,12 +346,12 @@ msgstr "Medicina Generale"
 #: lib/ambiantcare_web/live/consultations_live.ex:366
 #, elixir-autogen, elixir-format
 msgid "Generalist 1 visit"
-msgstr "Visita Generalista 1"
+msgstr "Consultationa Generalista 1"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:367
 #, elixir-autogen, elixir-format
 msgid "Generalist 2 visit"
-msgstr "Visita Generalista 2"
+msgstr "Consultationa Generalista 2"
 
 #: lib/ambiantcare/medical_notes/template/template.ex:74
 #, elixir-autogen, elixir-format
@@ -729,7 +729,12 @@ msgstr "3. Genera"
 msgid "Medical Notes"
 msgstr "Nota medica"
 
-#: lib/ambiantcare_web/live/consultations_live.ex:768
+#: lib/ambiantcare_web/live/consultations_live.ex:778
 #, elixir-autogen, elixir-format
 msgid "Task %{task} failed with error: %{error}"
 msgstr "Attività %{task} non riuscita con errore: %{error}"
+
+#: lib/ambiantcare/consultations/consultation.ex:45
+#, elixir-autogen, elixir-format
+msgid "My consultation"
+msgstr ""
