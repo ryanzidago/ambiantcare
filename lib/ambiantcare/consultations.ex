@@ -28,11 +28,30 @@ defmodule Ambiantcare.Consultations do
     |> Repo.one()
   end
 
+  @spec get_latest_consultation(User.t()) :: Consultation.t() | nil
+  def get_latest_consultation(%User{} = user) do
+    user
+    |> list_consultations_query()
+    |> limit(1)
+    |> Repo.one()
+  end
+
   @spec list_consultations(User.t()) :: list(Consultation.t())
   def list_consultations(%User{} = user) do
+    user
+    |> list_consultations_query()
+    |> Repo.all()
+  end
+
+  def list_consultations_query(%User{} = user) do
     from(cons in Consultation, as: :cons)
     |> where([cons: cons], cons.user_id == ^user.id)
     |> order_by([cons: cons], desc: cons.inserted_at)
-    |> Repo.all()
+  end
+
+  @spec delete_consultation(User.t(), Consultation.t()) :: {:ok, Consultation.t()}
+  def delete_consultation(%User{} = user, %Consultation{} = consultation)
+      when user.id == consultation.user_id do
+    Repo.delete(consultation)
   end
 end

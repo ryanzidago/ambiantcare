@@ -119,7 +119,10 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             consultation ->
               DateTime.to_date(consultation.start_datetime)
           end)
-          |> Enum.sort_by(fn {date, _consultations} -> date end, {:desc, Date})
+          |> Enum.sort_by(
+            fn {grouping_key, _consultations} -> grouping_key || Date.utc_today() end,
+            {:desc, Date}
+          )
       )
 
     ~H"""
@@ -128,8 +131,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <.new_consultation_button />
       <div class="flex flex-col items-start gap-6 sm:px-6 lg:px-8 overflow-auto">
         <div
-          :if={Enum.any?(@consultations)}
           :for={{grouping_key, consultations} <- @consultations_by_date}
+          :if={Enum.any?(@consultations)}
           class="flex flex-col w-full gap-1 p-2"
         >
           <span class="p-1"><%= consultations_group_label(grouping_key) %></span>
@@ -236,7 +239,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     date in range
   end
 
-  defp consultation_start_datetime_label(nil), do: consultation_start_datetime_label(DateTime.utc_now())
+  defp consultation_start_datetime_label(nil),
+    do: consultation_start_datetime_label(DateTime.utc_now())
 
   defp consultation_start_datetime_label(%DateTime{} = start_datetime) do
     Cldr.Time.to_string!(start_datetime,
@@ -246,13 +250,14 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp action_panel(assigns)
-       when assigns.current_action in ~w(transcription visit_context medical_note) do
+       when assigns.current_action in ~w(transcription visit_context medical_note consultation_settings) do
     assigns =
       assign(assigns,
         action_panel_items: [
           {"transcription", gettext("Transcription")},
           {"visit_context", gettext("Context")},
-          {"medical_note", gettext("Medical Note")}
+          {"medical_note", gettext("Medical Note")},
+          {"consultation_settings", gettext("Settings")}
         ]
       )
 
@@ -316,6 +321,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
+  defp action_panel_item(assigns) when assigns.current_action == "consultation_settings" do
+    ~H"""
+    <.consultation_settings_panel />
+    """
+  end
+
   defp transcription_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
@@ -375,6 +386,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         </.async_result>
       </div>
     </div>
+    """
+  end
+
+  defp consultation_settings_panel(assigns) do
+    ~H"""
+    <.button
+      type="button"
+      variant={:danger}
+      phx-click="delete_consultation"
+      class="md:min-w-32 max-w-52"
+    >
+      <%= gettext("Delete consultation") %>
+    </.button>
     """
   end
 
@@ -863,8 +887,33 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     {:noreply, socket}
   end
 
-  def handle_event("navigate_to_consultation", %{"consultation_id" => consultation_id}, socket) do
-    {:noreply, push_navigate(socket, to: PathUtils.consultation_path(consultation_id))}
+  def handle_event("navigate_to_consultation", _params, socket) do
+    consultation = socket.assigns.consultation
+    socket = push_navigate(socket, to: PathUtils.consultation_path(consultation))
+    {:noreply, socket}
+  end
+
+  def handle_event("delete_consultation", _params, socket) do
+    consultation = socket.assigns.consultation
+    user = socket.assigns.current_user
+
+    socket =
+      case Consultations.delete_consultation(user, consultation) do
+        {:ok, _} ->
+          socket
+          |> put_flash(:info, gettext("Consultation successfully deleted"))
+          |> push_navigate(to: PathUtils.consultations_path())
+
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to delete the consultation: %{reason}", reason: reason)
+
+          put_flash(socket, :error, message)
+      end
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -1015,13 +1064,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp assign_consultation(socket, _params) do
-    consultation = Consultation.default()
+    current_user = socket.assigns.current_user
+    consultation = Consultations.get_latest_consultation(current_user)
     assign(socket, consultation: consultation)
   end
 
-  defp assign_consultation_transcription(socket) do
+  defp assign_consultation_transcription(%{assigns: %{consultation: %Consultation{}}} = socket) do
     consultation = socket.assigns.consultation
     transcription = %AsyncResult{ok?: true, loading: false, result: consultation.transcription}
+    assign(socket, consultation_transcription: transcription)
+  end
+
+  defp assign_consultation_transcription(%{assigns: %{consultation: nil}} = socket) do
+    transcription = %AsyncResult{ok?: true, loading: false, result: nil}
     assign(socket, consultation_transcription: transcription)
   end
 
