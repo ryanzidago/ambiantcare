@@ -46,7 +46,7 @@ defmodule AmbiantcareWeb.UserRegistrationLiveTest do
       render_submit(form)
       conn = follow_trigger_action(form, conn)
 
-      assert redirected_to(conn) =~ ~p"/en/medical-notes"
+      assert redirected_to(conn) =~ ~p"/en/consultations"
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/en")
