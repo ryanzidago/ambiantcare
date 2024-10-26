@@ -52,4 +52,6 @@ defmodule Ambiantcare.Consultations.Consultation do
   def default do
     %__MODULE__{label: gettext(@default_label)}
   end
+
+  def default_label, do: gettext(@default_label)
 end
