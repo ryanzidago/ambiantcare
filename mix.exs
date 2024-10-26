@@ -74,7 +74,9 @@ defmodule Ambiantcare.MixProject do
       {:tzdata, "~> 1.1"},
       {:ex_machina, "~> 2.8.0", only: :test},
       {:ex_cldr, "~> 2.0"},
-      {:ex_cldr_dates_times, "~> 2.0"}
+      {:ex_cldr_dates_times, "~> 2.0"},
+      {:cloak, "~> 1.1"},
+      {:cloak_ecto, "~> 1.3"}
     ]
   end
 

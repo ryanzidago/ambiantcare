@@ -126,3 +126,5 @@ config :ambiantcare, Ambiantcare.AI.Gladia,
 config :ambiantcare, Ambiantcare.AI.SpeechMatics,
   api_key: System.get_env("SPEECHMATICS_API_KEY"),
   base_url: "https://asr.api.speechmatics.com/v2"
+
+System.put_env("CLOAK_ENCRYPTION_KEY", "qKcLDg0BFbCUJR+MIqFF5GO6VoEWm3udIbuncrxoABA=")
