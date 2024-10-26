@@ -28,6 +28,7 @@ defmodule AmbiantcareWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import AmbiantcareWeb.ConnCase
+      import Ambiantcare.Factories
     end
   end
 

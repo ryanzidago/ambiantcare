@@ -12,7 +12,8 @@ defmodule Ambiantcare.MixProject do
       deps: deps(),
       dialyzer: [
         plt_file: {:no_warn, "priv/plts/project.plt"}
-      ]
+      ],
+      test_paths: ~w(test lib)
     ]
   end
 
@@ -70,7 +71,8 @@ defmodule Ambiantcare.MixProject do
       {:exla, ">= 0.0.0", only: [:dev, :test]},
       {:toml, "~> 0.7"},
       {:oban, "~> 2.18"},
-      {:tzdata, "~> 1.1"}
+      {:tzdata, "~> 1.1"},
+      {:ex_machina, "~> 2.8.0", only: :test}
     ]
   end
 

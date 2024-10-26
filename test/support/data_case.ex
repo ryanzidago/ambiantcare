@@ -24,6 +24,7 @@ defmodule Ambiantcare.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Ambiantcare.DataCase
+      import Ambiantcare.Factories
     end
   end
 
