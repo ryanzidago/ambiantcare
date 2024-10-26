@@ -1259,7 +1259,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
     # @ryanzidago - do not hardcode the model name
     with false <- use_local_stt?(),
-         {:ok, response} =
+         {:ok, response} <-
            HuggingFace.Dedicated.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
          state when state != "running" <- get_in(response, ~w(status state)),
          {:ok, _} <- HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx") do
