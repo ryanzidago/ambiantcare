@@ -14,6 +14,7 @@ defmodule Ambiantcare.Application do
       [
         AmbiantcareWeb.Telemetry,
         Ambiantcare.Repo,
+        Ambiantcare.Vault,
         {DNSCluster, query: Application.get_env(:ambiantcare, :dns_cluster_query) || :ignore},
         {Phoenix.PubSub, name: Ambiantcare.PubSub},
         # Start the Finch HTTP client for sending emails

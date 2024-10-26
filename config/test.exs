@@ -40,3 +40,5 @@ config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
 config :ambiantcare, Oban, testing: :inline
+
+System.put_env("CLOAK_ENCRYPTION_KEY", "IkFMbGOpcvw7/1vUmEIJya0qCk6cEHK0eGRB8Y3zhZk=")
