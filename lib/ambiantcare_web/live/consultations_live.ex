@@ -129,7 +129,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     <div class="flex flex-col h-screen w-full text-sm">
       <Branding.logo class="py-14" />
       <.new_consultation_button />
-      <div class="flex flex-col items-start gap-6 sm:px-6 lg:px-8 overflow-auto">
+      <div class="flex flex-col items-start gap-6 sm:px-4 lg:px-6 overflow-auto">
         <div
           :for={{grouping_key, consultations} <- @consultations_by_date}
           :if={Enum.any?(@consultations_by_date)}
@@ -140,7 +140,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             :for={consultation <- consultations}
             phx-click="navigate_to_consultation"
             phx-value-consultation_id={consultation.id}
-            class="flex flex-row items-center gap-2 justify-between hover:bg-gray-200 hover:font-medium hover:text-blue-700 focus:text-blue-700 hover:shadow-xs p-1 rounded focus:bg-gray-200 focus:font-medium transition-all transform duration-200"
+            class="flex flex-row items-center gap-2 justify-between hover:bg-gray-200 hover:text-blue-700 focus:text-blue-700 hover:shadow-xs p-1 rounded focus:bg-gray-200 transition-all transform duration-200"
           >
             <span class=""><%= consultation.title || Consultation.default_title() %></span>
             <span class="text-xs hover:font-medium">
