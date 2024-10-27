@@ -10,13 +10,13 @@ defmodule Ambiantcare.Consultations.Consultation do
 
   import Ecto.Changeset
 
-  @default_label "My consultation"
+  @default_title gettext("New consultation")
 
   @type t :: %__MODULE__{}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "consultations" do
-    field :label, :string
+    field :title, :string
     field :transcription, Encrypted.Binary
     field :context, Encrypted.Binary
     field :start_datetime, :utc_datetime
@@ -36,22 +36,10 @@ defmodule Ambiantcare.Consultations.Consultation do
   def changeset(%__MODULE__{} = consultation, attrs) do
     consultation
     |> cast(attrs, __MODULE__.__schema__(:fields))
-    |> maybe_put_default_label()
-    |> validate_required([:label, :user_id])
+    |> validate_required([:user_id])
   end
 
-  defp maybe_put_default_label(changeset) do
-    if get_field(changeset, :label) do
-      changeset
-    else
-      label = gettext(@default_label)
-      put_change(changeset, :label, label)
-    end
-  end
+  def default, do: %__MODULE__{}
 
-  def default do
-    %__MODULE__{label: gettext(@default_label)}
-  end
-
-  def default_label, do: gettext(@default_label)
+  def default_title, do: @default_title
 end

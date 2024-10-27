@@ -5,7 +5,8 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
 
   alias Ambiantcare.MedicalNotes.Template
 
-  def user(params) do
+  @spec medical_note_user_prompt(map()) :: String.t()
+  def medical_note_user_prompt(params) do
     context = Map.get(params, :context)
     transcription = Map.fetch!(params, :transcription)
     template = Map.fetch!(params, :template)
@@ -19,6 +20,14 @@ defmodule Ambiantcare.MedicalNotes.Prompts do
 
     # Medical Note Template
     #{Template.to_prompt(template)}
+    """
+  end
+
+  @spec consultation_title_user_prompt(String.t()) :: String.t()
+  def consultation_title_user_prompt(transcription) do
+    """
+    # Consultation Transcription
+    #{transcription}
     """
   end
 end

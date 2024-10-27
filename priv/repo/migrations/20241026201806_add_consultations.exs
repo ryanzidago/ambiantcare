@@ -4,7 +4,7 @@ defmodule Ambiantcare.Repo.Migrations.AddConsultations do
   def change do
     create table(:consultations, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :label, :string, null: false
+      add :title, :string
       add :transcription, :binary
       add :context, :binary
       add :start_datetime, :utc_datetime
