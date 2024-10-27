@@ -735,11 +735,6 @@ msgstr "Nota medica"
 msgid "Task %{task} failed with error: %{error}"
 msgstr "Attività %{task} non riuscita con errore: %{error}"
 
-#: lib/ambiantcare/consultations/consultation.ex:13
-#, elixir-autogen, elixir-format
-msgid "My consultation"
-msgstr ""
-
 #: lib/ambiantcare_web/live/consultations_live.ex:899
 #, elixir-autogen, elixir-format
 msgid "Consultation successfully deleted"
@@ -753,14 +748,15 @@ msgstr "Inizia visita"
 #: lib/ambiantcare_web/live/consultations_live.ex:876
 #, elixir-autogen, elixir-format
 msgid "Failed to create a new consultation: %{reason}"
-msgstr ""
+msgstr "Impossibile creare una nuova consultazione: %{reason}"
 
+#: lib/ambiantcare/consultations/consultation.ex:13
 #: lib/ambiantcare_web/live/consultations_live.ex:201
 #, elixir-autogen, elixir-format, fuzzy
 msgid "New consultation"
-msgstr ""
+msgstr "Nuova consultazione"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:206
 #, elixir-autogen, elixir-format
 msgid "Not started"
-msgstr ""
+msgstr "Non iniziato"

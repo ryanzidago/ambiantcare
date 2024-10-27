@@ -104,9 +104,9 @@ msgstr "deve essere uguale a %{number}"
 #: lib/ambiantcare_web/live/consultations_live.ex:948
 #, elixir-autogen, elixir-format
 msgid "Failed to save the consultation: %{reason}"
-msgstr ""
+msgstr "Impossibile salvare la consultazione: %{reason}"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:906
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Failed to delete the consultation: %{reason}"
-msgstr ""
+msgstr "Impossibile eliminare la consultazione: %{reason}"

@@ -734,11 +734,6 @@ msgstr ""
 msgid "Task %{task} failed with error: %{error}"
 msgstr ""
 
-#: lib/ambiantcare/consultations/consultation.ex:13
-#, elixir-autogen, elixir-format
-msgid "My consultation"
-msgstr ""
-
 #: lib/ambiantcare_web/live/consultations_live.ex:899
 #, elixir-autogen, elixir-format
 msgid "Consultation successfully deleted"
@@ -754,6 +749,7 @@ msgstr ""
 msgid "Failed to create a new consultation: %{reason}"
 msgstr ""
 
+#: lib/ambiantcare/consultations/consultation.ex:13
 #: lib/ambiantcare_web/live/consultations_live.ex:201
 #, elixir-autogen, elixir-format, fuzzy
 msgid "New consultation"
