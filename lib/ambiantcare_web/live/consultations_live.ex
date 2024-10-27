@@ -132,7 +132,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <div class="flex flex-col items-start gap-6 sm:px-6 lg:px-8 overflow-auto">
         <div
           :for={{grouping_key, consultations} <- @consultations_by_date}
-          :if={Enum.any?(@consultations)}
+          :if={Enum.any?(@consultations_by_date)}
           class="flex flex-col w-full gap-1 p-2"
         >
           <span class="p-1"><%= consultations_group_label(grouping_key) %></span>
@@ -142,7 +142,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             phx-value-consultation_id={consultation.id}
             class="flex flex-row items-center gap-2 justify-between hover:bg-gray-200 hover:font-medium hover:text-blue-700 focus:text-blue-700 hover:shadow-xs p-1 rounded focus:bg-gray-200 focus:font-medium transition-all transform duration-200"
           >
-            <span class=""><%= consultation.label %></span>
+            <span class=""><%= consultation.title || Consultation.default_title() %></span>
             <span class="text-xs hover:font-medium">
               <%= grouping_key && consultation_start_datetime_label(consultation.start_datetime) %>
             </span>
@@ -864,11 +864,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   def handle_event("new_consultation", _params, socket) do
     user = socket.assigns.current_user
     consultation = %Consultation{}
-
-    attrs = %{
-      user_id: user.id,
-      label: Consultation.default_label()
-    }
+    attrs = %{user_id: user.id}
 
     socket =
       case Consultations.create_or_update_consultation(user, consultation, attrs) do
@@ -924,12 +920,17 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   @impl true
   def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
     current_user = socket.assigns.current_user
-    consultation = socket.assigns.consultation
+    consultation = socket.assigns.consultation || Consultation.default()
     consultation_transcription = result.consultation_transcription
     medical_note_changeset = result.medical_note_changeset
 
+    user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
+
+    {:ok, %{"title" => title}} =
+      Ambiantcare.AI.LLMs.generate("consultations/title/v1_0", user_prompt)
+
     attrs = %{
-      label: consultation.label,
+      title: title,
       transcription: consultation_transcription,
       user_id: current_user.id,
       end_datetime: DateTime.utc_now()
@@ -1237,7 +1238,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp query_llm(%{} = params) do
-    user_prompt = Prompts.user(params)
+    user_prompt = Prompts.medical_note_user_prompt(params)
     result = Ambiantcare.AI.LLMs.generate("medical_notes/v1_0", user_prompt)
 
     Logger.debug("*** prompt ***")
