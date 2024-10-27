@@ -230,10 +230,11 @@ defmodule AmbiantcareWeb.CoreComponents do
   attr :type, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
+  attr :variant, :atom, default: :primary, values: [:primary, :danger]
 
   slot :inner_block, required: true
 
-  def button(assigns) do
+  def button(%{variant: :primary} = assigns) do
     ~H"""
     <button
       type={@type}
@@ -249,6 +250,25 @@ defmodule AmbiantcareWeb.CoreComponents do
     >
       <%= render_slot(@inner_block) %>
     </button>
+    """
+  end
+
+  def button(%{variant: :danger} = assigns) do
+    ~H"""
+    <.button
+      type={@type}
+      class={
+        [
+          "bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800",
+          "disabled:hover:bg-red-700",
+          @class
+        ]
+        |> Enum.join(" ")
+      }
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </.button>
     """
   end
 

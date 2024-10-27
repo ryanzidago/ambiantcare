@@ -1,0 +1,89 @@
+[metadata]
+title = "Generate a medical consultation title from a transcript"
+version = "1.0"
+
+[config]
+backend = "mistral"
+model = "mistral-small-latest"
+temperature = 0.0
+
+[prompt]
+text = """
+Generate a concise and informative medical consultation title using the format:
+"[Primary Condition/Complaint] - [Action/Status]"
+
+Your title must:
+- Focus on the main medical condition or primary complaint
+- Include the key outcome or next steps
+- Be concise yet informative
+- Use full medical terms (no abbreviations)
+- Exclude any patient demographics (age, gender)
+
+Generate only the title, nothing else.
+"""
+
+[[prompt.examples]]
+input = """
+# Consultation Transcription
+Good morning, Dr. Smith. My blood sugar readings have been quite high lately.
+Yes, I see. How high have they been running?
+Usually around 180-200 in the mornings, and sometimes up to 250 after meals.
+That's concerning. Are you taking your metformin as prescribed?
+Yes, but I've been having trouble with my diet lately.
+I understand. Let's adjust your medication and refer you to our diabetes educator.
+Thank you, doctor.
+"""
+output = """
+{
+  "title": "Diabetes - Medication Adjustment & Education Referral"
+}
+"""
+
+[[prompt.examples]]
+input = """
+# Consultation Transcription
+Good morning, Doctor. I've been having this constant back pain for two weeks now.
+Can you describe where exactly it hurts?
+Lower back, mostly on the right side. It gets worse when I bend over.
+Any numbness or tingling down your legs?
+No, just the pain in my back.
+Okay, I'll prescribe some pain medication and refer you to physical therapy.
+Thank you, I appreciate it.
+"""
+output = """
+{
+  "title": "Lower Back Pain - Medication & Physical Therapy"
+}
+"""
+
+[[prompt.examples]]
+input = """
+# Consultation Transcription
+Good morning, Mr. Rossi. I see you're here for a follow-up. How have you been feeling since your last visit?
+Good morning, Doctor. I've been alright, but I've noticed that I'm getting more short of breath lately, especially when I climb stairs or walk for a long time.
+I see. How long has this been happening?
+It started about two months ago, but it's gotten worse in the last few weeks.
+Have you experienced any chest pain, palpitations, or dizziness?
+I haven't had any chest pain, but I do feel my heart racing sometimes, especially when I'm short of breath. I haven't felt dizzy, though.
+Have you noticed any swelling in your legs or ankles?
+Yes, actually. My ankles have been swelling by the end of the day, especially if I've been on my feet a lot.
+Thank you for sharing that. Let's go over your medications. Are you still taking the lisinopril and the aspirin that I prescribed last time?
+Yes, I take both of them every day, as you told me. I haven't missed a dose.
+That's good to hear. And how's your diet and exercise routine going?
+I've been trying to eat healthier, cutting down on salt and fats, as you suggested. I walk about 30 minutes most days, but lately, it's been harder because of the shortness of breath.
+Understood. Let's check your blood pressure and listen to your heart.
+Your blood pressure is slightly elevated today at 140/90, and I hear a bit of fluid buildup in your lungs. I'm concerned that your symptoms might be related to heart failure, which could be causing the shortness of breath and swelling.
+Heart failure? That sounds serious.
+It's something we need to monitor closely, but with the right treatment, we can manage it. I want to order an echocardiogram to get a better look at how your heart is functioning. We might also adjust your medications to help reduce the fluid buildup.
+Okay, Doctor. What should I do in the meantime?
+Continue taking your current medications, but avoid excessive salt and try to elevate your legs when you’re sitting down to help reduce the swelling. We'll also schedule you for the echocardiogram as soon as possible. Once we have the results, we can discuss the next steps.
+Thank you, Doctor. I appreciate it.
+You're welcome, Mr. Rossi. If you notice any worsening symptoms—like severe shortness of breath, chest pain, or lightheadedness—contact me immediately or go to the emergency room. I'll see you again after we have the test results.
+I will. Thanks again.
+Take care, Mr. Rossi.
+"""
+output = """
+{
+  "title": "Heart Failure - Echo Ordered & Medication Review"
+}
+"""

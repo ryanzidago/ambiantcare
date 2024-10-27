@@ -18,6 +18,9 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Ambiantcare.MedicalNotes.Prompts
   alias Ambiantcare.Audio
   alias Ambiantcare.Accounts
+  alias Ambiantcare.Consultations
+  alias Ambiantcare.Consultations.Consultation
+  alias Ambiantcare.Cldr
 
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
@@ -27,6 +30,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias AmbiantcareWeb.Hooks.SetLocale
   alias AmbiantcareWeb.Components.Branding
   alias AmbiantcareWeb.Components.Shell
+  alias AmbiantcareWeb.Utils.PathUtils
 
   import Ecto.Changeset
   import AmbiantcareWeb.ConsultationsLive.Helpers
@@ -37,12 +41,15 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       socket
       |> assign(session: session)
       |> assign_current_user(session)
+      |> assign_consultations()
+      |> assign_consultation(params)
+      # @ryanzidago - refactor this to avoid derived state
+      |> assign_consultation_transcription()
       |> assign_speech_to_text_backend(params)
       |> assign_huggingface_deployment(params)
       |> assign_templates_by_id()
       |> assign_selected_template()
       |> assign(recording?: false)
-      |> assign(consultation_transcription: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign(consultation_transcription_loading: false)
       |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
       |> assign_medical_note_changeset(params)
@@ -77,7 +84,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     ~H"""
     <Shell.with_sidebar {assigns}>
       <:sidebar>
-        <.sidebar current_user={@current_user} locale={@locale} />
+        <.sidebar current_user={@current_user} locale={@locale} consultations={@consultations} />
       </:sidebar>
       <:main>
         <.action_panel
@@ -100,10 +107,49 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp sidebar(assigns) do
+    assigns =
+      assigns
+      |> assign(
+        consultations_by_date:
+          assigns.consultations
+          |> Enum.group_by(fn
+            consultation when is_nil(consultation.start_datetime) ->
+              nil
+
+            consultation ->
+              DateTime.to_date(consultation.start_datetime)
+          end)
+          |> Enum.sort_by(
+            fn {grouping_key, _consultations} -> grouping_key || Date.utc_today() end,
+            {:desc, Date}
+          )
+      )
+
     ~H"""
-    <div class="flex flex-col justify-between h-full">
+    <div class="flex flex-col h-screen w-full text-sm">
       <Branding.logo class="py-14" />
-      <ul class="flex flex-col items-start gap-4 p-4 sm:px-6 lg:px-8 align-bottom justify-end border">
+      <.new_consultation_button />
+      <div class="flex flex-col items-start gap-6 sm:px-4 lg:px-6 overflow-auto">
+        <div
+          :for={{grouping_key, consultations} <- @consultations_by_date}
+          :if={Enum.any?(@consultations_by_date)}
+          class="flex flex-col w-full gap-1 p-2"
+        >
+          <span class="p-1"><%= consultations_group_label(grouping_key) %></span>
+          <.link
+            :for={consultation <- consultations}
+            phx-click="navigate_to_consultation"
+            phx-value-consultation_id={consultation.id}
+            class="flex flex-row items-center gap-2 justify-between hover:bg-gray-200 hover:text-blue-700 focus:text-blue-700 hover:shadow-xs p-1 rounded focus:bg-gray-200 transition-all transform duration-200"
+          >
+            <span class=""><%= consultation.title || Consultation.default_title() %></span>
+            <span class="text-xs hover:font-medium">
+              <%= grouping_key && consultation_start_datetime_label(consultation.start_datetime) %>
+            </span>
+          </.link>
+        </div>
+      </div>
+      <ul class="flex flex-col items-start gap-4 p-4 sm:px-6 lg:px-8 align-bottom justify-end border mt-10">
         <%= if @current_user do %>
           <li class="text-[0.8125rem] text-zinc-900">
             <%= @current_user.email %>
@@ -149,14 +195,69 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
+  defp new_consultation_button(assigns) do
+    ~H"""
+    <.button type="button" phx-click="new_consultation" class="mx-10 mb-10">
+      <%= gettext("New consultation") %>
+    </.button>
+    """
+  end
+
+  defp consultations_group_label(nil), do: gettext("Not started")
+
+  defp consultations_group_label(%Date{} = date) do
+    locale = Gettext.get_locale(AmbiantcareWeb.Gettext)
+
+    cond do
+      today_or_yesterday?(date) ->
+        today = Date.utc_today()
+
+        Date.diff(date, today)
+        |> Cldr.DateTime.Relative.to_string!(unit: :day, locale: locale)
+        |> String.capitalize()
+
+      in_current_week?(date) ->
+        date
+        |> Cldr.Date.to_string!(format: "EEEE", locale: locale)
+        |> String.capitalize()
+
+      true ->
+        date
+        |> Cldr.Date.to_string!(format: :short, locale: locale)
+    end
+  end
+
+  defp today_or_yesterday?(date) do
+    today = Date.utc_today()
+    Date.diff(date, today) in -1..0
+  end
+
+  defp in_current_week?(date) do
+    today = Date.utc_today()
+    beginning_of_week = Date.beginning_of_week(today)
+    range = Date.range(beginning_of_week, today)
+    date in range
+  end
+
+  defp consultation_start_datetime_label(nil),
+    do: consultation_start_datetime_label(DateTime.utc_now())
+
+  defp consultation_start_datetime_label(%DateTime{} = start_datetime) do
+    Cldr.Time.to_string!(start_datetime,
+      format: :short,
+      locale: Gettext.get_locale(AmbiantcareWeb.Gettext)
+    )
+  end
+
   defp action_panel(assigns)
-       when assigns.current_action in ~w(transcription visit_context medical_note) do
+       when assigns.current_action in ~w(transcription visit_context medical_note consultation_settings) do
     assigns =
       assign(assigns,
         action_panel_items: [
           {"transcription", gettext("Transcription")},
           {"visit_context", gettext("Context")},
-          {"medical_note", gettext("Medical Note")}
+          {"medical_note", gettext("Medical Note")},
+          {"consultation_settings", gettext("Settings")}
         ]
       )
 
@@ -220,6 +321,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
+  defp action_panel_item(assigns) when assigns.current_action == "consultation_settings" do
+    ~H"""
+    <.consultation_settings_panel />
+    """
+  end
+
   defp transcription_panel(assigns) do
     ~H"""
     <div class="flex flex-col gap-10">
@@ -279,6 +386,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         </.async_result>
       </div>
     </div>
+    """
+  end
+
+  defp consultation_settings_panel(assigns) do
+    ~H"""
+    <.button
+      type="button"
+      variant={:danger}
+      phx-click="delete_consultation"
+      class="md:min-w-32 max-w-52"
+    >
+      <%= gettext("Delete consultation") %>
+    </.button>
     """
   end
 
@@ -741,6 +861,56 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     {:noreply, socket}
   end
 
+  def handle_event("new_consultation", _params, socket) do
+    user = socket.assigns.current_user
+    consultation = %Consultation{}
+    attrs = %{user_id: user.id}
+
+    socket =
+      case Consultations.create_or_update_consultation(user, consultation, attrs) do
+        {:ok, %Consultation{} = consultation} ->
+          push_navigate(socket, to: PathUtils.consultation_path(consultation))
+
+        {:error, %Changeset{} = changeset} ->
+          message =
+            gettext("Failed to create a new consultation: %{reason}",
+              reason: inspect(changeset.errors)
+            )
+
+          put_flash(socket, :error, message)
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("navigate_to_consultation", %{"consultation_id" => consultation_id}, socket) do
+    socket = push_navigate(socket, to: PathUtils.consultation_path(consultation_id))
+    {:noreply, socket}
+  end
+
+  def handle_event("delete_consultation", _params, socket) do
+    consultation = socket.assigns.consultation
+    user = socket.assigns.current_user
+
+    socket =
+      case Consultations.delete_consultation(user, consultation) do
+        {:ok, _} ->
+          socket
+          |> put_flash(:info, gettext("Consultation successfully deleted"))
+          |> push_navigate(to: PathUtils.consultations_path())
+
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to delete the consultation: %{reason}", reason: reason)
+
+          put_flash(socket, :error, message)
+      end
+
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_info({:error, reason}, socket) do
     Logger.error(reason)
@@ -749,14 +919,44 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   @impl true
   def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
-    consultation_transcription = AsyncResult.ok(result.consultation_transcription)
-    medical_note_changeset = AsyncResult.ok(result.medical_note_changeset)
+    current_user = socket.assigns.current_user
+    consultation = socket.assigns.consultation || Consultation.default()
+    consultation_transcription = result.consultation_transcription
+    medical_note_changeset = result.medical_note_changeset
+
+    user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
+
+    {:ok, %{"title" => title}} =
+      Ambiantcare.AI.LLMs.generate("consultations/title/v1_0", user_prompt)
+
+    attrs = %{
+      title: title,
+      transcription: consultation_transcription,
+      user_id: current_user.id,
+      end_datetime: DateTime.utc_now()
+    }
+
+    socket =
+      case Consultations.create_or_update_consultation(current_user, consultation, attrs) do
+        {:ok, %Consultation{} = consultation} ->
+          push_navigate(socket, to: PathUtils.consultation_path(consultation))
+
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to save the consultation: %{reason}", reason: reason)
+
+          socket
+          |> put_flash(:error, message)
+          |> assign(consultation_transcription_loading: false)
+      end
 
     socket =
       socket
       |> assign(consultation_transcription_loading: false)
-      |> assign(consultation_transcription: consultation_transcription)
-      |> assign(medical_note_changeset: medical_note_changeset)
+      |> assign(consultation_transcription: AsyncResult.ok(consultation_transcription))
+      |> assign(medical_note_changeset: AsyncResult.ok(medical_note_changeset))
 
     {:noreply, socket}
   end
@@ -851,8 +1051,33 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     assign(socket, current_user: current_user)
   end
 
-  defp assign_current_user(socket, _session) do
-    assign(socket, current_user: nil)
+  defp assign_consultations(socket) do
+    current_user = socket.assigns.current_user
+    consultations = Consultations.list_consultations(current_user)
+    assign(socket, consultations: consultations)
+  end
+
+  defp assign_consultation(socket, %{"consultation_id" => consultation_id}) do
+    current_user = socket.assigns.current_user
+    consultation = Consultations.get_consultation(current_user, consultation_id)
+    assign(socket, consultation: consultation)
+  end
+
+  defp assign_consultation(socket, _params) do
+    current_user = socket.assigns.current_user
+    consultation = Consultations.get_latest_consultation(current_user)
+    assign(socket, consultation: consultation)
+  end
+
+  defp assign_consultation_transcription(%{assigns: %{consultation: %Consultation{}}} = socket) do
+    consultation = socket.assigns.consultation
+    transcription = %AsyncResult{ok?: true, loading: false, result: consultation.transcription}
+    assign(socket, consultation_transcription: transcription)
+  end
+
+  defp assign_consultation_transcription(%{assigns: %{consultation: nil}} = socket) do
+    transcription = %AsyncResult{ok?: true, loading: false, result: nil}
+    assign(socket, consultation_transcription: transcription)
   end
 
   defp assign_huggingface_deployment(socket, params) do
@@ -1013,7 +1238,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp query_llm(%{} = params) do
-    user_prompt = Prompts.user(params)
+    user_prompt = Prompts.medical_note_user_prompt(params)
     result = Ambiantcare.AI.LLMs.generate("medical_notes/v1_0", user_prompt)
 
     Logger.debug("*** prompt ***")
@@ -1034,7 +1259,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
     # @ryanzidago - do not hardcode the model name
     with false <- use_local_stt?(),
-         {:ok, response} =
+         {:ok, response} <-
            HuggingFace.Dedicated.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
          state when state != "running" <- get_in(response, ~w(status state)),
          {:ok, _} <- HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx") do

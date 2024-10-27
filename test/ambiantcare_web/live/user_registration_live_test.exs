@@ -3,7 +3,7 @@ defmodule AmbiantcareWeb.UserRegistrationLiveTest do
 
   import Phoenix.LiveViewTest
   import Ambiantcare.AccountsFixtures
-  import AmbiantcareWeb.Utils.Path, only: [medical_notes_path: 0]
+  import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 0]
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -18,7 +18,7 @@ defmodule AmbiantcareWeb.UserRegistrationLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/en/users/register")
-        |> follow_redirect(conn, medical_notes_path())
+        |> follow_redirect(conn, consultations_path())
 
       assert {:ok, _conn} = result
     end
