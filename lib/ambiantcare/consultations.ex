@@ -43,6 +43,7 @@ defmodule Ambiantcare.Consultations do
     |> Repo.all()
   end
 
+  @spec list_consultations_query(User.t()) :: Ecto.Query.t()
   def list_consultations_query(%User{} = user) do
     from(cons in Consultation, as: :cons)
     |> where([cons: cons], cons.user_id == ^user.id)
