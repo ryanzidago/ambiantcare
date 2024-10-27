@@ -16,7 +16,7 @@ defmodule Ambiantcare.Consultations.Consultation do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "consultations" do
-    field :label, :string
+    field :title, :string
     field :transcription, Encrypted.Binary
     field :context, Encrypted.Binary
     field :start_datetime, :utc_datetime
