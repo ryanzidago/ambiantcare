@@ -20,7 +20,7 @@ defmodule Ambiantcare.MedicalNotes.Templates do
   def templates_query(%User{} = user) do
     from(r in Template, as: :t)
     |> where([t: t], t.user_id == ^user.id)
-    |> order_by([t: t], desc: t.is_default, desc: t.title)
+    |> order_by([t: t], desc: t.is_default, asc: t.title)
   end
 
   @spec change_user_default_template(User.t(), Template.t(), map()) :: Changeset.t()

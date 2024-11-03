@@ -30,13 +30,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
     medical_note
     |> cast(attrs, [:title, :description, :is_default, :user_id])
     |> cast_embed(:fields, with: &Template.Field.changeset/2)
-    |> validate_required([:title, :description, :is_default, :user_id])
-  end
-
-  def change_default_template_changet(%__MODULE__{} = template, %{} = attrs) do
-    template
-    |> cast(attrs, [:is_default])
-    |> validate_required([:is_default])
+    |> validate_required([:title, :is_default, :user_id])
   end
 
   def default_template do
