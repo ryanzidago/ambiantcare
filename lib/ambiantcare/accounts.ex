@@ -4,9 +4,13 @@ defmodule Ambiantcare.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias Ambiantcare.Repo
 
   alias Ambiantcare.Accounts.{User, UserToken, UserNotifier}
+  alias Ambiantcare.MedicalNotes.Template
+
+  alias Ambiantcare.Repo
+
+  alias Ecto.Multi
 
   ## Database getters
 
@@ -75,9 +79,31 @@ defmodule Ambiantcare.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    user = User.registration_changeset(%User{}, attrs)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
+
+    result =
+      Multi.new()
+      |> Multi.insert(:user, user)
+      |> Multi.insert_all(:templates, Template, fn %{user: user} ->
+        build_templates(user, now)
+      end)
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{user: user}} -> {:ok, user}
+      {:error, :user, changeset, _} -> {:error, changeset}
+    end
+  end
+
+  defp build_templates(user, now) do
+    %{user_id: user.id, inserted_at: now, updated_at: now}
+    |> Template.default_templates_attrs()
+    |> Enum.map(fn template ->
+      Map.update!(template, :fields, fn fields ->
+        Enum.map(fields, &struct!(Template.Field, &1))
+      end)
+    end)
   end
 
   @doc """

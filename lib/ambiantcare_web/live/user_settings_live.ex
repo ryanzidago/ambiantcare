@@ -3,9 +3,13 @@ defmodule AmbiantcareWeb.UserSettingsLive do
   use Gettext, backend: AmbiantcareWeb.Gettext
 
   alias Ambiantcare.Accounts
+  alias Ambiantcare.MedicalNotes.Templates
+  alias Ambiantcare.MedicalNotes.Template
 
   alias AmbiantcareWeb.Components.Branding
   alias AmbiantcareWeb.Components.Shell
+
+  alias Ecto.Changeset
 
   def render(assigns) do
     ~H"""
@@ -23,6 +27,9 @@ defmodule AmbiantcareWeb.UserSettingsLive do
           password_form={@password_form}
           locale={@locale}
           trigger_submit={@trigger_submit}
+          default_medical_note_template_form={@default_medical_note_template_form}
+          default_medical_note_template={@default_medical_note_template}
+          medical_note_template_options={@medical_note_template_options}
         />
       </:main>
     </Shell.with_sidebar>
@@ -35,11 +42,25 @@ defmodule AmbiantcareWeb.UserSettingsLive do
       <.header class="text-center">
         <%= gettext("Account Settings") %>
         <:subtitle>
-          <%= gettext("Manage your account email address and password settings") %>
+          <%= gettext("Manage your account, email address and password settings") %>
         </:subtitle>
       </.header>
 
       <div class="space-y-12 divide-y">
+        <div>
+          <.simple_form
+            for={@default_medical_note_template_form}
+            id="default_medical_note_template_form"
+            phx-change="change_default_medical_note_template_form"
+          >
+            <.input
+              type="select"
+              field={@default_medical_note_template_form[:default_medical_note_template_id]}
+              options={@medical_note_template_options}
+              label={gettext("Select default template")}
+            />
+          </.simple_form>
+        </div>
         <div>
           <.simple_form
             for={@email_form}
@@ -184,14 +205,38 @@ defmodule AmbiantcareWeb.UserSettingsLive do
 
     socket =
       socket
+      |> assign(current_user: user)
       |> assign(:current_password, nil)
       |> assign(:email_form_current_password, nil)
       |> assign(:current_email, user.email)
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
+      |> assign(default_medical_note_template_form: to_form(%{}))
       |> assign(:trigger_submit, false)
+      |> assign_medical_note_templates()
+      |> assign_default_medical_note_template()
+      |> assign_medical_note_template_options()
 
     {:ok, socket}
+  end
+
+  defp assign_medical_note_templates(socket) do
+    current_user = socket.assigns.current_user
+    templates = Templates.templates(current_user)
+
+    assign(socket, medical_note_templates: templates)
+  end
+
+  defp assign_default_medical_note_template(socket) do
+    default_template = Enum.find(socket.assigns.medical_note_templates, & &1.is_default)
+
+    assign(socket, default_medical_note_template: default_template)
+  end
+
+  defp assign_medical_note_template_options(socket) do
+    options = Enum.map(socket.assigns.medical_note_templates, &{&1.title, &1.id})
+
+    assign(socket, medical_note_template_options: options)
   end
 
   def handle_event("validate_email", params, socket) do
@@ -260,5 +305,42 @@ defmodule AmbiantcareWeb.UserSettingsLive do
   def handle_event("toggle_action_panel", %{"action" => "medical_notes"}, socket) do
     path = AmbiantcareWeb.Utils.PathUtils.consultations_path(socket.assigns.locale)
     {:noreply, push_navigate(socket, to: path)}
+  end
+
+  def handle_event(
+        "change_default_medical_note_template_form",
+        %{"default_medical_note_template_id" => template_id},
+        socket
+      ) do
+    current_user = socket.assigns.current_user
+    previous_default_template = Enum.find(socket.assigns.medical_note_templates, & &1.is_default)
+    template = Enum.find(socket.assigns.medical_note_templates, &(&1.id == template_id))
+
+    result =
+      Templates.update_user_default_template(
+        current_user,
+        previous_default_template,
+        template
+      )
+
+    socket =
+      case result do
+        {:ok, %{default_template: %Template{}}} ->
+          socket
+          |> put_flash(:info, gettext("Default template sucessfully updated"))
+          |> assign_medical_note_templates()
+          |> assign_default_medical_note_template()
+          |> assign_medical_note_template_options()
+
+        {:error, %Changeset{} = changeset} ->
+          message =
+            dgettext("errors", "Failed to update default template: %{reason}",
+              reason: changeset.errors
+            )
+
+          put_flash(socket, :error, message)
+      end
+
+    {:noreply, socket}
   end
 end

@@ -1,6 +1,9 @@
 defmodule Ambiantcare.Accounts.User do
   use Ecto.Schema
+  use Gettext, backend: AmbiantcareWeb.Gettext
+
   import Ecto.Changeset
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
@@ -9,6 +12,8 @@ defmodule Ambiantcare.Accounts.User do
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+
+    has_many :medical_note_templates, Ambiantcare.MedicalNotes.Template
 
     timestamps(type: :utc_datetime)
   end
