@@ -8,7 +8,7 @@ defmodule Ambiantcare.Repo.DataMigrations.SetupDefaultTemplatesForExistingUsers 
     ```
   """
 
- alias Ambiantcare.Repo
+  alias Ambiantcare.Repo
   alias Ambiantcare.Accounts.User
   alias Ambiantcare.MedicalNotes.Template
 
@@ -19,7 +19,7 @@ defmodule Ambiantcare.Repo.DataMigrations.SetupDefaultTemplatesForExistingUsers 
 
     default_templates = [
       Map.put(Template.default_template_attrs(), :is_default, true),
-      Template.gastroenterology_template_attrs(),
+      Template.gastroenterology_template_attrs()
     ]
 
     Repo.transaction(fn ->
