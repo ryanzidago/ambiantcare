@@ -33,6 +33,16 @@ defmodule Ambiantcare.MedicalNotes.Template do
     |> validate_required([:title, :is_default, :user_id])
   end
 
+  def default_templates_attrs(attrs \\ %{}) do
+    Enum.map(
+      [
+        default_template_attrs(),
+        gastroenterology_template_attrs()
+      ],
+      &Map.merge(&1, attrs)
+    )
+  end
+
   def default_template do
     default_template_attrs()
     |> changeset()
@@ -43,6 +53,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
     %{
       title: gettext("General Medicine"),
       description: "This is the default template for medical notes",
+      is_default: true,
       fields: [
         %{
           name: :chief_complaint,
@@ -118,6 +129,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
     %{
       title: gettext("Gastroenterology"),
       description: "This is the default template for gastroenterology notes",
+      is_default: false,
       fields: [
         %{
           name: :chief_complaint,

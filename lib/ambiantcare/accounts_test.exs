@@ -5,6 +5,9 @@ defmodule Ambiantcare.AccountsTest do
 
   import Ambiantcare.AccountsFixtures
   alias Ambiantcare.Accounts.{User, UserToken}
+  alias Ambiantcare.MedicalNotes.Template
+
+  import Ecto.Query
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
@@ -91,6 +94,15 @@ defmodule Ambiantcare.AccountsTest do
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
+    end
+
+    test "creates boilerplate templates" do
+      email = unique_user_email()
+      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
+
+      assert Template
+             |> where(user_id: ^user.id)
+             |> Repo.aggregate(:count) == 2
     end
   end
 
