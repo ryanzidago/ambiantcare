@@ -13,7 +13,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Phoenix.LiveView.UploadEntry
   alias Ecto.Changeset
 
-  alias Ambiantcare.MedicalNotes.Template
+  alias Ambiantcare.MedicalNotes.Templates
   alias Ambiantcare.MedicalNotes.MedicalNote
   alias Ambiantcare.MedicalNotes.Prompts
   alias Ambiantcare.Audio
@@ -1296,9 +1296,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp assign_templates_by_id(socket) do
+    current_user = socket.assigns.current_user
+
     templates_by_id =
-      [Template.default_template(), Template.gastroenterology_template()]
-      |> Map.new(&{&1.key, &1})
+      current_user
+      |> Templates.templates()
+      |> Map.new(&{&1.id, &1})
 
     assign(socket, templates_by_id: templates_by_id)
   end
@@ -1307,7 +1310,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     selected_template =
       socket.assigns.templates_by_id
       |> Map.values()
-      |> List.first()
+      |> Enum.find(& &1.is_default)
 
     assign(socket, selected_template: selected_template)
   end

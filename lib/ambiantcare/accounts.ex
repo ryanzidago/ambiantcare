@@ -4,6 +4,7 @@ defmodule Ambiantcare.Accounts do
   """
 
   import Ecto.Query, warn: false
+
   alias Ambiantcare.Repo
 
   alias Ambiantcare.Accounts.{User, UserToken, UserNotifier}

@@ -3,17 +3,23 @@ defmodule Ambiantcare.MedicalNotes.Template do
   use Gettext, backend: AmbiantcareWeb.Gettext
 
   alias __MODULE__
+  alias Ambiantcare.Accounts.User
 
   import Ecto.Changeset
 
-  schema "medical_notes" do
-    field :key, :string
+  @type t :: %__MODULE__{}
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+  schema "medical_note_templates" do
+    field :is_default, :boolean, default: false
     field :title, :string
     field :description, :string
 
-    belongs_to :template, __MODULE__
-
     embeds_many :fields, Template.Field
+
+    belongs_to :user, User
+
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(attrs \\ %{}) do
@@ -22,9 +28,15 @@ defmodule Ambiantcare.MedicalNotes.Template do
 
   def changeset(%__MODULE__{} = medical_note, attrs) do
     medical_note
-    |> cast(attrs, [:title, :description, :key])
+    |> cast(attrs, [:title, :description, :is_default, :user_id])
     |> cast_embed(:fields, with: &Template.Field.changeset/2)
-    |> validate_required([:title, :description])
+    |> validate_required([:title, :description, :is_default, :user_id])
+  end
+
+  def change_default_template_changet(%__MODULE__{} = template, %{} = attrs) do
+    template
+    |> cast(attrs, [:is_default])
+    |> validate_required([:is_default])
   end
 
   def default_template do
@@ -35,7 +47,6 @@ defmodule Ambiantcare.MedicalNotes.Template do
 
   def default_template_attrs do
     %{
-      key: "0",
       title: gettext("General Medicine"),
       description: "This is the default template for medical notes",
       fields: [
@@ -111,7 +122,6 @@ defmodule Ambiantcare.MedicalNotes.Template do
 
   def gastroenterology_template_attrs do
     %{
-      key: "1",
       title: gettext("Gastroenterology"),
       description: "This is the default template for gastroenterology notes",
       fields: [
