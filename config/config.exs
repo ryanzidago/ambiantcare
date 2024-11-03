@@ -92,6 +92,11 @@ config :ambiantcare, Oban,
   ],
   repo: Ambiantcare.Repo
 
+config :ambiantcare, Ambiantcare.Repo,
+  migration_timestamps: [type: :utc_datetime],
+  migration_primary_key: [name: :id, type: :binary_id],
+  migration_foreign_key: [column: :id, type: :binary_id]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

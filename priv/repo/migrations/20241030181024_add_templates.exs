@@ -8,7 +8,6 @@ defmodule Ambiantcare.Repo.Migrations.AddTemplates do
       add :title, :string, null: false
       add :description, :string
       add :fields, {:array, :map}, null: false, default: []
-
       add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
 
       timestamps(type: :utc_datetime)

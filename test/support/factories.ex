@@ -3,4 +3,5 @@ defmodule Ambiantcare.Factories do
   use Ambiantcare.Factories.UserFactory
   use Ambiantcare.Factories.ConsultationFactory
   use Ambiantcare.Factories.TemplateFactory
+  use Ambiantcare.Factories.MedicalNoteFactory
 end

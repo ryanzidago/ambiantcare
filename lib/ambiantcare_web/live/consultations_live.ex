@@ -13,6 +13,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Phoenix.LiveView.UploadEntry
   alias Ecto.Changeset
 
+  alias Ambiantcare.MedicalNotes
   alias Ambiantcare.MedicalNotes.Templates
   alias Ambiantcare.MedicalNotes.MedicalNote
   alias Ambiantcare.MedicalNotes.Prompts
@@ -52,7 +53,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       |> assign(recording?: false)
       |> assign(consultation_transcription_loading: false)
       |> assign(visit_context: %AsyncResult{ok?: true, loading: false, result: nil})
-      |> assign_medical_note_changeset(params)
+      |> assign_medical_note_changeset()
       |> assign(medical_note_loading: false)
       |> assign(microphone_hook: Microphone.from_params(params))
       |> assign(url_params: params)
@@ -585,10 +586,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       <:failed :let={_reason}>
         <%= gettext("Oops, something went wrong!") %>
       </:failed>
-      <.form :let={form} for={changeset} class="flex flex-col gap-10 drop-shadow-sm">
-        <.inputs_for :let={field} field={form[:fields]}>
-          <.field field={field} selected_template={@selected_template} />
-        </.inputs_for>
+      <.form :let={_form} for={changeset} class="flex flex-col gap-10 drop-shadow-sm">
+        <.field
+          :for={field <- get_field(changeset, :fields, [])}
+          field={field}
+          selected_template={@selected_template}
+        />
 
         <div class="flex flex-row gap-10">
           <.button
@@ -626,12 +629,17 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp field(assigns) do
-    name = fetch_field!(assigns.field.source, :name)
-    value = fetch_field!(assigns.field.source, :value)
+    name = Map.get(assigns.field, :name) || Map.get(assigns.field, "name")
+    value = Map.get(assigns.field, :value) || Map.get(assigns.field, "value")
 
     template_fields = assigns.selected_template.fields
     template_fields_by_name = Map.new(template_fields, fn field -> {field.name, field} end)
-    template_field = Map.fetch!(template_fields_by_name, name)
+
+    template_field =
+      cond do
+        is_atom(name) -> Map.get(template_fields_by_name, name)
+        is_binary(name) -> Map.get(template_fields_by_name, String.to_existing_atom(name))
+      end
 
     assigns =
       assigns
@@ -844,13 +852,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         %{"consultation_transcription" => consultation_transcription},
         socket
       ) do
-    selected_template = socket.assigns.selected_template
-    context = socket.assigns.visit_context.result
-
     params = %{
-      context: context,
+      current_user: socket.assigns.current_user,
+      consultation: socket.assigns.consultation,
+      context: socket.assigns.visit_context.result,
       transcription: consultation_transcription,
-      template: selected_template
+      template: socket.assigns.selected_template
     }
 
     socket =
@@ -967,16 +974,31 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         socket
       ) do
     socket =
-      socket
-      |> assign(medical_note_loading: false)
-      |> assign(medical_note_changeset: AsyncResult.ok(medical_note_changeset))
+      case MedicalNotes.create_medical_note(medical_note_changeset) do
+        {:ok, %MedicalNote{}} ->
+          socket
+          |> put_flash(:info, gettext("Medical note successfully created"))
+          |> assign(medical_note_loading: false)
+          |> assign(medical_note_changeset: AsyncResult.ok(medical_note_changeset))
+          |> assign(current_action: "medical_note")
+
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to create the medical note: %{reason}", reason: reason)
+
+          put_flash(socket, :error, message)
+      end
 
     {:noreply, socket}
   end
 
   def handle_async(task, {:ok, {:error, error}}, socket) do
-    error = gettext("Task %{task} failed with error: %{error}", task: task, error: error)
-    socket = put_flash(socket, :error, error)
+    message =
+      gettext("Task %{task} failed with error: %{error}", task: task, error: inspect(error))
+
+    socket = put_flash(socket, :error, message)
     {:noreply, socket}
   end
 
@@ -1025,6 +1047,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
     context_params =
       %{}
+      |> Map.put(:current_user, socket.assigns.current_user)
+      |> Map.put(:consultation, socket.assigns.consultation)
       |> Map.put(:transcription, current_consultation_transcription)
       |> Map.put(:template, selected_template)
       |> Map.put(:visit_context, context)
@@ -1247,8 +1271,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     Logger.debug(inspect(result))
 
     with {:ok, response} <- result,
-         {:ok, template} <- Map.fetch(params, :template),
-         {:ok, medical_note_changeset} <- response_to_changeset(response, template) do
+         {:ok, medical_note_changeset} <- response_to_changeset(response, params) do
       {:ok, medical_note_changeset}
     else
       {:error, reason} -> {:error, reason}
@@ -1315,25 +1338,33 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     assign(socket, selected_template: selected_template)
   end
 
-  defp assign_medical_note_changeset(socket, _params) do
-    selected_template = socket.assigns.selected_template
+  defp assign_medical_note_changeset(socket) do
+    medical_note =
+      MedicalNotes.get_latest_medical_note(
+        socket.assigns.current_user,
+        socket.assigns.consultation
+      )
 
     changeset =
-      selected_template
-      |> MedicalNote.from_template()
-      |> MedicalNote.changeset(%{})
+      if medical_note do
+        medical_note
+        |> Map.from_struct()
+        |> MedicalNote.changeset()
+      else
+        socket.assigns.selected_template
+        |> MedicalNote.from_template()
+        |> MedicalNote.changeset(%{})
+      end
 
-    changeset =
-      %AsyncResult{
-        ok?: true,
-        loading: false,
-        result: changeset
-      }
+    changeset = %AsyncResult{ok?: true, loading: false, result: changeset}
 
     assign(socket, medical_note_changeset: changeset)
   end
 
-  defp response_to_changeset(response, template) do
+  defp response_to_changeset(response, params) do
+    template = Map.fetch!(params, :template)
+    user = Map.fetch!(params, :current_user)
+    consultation = Map.fetch!(params, :consultation)
     template_fields_by_name = Map.new(template.fields, &{&1.name, &1})
 
     fields =
@@ -1348,7 +1379,14 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       end)
       |> Enum.sort_by(& &1.position)
 
-    changeset = MedicalNote.changeset(%MedicalNote{}, %{title: "Some title", fields: fields})
+    attrs = %{
+      template_id: template.id,
+      consultation_id: consultation.id,
+      user_id: user.id,
+      fields: fields
+    }
+
+    changeset = MedicalNote.changeset(%MedicalNote{}, attrs)
 
     {:ok, changeset}
   end

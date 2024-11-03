@@ -10,7 +10,11 @@ defmodule Ambiantcare.Vault do
       }
     ]
 
-    config = Keyword.put(config, :ciphers, ciphers)
+    config =
+      config
+      |> Keyword.put(:ciphers, ciphers)
+      |> Keyword.put(:json_library, Jason)
+
     {:ok, config}
   end
 
