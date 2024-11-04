@@ -4,8 +4,12 @@ defmodule Ambiantcare.Factories.TemplateFactory do
   defmacro __using__(_opts) do
     quote do
       def template_factory(attrs \\ %{}) do
-        Template.default_template_attrs()
-        |> Map.merge(attrs)
+        title = Map.get(attrs, :title, "A Random Template #{DateTime.utc_now()}")
+
+        attrs =
+          Template.default_template_attrs()
+          |> Map.merge(attrs)
+          |> Map.put(:title, title)
 
         Template
         |> struct!(attrs)

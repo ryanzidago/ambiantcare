@@ -101,12 +101,22 @@ msgstr "deve essere maggiore o uguale a %{number}"
 msgid "must be equal to %{number}"
 msgstr "deve essere uguale a %{number}"
 
-#: lib/ambiantcare_web/live/consultations_live.ex:948
+#: lib/ambiantcare_web/live/consultations_live.ex:949
 #, elixir-autogen, elixir-format
 msgid "Failed to save the consultation: %{reason}"
 msgstr "Impossibile salvare la consultazione: %{reason}"
 
-#: lib/ambiantcare_web/live/consultations_live.ex:906
+#: lib/ambiantcare_web/live/consultations_live.ex:907
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Failed to delete the consultation: %{reason}"
 msgstr "Impossibile eliminare la consultazione: %{reason}"
+
+#: lib/ambiantcare_web/live/consultations_live.ex:988
+#, elixir-autogen, elixir-format
+msgid "Failed to create the medical note: %{reason}"
+msgstr "Impossibile creare la nota medica: %{reason}"
+
+#: lib/ambiantcare_web/live/user_settings_live.ex:337
+#, elixir-autogen, elixir-format
+msgid "Failed to update default template: %{reason}"
+msgstr "Impossibile aggiornare il modello predefinito: %{reason}"

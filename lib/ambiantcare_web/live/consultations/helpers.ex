@@ -11,8 +11,12 @@ defmodule AmbiantcareWeb.ConsultationsLive.Helpers do
     header = gettext("Medical Note") <> " " <> "#{datetime}\n\n"
 
     body =
-      Enum.map_join(medical_note.fields, "\n\n", fn field ->
-        Gettext.gettext(AmbiantcareWeb.Gettext, field.label) <> ":\n" <> (field.value || "")
+      Enum.map_join(medical_note.fields, "\n\n", fn
+        field when is_map(field) ->
+          label = Map.get(field, "label")
+          value = Map.get(field, "value")
+
+          Gettext.gettext(AmbiantcareWeb.Gettext, label) <> ":\n" <> (value || "")
       end)
 
     header <> body

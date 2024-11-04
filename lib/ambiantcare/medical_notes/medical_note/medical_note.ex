@@ -3,19 +3,21 @@ defmodule Ambiantcare.MedicalNotes.MedicalNote do
 
   alias __MODULE__
   alias Ambiantcare.MedicalNotes.Template
+  alias Ambiantcare.Accounts.User
+  alias Ambiantcare.Consultations.Consultation
 
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "medical_notes" do
-    # belongs_to :author, Author
-    # belongs_to :encounter, Encounter
-    # belongs_to :organisation, Organisation
-
-    field :title, :string
-
     belongs_to :template, Template
+    belongs_to :user, User
+    belongs_to :consultation, Consultation
 
-    embeds_many :fields, MedicalNote.Field
+    field :fields, Ambiantcare.Encrypted.MapList
+
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(attrs \\ %{}) do
@@ -24,14 +26,12 @@ defmodule Ambiantcare.MedicalNotes.MedicalNote do
 
   def changeset(%__MODULE__{} = medical_note, attrs) do
     medical_note
-    |> cast(attrs, [:title])
-    |> cast_embed(:fields, with: &MedicalNote.Field.changeset/2)
-    |> validate_required([:title])
+    |> cast(attrs, [:fields, :user_id, :consultation_id, :template_id])
+    |> validate_required([:fields, :user_id, :consultation_id, :template_id])
   end
 
   def from_template(%Template{} = template) do
     %__MODULE__{
-      title: "Untitled",
       template_id: template.id,
       fields: Enum.map(template.fields, &MedicalNote.Field.from_template/1)
     }

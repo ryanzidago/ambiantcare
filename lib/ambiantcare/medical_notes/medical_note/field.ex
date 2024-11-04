@@ -1,7 +1,6 @@
 defmodule Ambiantcare.MedicalNotes.MedicalNote.Field do
   use Ecto.Schema
 
-  alias Ambiantcare.MedicalNotes.Template
   alias Ambiantcare.MedicalNotes.FieldNames
 
   import Ecto.Changeset
@@ -26,10 +25,10 @@ defmodule Ambiantcare.MedicalNotes.MedicalNote.Field do
     |> validate_required([:name, :label])
   end
 
-  def from_template(%Template.Field{} = field) do
-    %__MODULE__{
-      name: field.name,
-      label: field.label
+  def from_template(%{} = field) do
+    %{
+      "name" => field["name"],
+      "label" => field["label"]
     }
   end
 end
