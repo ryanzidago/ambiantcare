@@ -116,7 +116,7 @@ msgstr "Impossibile eliminare la consultazione: %{reason}"
 msgid "Failed to create the medical note: %{reason}"
 msgstr "Impossibile creare la nota medica: %{reason}"
 
-#: lib/ambiantcare_web/live/user_settings_live.ex:337
+#: lib/ambiantcare_web/live/user_settings_live.ex:341
 #, elixir-autogen, elixir-format
 msgid "Failed to update default template: %{reason}"
 msgstr "Impossibile aggiornare il modello predefinito: %{reason}"

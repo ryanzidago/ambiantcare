@@ -18,6 +18,7 @@ Your title must:
 - Be concise yet informative
 - Use full medical terms (no abbreviations)
 - Exclude any patient demographics (age, gender)
+- Must be in the same language as the input!
 
 Generate only the title, nothing else.
 """

@@ -377,7 +377,7 @@ msgstr ""
 msgid "Therapeutic Plan"
 msgstr ""
 
-#: lib/ambiantcare_web/live/user_settings_live.ex:267
+#: lib/ambiantcare_web/live/user_settings_live.ex:271
 #, elixir-autogen, elixir-format
 msgid "A link to confirm your email change has been sent to the new address."
 msgstr ""
@@ -744,13 +744,13 @@ msgstr ""
 msgid "Failed to create a new consultation: %{reason}"
 msgstr ""
 
-#: lib/ambiantcare/consultations/consultation.ex:13
+#: lib/ambiantcare/consultations/consultation.ex:44
 #: lib/ambiantcare_web/live/consultations_live.ex:202
 #, elixir-autogen, elixir-format, fuzzy
 msgid "New consultation"
 msgstr ""
 
-#: lib/ambiantcare_web/live/user_settings_live.ex:330
+#: lib/ambiantcare_web/live/user_settings_live.ex:334
 #, elixir-autogen, elixir-format
 msgid "Default template sucessfully updated"
 msgstr ""

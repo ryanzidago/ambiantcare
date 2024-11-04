@@ -10,7 +10,7 @@ defmodule Ambiantcare.Consultations.Consultation do
 
   import Ecto.Changeset
 
-  @default_title gettext("New consultation")
+  @default_title "New consultation"
 
   @type t :: %__MODULE__{}
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -41,5 +41,5 @@ defmodule Ambiantcare.Consultations.Consultation do
 
   def default, do: %__MODULE__{}
 
-  def default_title, do: @default_title
+  def default_title, do: gettext(@default_title)
 end

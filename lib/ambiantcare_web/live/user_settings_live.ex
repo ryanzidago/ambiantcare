@@ -234,7 +234,11 @@ defmodule AmbiantcareWeb.UserSettingsLive do
   end
 
   defp assign_medical_note_template_options(socket) do
-    options = Enum.map(socket.assigns.medical_note_templates, &{&1.title, &1.id})
+    options =
+      Enum.map(
+        socket.assigns.medical_note_templates,
+        &{Gettext.gettext(AmbiantcareWeb.Gettext, &1.title), &1.id}
+      )
 
     assign(socket, medical_note_template_options: options)
   end
