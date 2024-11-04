@@ -5,7 +5,6 @@ defmodule AmbiantcareWeb.ConsultationsLive.Helpers do
   alias Phoenix.LiveView.AsyncResult
 
   alias Ambiantcare.MedicalNotes.MedicalNote
-  alias Ambiantcare.MedicalNotes.Template
 
   # @spec to_text(MedicalNote.t() | Changeset.t(), DateTime.t()) :: String.t()
   def to_text(%MedicalNote{} = medical_note, datetime) do
@@ -17,8 +16,10 @@ defmodule AmbiantcareWeb.ConsultationsLive.Helpers do
           Gettext.gettext(AmbiantcareWeb.Gettext, field.label) <> ":\n" <> (field.value || "")
 
         field when is_map(field) ->
-          Gettext.gettext(AmbiantcareWeb.Gettext, field["label"]) <>
-            ":\n" <> (field["value"] || "")
+          label = Map.get(field, "label")
+          value = Map.get(field, "value")
+
+          Gettext.gettext(AmbiantcareWeb.Gettext, label) <> ":\n" <> (value || "")
       end)
 
     header <> body

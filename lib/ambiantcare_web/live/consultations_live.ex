@@ -204,7 +204,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
-  defp consultations_group_label(nil), do: gettext("Not started")
+  defp consultations_group_label(nil), do: ""
 
   defp consultations_group_label(%Date{} = date) do
     locale = Gettext.get_locale(AmbiantcareWeb.Gettext)
@@ -629,23 +629,17 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp field(assigns) do
-    name = Map.get(assigns.field, :name) || Map.get(assigns.field, "name")
-    value = Map.get(assigns.field, :value) || Map.get(assigns.field, "value")
+    name = Map.get(assigns.field, "name")
+    value = Map.get(assigns.field, "value")
 
     template_fields = assigns.selected_template.fields
-    template_fields_by_name = Map.new(template_fields, fn field -> {field.name, field} end)
-
-    template_field =
-      cond do
-        is_atom(name) -> Map.get(template_fields_by_name, name)
-        is_binary(name) -> Map.get(template_fields_by_name, String.to_existing_atom(name))
-      end
+    template_field = Enum.find(template_fields, fn field -> field["name"] == name end)
 
     assigns =
       assigns
-      |> assign(input_type: Atom.to_string(template_field.input_type))
+      |> assign(input_type: template_field["input_type"] || "textarea")
       |> assign(name: name)
-      |> assign(label: template_field.label)
+      |> assign(label: template_field["label"])
       |> assign(value: value)
 
     ~H"""
@@ -973,6 +967,11 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         {:ok, {:ok, %Changeset{} = medical_note_changeset}},
         socket
       ) do
+    consultation = socket.assigns.consultation
+
+    medical_note_changeset =
+      Changeset.put_change(medical_note_changeset, :consultation_id, consultation.id)
+
     socket =
       case MedicalNotes.create_medical_note(medical_note_changeset) do
         {:ok, %MedicalNote{}} ->
@@ -998,7 +997,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     message =
       gettext("Task %{task} failed with error: %{error}", task: task, error: inspect(error))
 
-    socket = put_flash(socket, :error, message)
+    socket =
+      socket
+      |> put_flash(:error, message)
+      |> assign(consultation_transcription_loading: false)
+      |> assign(medical_note_loading: false)
+
     {:noreply, socket}
   end
 
@@ -1364,29 +1368,30 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp response_to_changeset(response, params) do
     template = Map.fetch!(params, :template)
     user = Map.fetch!(params, :current_user)
-    consultation = Map.fetch!(params, :consultation)
-    template_fields_by_name = Map.new(template.fields, &{&1.name, &1})
+    # consultation = Map.fetch!(params, :consultation)
+    template_fields_by_name = Map.new(template.fields, &{&1["name"], &1})
 
     fields =
       response
-      |> to_fields()
+      |> Enum.map(fn {name, value} -> %{"name" => name, "value" => value} end)
       |> Enum.map(fn field ->
-        template_field = Map.fetch!(template_fields_by_name, field.name)
+        template_field = Map.fetch!(template_fields_by_name, field["name"])
 
         field
-        |> Map.put(:label, template_field.label)
-        |> Map.put(:position, template_field.position)
+        |> Map.put("label", template_field["label"])
+        |> Map.put("position", template_field["position"])
       end)
-      |> Enum.sort_by(& &1.position)
+      |> Enum.sort_by(& &1["position"])
 
     attrs = %{
       template_id: template.id,
-      consultation_id: consultation.id,
+      # @ryanzidago - this breaks if the user does not have any consultations (e.g. first time user)
+      # consultation_id: consultation.id,
       user_id: user.id,
       fields: fields
     }
 
-    changeset = MedicalNote.changeset(%MedicalNote{}, attrs)
+    changeset = Ecto.Changeset.change(%MedicalNote{}, attrs)
 
     {:ok, changeset}
   end

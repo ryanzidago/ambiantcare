@@ -2,7 +2,6 @@ defmodule Ambiantcare.MedicalNotes.Template do
   use Ecto.Schema
   use Gettext, backend: AmbiantcareWeb.Gettext
 
-  alias __MODULE__
   alias Ambiantcare.Accounts.User
 
   import Ecto.Changeset
@@ -15,7 +14,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
     field :title, :string
     field :description, :string
 
-    embeds_many :fields, Template.Field
+    field :fields, {:array, :map}
 
     belongs_to :user, User
 
@@ -28,9 +27,8 @@ defmodule Ambiantcare.MedicalNotes.Template do
 
   def changeset(%__MODULE__{} = medical_note, attrs) do
     medical_note
-    |> cast(attrs, [:title, :description, :is_default, :user_id])
-    |> cast_embed(:fields, with: &Template.Field.changeset/2)
-    |> validate_required([:title, :is_default, :user_id])
+    |> cast(attrs, [:fields, :title, :description, :is_default, :user_id])
+    |> validate_required([:fields, :title, :is_default, :user_id])
   end
 
   def default_templates_attrs(attrs \\ %{}) do
@@ -56,64 +54,40 @@ defmodule Ambiantcare.MedicalNotes.Template do
       is_default: true,
       fields: [
         %{
-          name: :chief_complaint,
-          label: gettext("Chief Complaint"),
-          description: "The main reason for the patient's visit",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 0
+          "name" => "chief_complaint",
+          "label" => gettext("Chief Complaint"),
+          "description" => "The main reason for the patient's visit",
+          "position" => 0
         },
         %{
-          name: :present_medical_history,
-          label: gettext("Present medical history"),
-          description: "A detailed description of the patient's current illness",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 1
+          "name" => "present_medical_history",
+          "label" => gettext("Present medical history"),
+          "description" => "A detailed description of the patient's current illness",
+          "position" => 1
         },
         %{
-          name: :past_medical_history,
-          label: gettext("Past medical history"),
-          description: "The patient's past medical history",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 2
+          "name" => "past_medical_history",
+          "label" => gettext("Past medical history"),
+          "description" => "The patient's past medical history",
+          "position" => 2
         },
         %{
-          name: :ongoing_therapy,
-          label: gettext("Ongoing therapy"),
-          description: "Ongoing therapy",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 3
+          "name" => "ongoing_therapy",
+          "label" => gettext("Ongoing therapy"),
+          "description" => "Ongoing therapy",
+          "position" => 3
         },
         %{
-          name: :physical_assessment,
-          label: gettext("Physical Assessment"),
-          description: "The patient's physical assessment",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 4
+          "name" => "physical_assessment",
+          "label" => gettext("Physical Assessment"),
+          "description" => "The patient's physical assessment",
+          "position" => 4
         },
         %{
-          name: :therapeutic_plan,
-          label: gettext("Therapeutic Plan"),
-          description: "The patient's therapeutic plan",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 5
+          "name" => "therapeutic_plan",
+          "label" => gettext("Therapeutic Plan"),
+          "description" => "The patient's therapeutic plan",
+          "position" => 5
         }
       ]
     }
@@ -132,74 +106,46 @@ defmodule Ambiantcare.MedicalNotes.Template do
       is_default: false,
       fields: [
         %{
-          name: :chief_complaint,
-          label: gettext("Present Medical History"),
-          description: "The patient's current medical history",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 0
+          "name" => "chief_complaint",
+          "label" => gettext("Present Medical History"),
+          "description" => "The patient's current medical history",
+          "position" => 0
         },
         %{
-          name: :past_medical_history,
-          label: gettext("Past Medical History"),
-          description: "The patient's past medical history",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 1
+          "name" => "past_medical_history",
+          "label" => gettext("Past Medical History"),
+          "description" => "The patient's past medical history",
+          "position" => 1
         },
         %{
-          name: :home_medications,
-          label: gettext("Home Medications"),
-          description: "The patient's current medications",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :bullet,
-          is_visible: true,
-          position: 2
+          "name" => "home_medications",
+          "label" => gettext("Home Medications"),
+          "description" => "The patient's current medications",
+          "position" => 2
         },
         %{
-          name: :allergies,
-          label: gettext("Allergies"),
-          description: "The patient's allergies",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :bullet,
-          is_visible: true,
-          position: 3
+          "name" => "allergies",
+          "label" => gettext("Allergies"),
+          "description" => "The patient's allergies",
+          "position" => 3
         },
         %{
-          name: :physical_examination,
-          label: gettext("Physical Examination"),
-          description: "The patient's physical examination",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 4
+          "name" => "physical_examination",
+          "label" => gettext("Physical Examination"),
+          "description" => "The patient's physical examination",
+          "position" => 4
         },
         %{
-          name: :conclusions,
-          label: gettext("Conclusions"),
-          description: "The patient's diagnosis",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 5
+          "name" => "conclusions",
+          "label" => gettext("Conclusions"),
+          "description" => "The patient's diagnosis",
+          "position" => 5
         },
         %{
-          name: :therapeutic_advices,
-          label: gettext("Therapeutic Advices"),
-          description: "The patient's treatment plan",
-          autofill_instructions: "",
-          autofill_enabled: true,
-          writting_style: :prose,
-          is_visible: true,
-          position: 6
+          "name" => "therapeutic_advices",
+          "label" => gettext("Therapeutic Advices"),
+          "description" => "The patient's treatment plan",
+          "position" => 6
         }
       ]
     }
@@ -207,7 +153,7 @@ defmodule Ambiantcare.MedicalNotes.Template do
 
   def to_prompt(%__MODULE__{} = template) do
     template.fields
-    |> Map.new(fn field -> {field.name, "string"} end)
+    |> Map.new(fn field -> {field["name"], "string"} end)
     |> Jason.encode!()
   end
 end

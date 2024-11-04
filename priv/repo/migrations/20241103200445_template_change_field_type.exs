@@ -1,7 +1,7 @@
 defmodule Ambiantcare.Repo.Migrations.TemplateChangeFieldType do
   use Ecto.Migration
 
-   def up do
+  def up do
     # First remove the default value
     execute "ALTER TABLE medical_note_templates ALTER COLUMN fields DROP DEFAULT"
 

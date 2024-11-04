@@ -2,9 +2,6 @@ defmodule Ambiantcare.Accounts do
   @moduledoc """
   The Accounts context.
   """
-
-  import Ecto.Query, warn: false
-
   alias Ambiantcare.Accounts.{User, UserToken, UserNotifier}
   alias Ambiantcare.MedicalNotes.Template
 
@@ -12,6 +9,7 @@ defmodule Ambiantcare.Accounts do
 
   alias Ecto.Multi
 
+  import Ecto.Query, warn: false
   ## Database getters
 
   @doc """
@@ -86,7 +84,7 @@ defmodule Ambiantcare.Accounts do
       Multi.new()
       |> Multi.insert(:user, user)
       |> Multi.insert_all(:templates, Template, fn %{user: user} ->
-        build_templates(user, now)
+        Template.default_templates_attrs(%{user_id: user.id, inserted_at: now, updated_at: now})
       end)
       |> Repo.transaction()
 
@@ -94,16 +92,6 @@ defmodule Ambiantcare.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
-  end
-
-  defp build_templates(user, now) do
-    %{user_id: user.id, inserted_at: now, updated_at: now}
-    |> Template.default_templates_attrs()
-    |> Enum.map(fn template ->
-      Map.update!(template, :fields, fn fields ->
-        Enum.map(fields, &struct!(Template.Field, &1))
-      end)
-    end)
   end
 
   @doc """

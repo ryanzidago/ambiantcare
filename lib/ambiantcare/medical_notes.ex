@@ -21,7 +21,7 @@ defmodule Ambiantcare.MedicalNotes do
     |> Repo.insert()
   end
 
-  @spec get_latest_medical_note(User.t(), Consultation.t()) :: MedicalNote.t() | nil
+  @spec get_latest_medical_note(User.t(), Consultation.t() | nil) :: MedicalNote.t() | nil
   def get_latest_medical_note(%User{} = user, %Consultation{} = consultation) do
     from(mn in MedicalNote, as: :mn)
     |> where([mn: mn], mn.user_id == ^user.id)
@@ -30,4 +30,6 @@ defmodule Ambiantcare.MedicalNotes do
     |> limit(1)
     |> Repo.one()
   end
+
+  def get_latest_medical_note(_user, _consultation = nil), do: nil
 end
