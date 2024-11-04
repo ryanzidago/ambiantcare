@@ -632,12 +632,21 @@ defmodule AmbiantcareWeb.CoreComponents do
 
   def icon(%{name: "fa-linkedin"} = assigns) do
     ~H"""
-    <svg class={["w-5 h-5", @class]} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class={["w-full h-5", @class]} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill-rule="evenodd"
         d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22 3.5C22 2.672 21.328 2 20.5 2h-17C2.672 2 2 2.672 2 3.5v17c0 .828.672 1.5 1.5 1.5h17c.828 0 1.5-.672 1.5-1.5v-17z"
         clip-rule="evenodd"
       />
+    </svg>
+    """
+  end
+
+  def icon(%{name: "fa-envelope"} = assigns) do
+    ~H"""
+    <svg class={["w-5 h-5", @class]} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+      <path d="M64 112c-8.8 0-16 7.2-16 16l0 22.1L220.5 291.7c20.7 17 50.4 17 71.1 0L464 150.1l0-22.1c0-8.8-7.2-16-16-16L64 112zM48 212.2L48 384c0 8.8 7.2 16 16 16l384 0c8.8 0 16-7.2 16-16l0-171.8L322 328.8c-38.4 31.5-93.7 31.5-132 0L48 212.2zM0 128C0 92.7 28.7 64 64 64l384 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128z" />
     </svg>
     """
   end

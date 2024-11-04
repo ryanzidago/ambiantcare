@@ -14,7 +14,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-20 snap-mandatory snap-y h-screen overflow-y-scroll">
+    <div class="flex flex-col gap-20 h-screen overflow-y-scroll">
       <.header_section />
       <.hero_section />
       <.cta_section />
@@ -35,7 +35,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
     assigns = assign(assigns, links: links)
 
     ~H"""
-    <header class="snap-center sticky top-0 z-10">
+    <header class="sticky top-0 z-10">
       <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           <Branding.logo />
@@ -101,7 +101,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   defp hero_section(assigns) do
     ~H"""
-    <section class="bg-white dark:bg-gray-900 snap-center" id="hero">
+    <section class="bg-white dark:bg-gray-900" id="hero">
       <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         <div class="mr-auto place-self-center lg:col-span-7">
           <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
@@ -126,7 +126,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   defp cta_section(assigns) do
     ~H"""
-    <section class="bg-white dark:bg-gray-900 snap-center">
+    <section class="bg-white dark:bg-gray-900">
       <div class="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
         <div style="position: relative; padding-bottom: 56.25%; height: 0;">
           <iframe
@@ -157,7 +157,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   defp how_it_works_section(assigns) do
     ~H"""
-    <section class="bg-white dark:bg-gray-900 snap-center" id="how-it-works">
+    <section class="bg-white dark:bg-gray-900" id="how-it-works">
       <div class="py-8 px-4 mx-auto max-w-screen-xl text-center sm:py-16 lg:px-6">
         <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           <%= gettext("How it works") %>
@@ -233,7 +233,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
     assigns = assign(assigns, cards: cards)
 
     ~H"""
-    <section class="bg-white dark:bg-gray-900 md:snap-center" id="team">
+    <section class="bg-white dark:bg-gray-900" id="team">
       <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6 ">
         <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
@@ -244,15 +244,15 @@ defmodule AmbiantcareWeb.LandingPageLive do
         <div class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2">
           <div
             :for={card <- @cards}
-            class="snap-center md:snap-none items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700"
+            class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700"
           >
-            <a href="#">
+            <%!-- <a href="#">
               <img
                 class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg"
                 src={card.avatar_url}
                 alt={card.avatar_alt}
               />
-            </a>
+            </a> --%>
             <div class="p-5">
               <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 <a href="#"><%= card.full_name %></a>
@@ -261,7 +261,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
               <p class="mt-3 mb-4 font-light text-gray-500 dark:text-gray-400">
                 <%= card.description %>
               </p>
-              <div class="relative">
+              <div>
                 <ul class="flex items-center space-x-4 sm:mt-0">
                   <li :for={social <- card.socials}>
                     <.link
@@ -283,7 +283,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   defp footer_section(assigns) do
     ~H"""
-    <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800 snap-center">
+    <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
       <div class="mx-auto max-w-screen-xl text-center">
         <Branding.logo />
         <p class="my-6 text-gray-500 dark:text-gray-400">
