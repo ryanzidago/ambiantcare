@@ -12,9 +12,6 @@ defmodule AmbiantcareWeb.ConsultationsLive.Helpers do
 
     body =
       Enum.map_join(medical_note.fields, "\n\n", fn
-        field when is_struct(field) ->
-          Gettext.gettext(AmbiantcareWeb.Gettext, field.label) <> ":\n" <> (field.value || "")
-
         field when is_map(field) ->
           label = Map.get(field, "label")
           value = Map.get(field, "value")

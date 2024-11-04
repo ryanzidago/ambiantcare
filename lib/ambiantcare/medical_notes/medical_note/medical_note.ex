@@ -17,7 +17,7 @@ defmodule Ambiantcare.MedicalNotes.MedicalNote do
 
     field :fields, Ambiantcare.Encrypted.MapList
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(attrs \\ %{}) do
@@ -27,7 +27,6 @@ defmodule Ambiantcare.MedicalNotes.MedicalNote do
   def changeset(%__MODULE__{} = medical_note, attrs) do
     medical_note
     |> cast(attrs, [:fields, :user_id, :consultation_id, :template_id])
-    # |> cast_embed(:virtual_fields, with: &MedicalNote.Field.changeset/2)
     |> validate_required([:fields, :user_id, :consultation_id, :template_id])
   end
 

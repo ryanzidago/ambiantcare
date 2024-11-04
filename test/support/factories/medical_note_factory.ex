@@ -11,8 +11,13 @@ defmodule Ambiantcare.Factories.MedicalNoteFactory do
 
         template = Map.get_lazy(attrs, :template, fn -> insert(:template, user: user) end)
 
+        fields =
+          Map.get(attrs, :fields, [
+            %{"name" => :chief_complaint, "label" => "Chief Complaint", "value" => "Headache"}
+          ])
+
         MedicalNote
-        |> struct!(%{})
+        |> struct!(%{user: user, consultation: consultation, template: template, fields: fields})
         |> merge_attributes(attrs)
         |> evaluate_lazy_attributes()
       end
