@@ -104,17 +104,17 @@ msgstr "deve essere uguale a %{number}"
 #: lib/ambiantcare_web/live/consultations_live.ex:949
 #, elixir-autogen, elixir-format
 msgid "Failed to save the consultation: %{reason}"
-msgstr "Impossibile salvare la consultazione: %{reason}"
+msgstr "Impossibile salvare l'incontro: %{reason}"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:907
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Failed to delete the consultation: %{reason}"
-msgstr "Impossibile eliminare la consultazione: %{reason}"
+msgstr "Impossibile eliminare l'incontro: %{reason}"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:988
 #, elixir-autogen, elixir-format
 msgid "Failed to create the medical note: %{reason}"
-msgstr "Impossibile creare la nota medica: %{reason}"
+msgstr "Impossibile generare la nota medica: %{reason}"
 
 #: lib/ambiantcare_web/live/user_settings_live.ex:341
 #, elixir-autogen, elixir-format

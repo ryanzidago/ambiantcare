@@ -200,23 +200,23 @@ msgstr ""
 #: lib/ambiantcare_web/live/landing_page_live.ex:144
 #, elixir-autogen, elixir-format
 msgid "Focus on what matters: patient care. We'll handle the rest."
-msgstr "Concentrati su ciò che conta: la cura del paziente. Al resto ci pensiamo noi."
+msgstr "Concentrati sul tuo paziente. Lascia la burocrazia all'Intelligenza Artificiale."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:170
 #, elixir-autogen, elixir-format
 msgid "Get your patient's consent and record the consultation."
-msgstr "Chiedi il consenso del paziente e registra la consulenza."
+msgstr "Prima di iniziare la registrazione, chiedi il consenso al tuo paziente."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:31
 #: lib/ambiantcare_web/live/landing_page_live.ex:163
 #, elixir-autogen, elixir-format
 msgid "How it works"
-msgstr "Come funziona"
+msgstr "Come funziona l'assistente IA"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:176
 #, elixir-autogen, elixir-format
 msgid "Learn how we safely process your patient data"
-msgstr "Scopri come trattiamo in modo sicuro i dati dei tuoi pazienti."
+msgstr "Seguiamo scrupolosamente le linee guida GDPR. Scopri di più su come trattiamo i dati dei tuoi pazienti."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:52
 #, elixir-autogen, elixir-format
@@ -226,12 +226,12 @@ msgstr "Apri il menu principale"
 #: lib/ambiantcare_web/live/landing_page_live.ex:147
 #, elixir-autogen, elixir-format
 msgid "Our copilot helps clinicians generate medical notes from audio transcription or text documents."
-msgstr "Il nostro copilota aiuta i medici a generare note mediche da trascrizioni audio o documenti di testo."
+msgstr "Il nostro assistente utilizza l'Intelligenza Artificiale per aiutarti a generare note cliniche da trascrizioni audio o documenti di testo."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:193
 #, elixir-autogen, elixir-format
 msgid "Our copilot will generate a medical notes in minutes. You can edit and download them."
-msgstr "Il nostro assistente IA genererà un riepilogo della visita in meno di un minuto. Alla fine della visita potrai modificare e scaricare il riepilogo con un semplice clic."
+msgstr "L'Intelligenza Artificiale genererà un riepilogo delle informazioni importanti dell'incontro in meno di un minuto. Alla fine della visita potrai modificare e scaricare la tua nota con un semplice clic."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:111
 #, elixir-autogen, elixir-format
@@ -241,7 +241,7 @@ msgstr "Dì addio alla burocrazia. Il nostro assistente IA ti aiuta a creare un 
 #: lib/ambiantcare_web/live/landing_page_live.ex:290
 #, elixir-autogen, elixir-format
 msgid "Spend more time with your patients and less time on paperwork."
-msgstr "Concentrati sui tuoi pazienti e lascia all'IA la burocrazia."
+msgstr "Concentrati sui tuoi pazienti e lascia la burocrazia a noi."
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:32
 #, elixir-autogen, elixir-format
@@ -256,7 +256,7 @@ msgstr "Provalo gratuitamente"
 #: lib/ambiantcare_web/live/landing_page_live.ex:184
 #, elixir-autogen, elixir-format
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
-msgstr "Durante la registrazione, procedi normalmente e lascia che ci occupiamo della burocrazia."
+msgstr "Avvia la registrazione e procedi normalmente. Della burocrazia ci occupiamo noi."
 
 #: lib/ambiantcare_web/live/consultations_live.ex:380
 #, elixir-autogen, elixir-format
@@ -316,7 +316,7 @@ msgstr "Annulla"
 #: lib/ambiantcare_web/live/consultations_live.ex:529
 #, elixir-autogen, elixir-format
 msgid "Or select one of the examples"
-msgstr "Oppure seleziona uno degli esempi"
+msgstr "Oppure seleziona una conversazione medico-paziente dai nostri esempi"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:548
 #, elixir-autogen, elixir-format
@@ -346,12 +346,12 @@ msgstr "Medicina Generale"
 #: lib/ambiantcare_web/live/consultations_live.ex:487
 #, elixir-autogen, elixir-format
 msgid "Generalist 1 visit"
-msgstr "Consultationa Generalista 1"
+msgstr "Visita Medicina Generale 1 (Inglese)"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:488
 #, elixir-autogen, elixir-format
 msgid "Generalist 2 visit"
-msgstr "Consultationa Generalista 2"
+msgstr "Visita Medicina Generale 2 (Inglese)"
 
 #: lib/ambiantcare/medical_notes/template/template.ex:76
 #, elixir-autogen, elixir-format
@@ -407,7 +407,7 @@ msgstr "Cambia password"
 #: lib/ambiantcare_web/live/user_settings_live.ex:125
 #, elixir-autogen, elixir-format
 msgid "Changing..."
-msgstr "In corso di modifica..."
+msgstr "Modifica in corso..."
 
 #: lib/ambiantcare_web/live/user_confirmation_live.ex:12
 #, elixir-autogen, elixir-format
@@ -556,7 +556,7 @@ msgstr "Reimpostazione in corso..."
 #: lib/ambiantcare_web/live/user_forgot_password_live.ex:19
 #, elixir-autogen, elixir-format
 msgid "Send password reset instructions"
-msgstr "Invia istruzioni per reimpostare la password"
+msgstr "Inviami le istruzioni per reimpostare la password"
 
 #: lib/ambiantcare_web/live/user_confirmation_instructions_live.ex:18
 #: lib/ambiantcare_web/live/user_forgot_password_live.ex:18
@@ -708,22 +708,22 @@ msgstr "Bentornato!"
 #: lib/ambiantcare_web/live/landing_page_live.ex:168
 #, elixir-autogen, elixir-format
 msgid "1. Record"
-msgstr "1. Registra"
+msgstr "1. Avvia la registrazione"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:182
 #, elixir-autogen, elixir-format
 msgid "2. Consult"
-msgstr "2. Consulta"
+msgstr "2. Procedi normalmente con la tua visita"
 
 #: lib/ambiantcare_web/live/landing_page_live.ex:191
 #, elixir-autogen, elixir-format
 msgid "3. Generate"
-msgstr "3. Genera"
+msgstr "3. Genera la nota clinica"
 
 #: lib/ambiantcare_web/live/user_settings_live.ex:151
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Medical Notes"
-msgstr "Nota medica"
+msgstr "Nota clinica"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:998
 #, elixir-autogen, elixir-format
@@ -738,18 +738,18 @@ msgstr ""
 #: lib/ambiantcare_web/live/consultations_live.ex:401
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Delete consultation"
-msgstr "Inizia visita"
+msgstr "Cancella l'incontro"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:877
 #, elixir-autogen, elixir-format
 msgid "Failed to create a new consultation: %{reason}"
-msgstr "Impossibile creare una nuova consultazione: %{reason}"
+msgstr "Impossibile creare un nuovo incontro: %{reason}"
 
 #: lib/ambiantcare/consultations/consultation.ex:44
 #: lib/ambiantcare_web/live/consultations_live.ex:202
 #, elixir-autogen, elixir-format, fuzzy
 msgid "New consultation"
-msgstr "Nuova consultazione"
+msgstr "Nuovo incontro"
 
 #: lib/ambiantcare_web/live/user_settings_live.ex:334
 #, elixir-autogen, elixir-format
@@ -764,7 +764,7 @@ msgstr "Gestisci le impostazioni dell'email e della password del tuo account"
 #: lib/ambiantcare_web/live/consultations_live.ex:979
 #, elixir-autogen, elixir-format
 msgid "Medical note successfully created"
-msgstr "Nota medica creata con successo"
+msgstr "Nota clinica creata con successo"
 
 #: lib/ambiantcare_web/live/user_settings_live.ex:60
 #, elixir-autogen, elixir-format
