@@ -756,12 +756,12 @@ msgstr "Visita Medicina Generale"
 #: lib/ambiantcare_web/live/consultations_live.ex:577
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Generalist visit 1"
-msgstr "Visita Medicina Generale"
+msgstr "Visita Medicina Generale 1"
 
 #: lib/ambiantcare_web/live/consultations_live.ex:578
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Generalist visit 2"
-msgstr "Visita Medicina Generale"
+msgstr "Visita Medicina Generale 2"
 
 #: lib/ambiantcare/medical_notes/template/template.ex:76
 #, elixir-autogen, elixir-format, fuzzy
