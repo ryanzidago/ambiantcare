@@ -61,19 +61,19 @@ defmodule Ambiantcare.MedicalNotes.Template do
         },
         %{
           "name" => "present_medical_history",
-          "label" => gettext("Present medical history"),
+          "label" => gettext("Present Medical History"),
           "description" => "A detailed description of the patient's current illness",
           "position" => 1
         },
         %{
           "name" => "past_medical_history",
-          "label" => gettext("Past medical history"),
+          "label" => gettext("Past Medical History"),
           "description" => "The patient's past medical history",
           "position" => 2
         },
         %{
           "name" => "ongoing_therapy",
-          "label" => gettext("Ongoing therapy"),
+          "label" => gettext("Ongoing Therapy"),
           "description" => "Ongoing therapy",
           "position" => 3
         },
