@@ -11,6 +11,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.AsyncResult
   alias Phoenix.LiveView.UploadEntry
+
   alias Ecto.Changeset
 
   alias Ambiantcare.MedicalNotes
@@ -23,6 +24,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   alias Ambiantcare.Consultations.Consultation
   alias Ambiantcare.Cldr
 
+  alias Ambiantcare.AI
+  alias Ambiantcare.AI.Inputs.TextCompletion
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
   alias Ambiantcare.AI.SpeechMatics
@@ -927,8 +930,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
     user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
 
-    {:ok, %{"title" => title}} =
-      Ambiantcare.AI.LLMs.generate("consultations/title/v1_0", user_prompt)
+    text_completion = %TextCompletion{
+      system_prompt_id: "consultations/title/v1_0",
+      user_prompt: user_prompt
+    }
+
+    {:ok, %{"title" => title}} = AI.generate(text_completion)
 
     attrs = %{
       title: title,
@@ -1267,7 +1274,13 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   defp query_llm(%{} = params) do
     user_prompt = Prompts.medical_note_user_prompt(params)
-    result = Ambiantcare.AI.LLMs.generate("medical_notes/v1_0", user_prompt)
+
+    text_completion = %TextCompletion{
+      system_prompt_id: "medical_notes/v1_0",
+      user_prompt: user_prompt
+    }
+
+    result = AI.generate(text_completion)
 
     Logger.debug("*** prompt ***")
     Logger.debug(user_prompt)

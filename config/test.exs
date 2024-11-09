@@ -41,4 +41,9 @@ config :phoenix_live_view,
 
 config :ambiantcare, Oban, testing: :inline
 
+config :ambiantcare, Ambiantcare.AI,
+  backends: [
+    mistral: Ambiantcare.AI.Backend.Mistral.Mock
+  ]
+
 System.put_env("CLOAK_ENCRYPTION_KEY", "IkFMbGOpcvw7/1vUmEIJya0qCk6cEHK0eGRB8Y3zhZk=")

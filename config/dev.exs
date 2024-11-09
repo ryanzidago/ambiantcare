@@ -88,15 +88,9 @@ config :swoosh, adapter: Swoosh.Adapters.Local, api_client: false
 
 config :ambiantcare, AmbiantcareWeb.TransactionalMailer, adapter: Swoosh.Adapters.Local
 
-config :ambiantcare, Ambiantcare.AI,
-  use_local_stt: System.get_env("USE_LOCAL_STT", "true") == "true"
-
 config :ambiantcare, Ambiantcare.AI.HuggingFace,
   api_key: System.get_env("HUGGING_FACE_API_KEY"),
   deployment: System.get_env("HUGGING_FACE_DEPLOYMENT") || "dedicated",
-  serverless: [
-    api_endpoint: "https://api-inference.huggingface.co/models"
-  ],
   dedicated: [
     namespace: "ambiantcare",
     api_endpoint: "https://api.endpoints.huggingface.cloud/v2",
@@ -110,7 +104,13 @@ config :ambiantcare, Ambiantcare.AI.HuggingFace,
     ]
   ]
 
-config :ambiantcare, Ambiantcare.AI.Mistral,
+config :ambiantcare, Ambiantcare.AI,
+  use_local_stt: System.get_env("USE_LOCAL_STT", "true") == "true",
+  backends: [
+    mistral: Ambiantcare.AI.Backend.Mistral
+  ]
+
+config :ambiantcare, Ambiantcare.AI.Backend.Mistral,
   base_url: "https://api.mistral.ai",
   api_key: System.get_env("MISTRAL_API_KEY"),
   agents: [

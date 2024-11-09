@@ -1,8 +1,11 @@
-defmodule Ambiantcare.AI.Mistral do
+defmodule Ambiantcare.AI.Backend.Mistral do
   @moduledoc """
   Mistral backend for LLM.
   """
-  alias __MODULE__
+  alias Ambiantcare.AI
+  alias Ambiantcare.AI.Inputs.TextCompletion
+
+  @behaviour AI.Backend
 
   @agent_endpoint "/v1/agents/completions"
   @chat_completion_endpoint "/v1/chat/completions"
@@ -10,10 +13,12 @@ defmodule Ambiantcare.AI.Mistral do
   @doc """
   Generates a response using the Mistral backend.
   """
-  def generate(model, prompt, options)
-      when is_binary(prompt) and is_binary(model) and is_list(options) do
-    with {:ok, body} <- build_body(model, prompt, options),
-         {:ok, response} <- request(:post, endpoint(model), body),
+  @impl AI.Backend
+  def generate(%TextCompletion{} = input) do
+    input = maybe_put_default_values(input)
+
+    with {:ok, body} <- build_body(input),
+         {:ok, response} <- request(:post, endpoint(input), body),
          {:ok, response} <- parse_response(response) do
       {:ok, response}
     else
@@ -22,51 +27,51 @@ defmodule Ambiantcare.AI.Mistral do
     end
   end
 
-  defp build_body("agent", prompt, options) do
-    stream = Keyword.get(options, :stream, false)
-    random_seed = Keyword.get(options, :random_seed, 0)
+  defp maybe_put_default_values(%TextCompletion{} = input) do
+    %TextCompletion{
+      input
+      | backend: :huggingface,
+        model: input.model || "mistral-small-latest"
+    }
+  end
 
+  defp build_body(%TextCompletion{model: "agent"} = input) do
     messages = [
       %{
         "role" => "user",
-        "content" => prompt
+        "content" => input.user_prompt
       }
     ]
 
     body =
       %{}
       |> Map.put("messages", messages)
-      |> Map.put("stream", stream)
-      |> Map.put("random_seed", random_seed)
+      |> Map.put("stream", false)
+      |> Map.put("random_seed", 0)
       |> Map.put("agent_id", agent(:medical_note_agent_id))
 
     Jason.encode(body)
   end
 
-  defp build_body(model, user_prompt, opts) do
-    system_prompt = Keyword.fetch!(opts, :system_prompt)
-    stream = Keyword.get(opts, :stream, false)
-    temperature = Keyword.get(opts, :temperature, 0.0)
-    response_format = Keyword.get(opts, :format, "json_object")
-
+  defp build_body(%TextCompletion{} = input) do
     messages = [
       %{
         "role" => "system",
-        "content" => system_prompt
+        "content" => input.system_prompt
       },
       %{
         "role" => "user",
-        "content" => user_prompt
+        "content" => input.user_prompt
       }
     ]
 
     body =
       %{}
-      |> Map.put("model", model)
+      |> Map.put("model", input.model)
       |> Map.put("messages", messages)
-      |> Map.put("stream", stream)
-      |> Map.put("response_format", %{"type" => response_format})
-      |> Map.put("temperature", temperature)
+      |> Map.put("stream", false)
+      |> Map.put("response_format", %{"type" => "json_object"})
+      |> Map.put("temperature", 0.0)
 
     Jason.encode(body)
   end
@@ -101,7 +106,7 @@ defmodule Ambiantcare.AI.Mistral do
   end
 
   defp config do
-    Application.fetch_env!(:ambiantcare, Mistral)
+    Application.fetch_env!(:ambiantcare, __MODULE__)
   end
 
   defp headers do
