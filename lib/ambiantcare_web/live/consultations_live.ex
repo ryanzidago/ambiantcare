@@ -3,7 +3,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   LiveView managing the medical notes form and visit recording.
   """
   use AmbiantcareWeb, :live_view
-
   use Gettext, backend: AmbiantcareWeb.Gettext
 
   require Logger
@@ -652,7 +651,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       assigns
       |> assign(input_type: template_field["input_type"] || "textarea")
       |> assign(name: name)
-      |> assign(label: template_field["label"])
+      |> assign(label: Gettext.gettext(AmbiantcareWeb.Gettext, template_field["label"]))
       |> assign(value: value)
 
     ~H"""
