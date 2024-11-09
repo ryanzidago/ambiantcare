@@ -160,7 +160,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   defp waitlist_form(assigns) do
     ~H"""
-    <section class="flex flex-col gap-8 items-center bg-white dark:bg-gray-900 " id="waitlist">
+    <section class="flex flex-col gap-8 items-center bg-white dark:bg-gray-900" id="waitlist">
       <div>
         <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           <%= gettext("Sign up for the waitlist now") %>
@@ -172,7 +172,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
       <.form
         for={UserEntry.changeset(%UserEntry{}, %{})}
         phx-submit="submit_waitlist_user_entry"
-        class="flex flex-col gap-2 items-center justify-center bg-blue-600 w-full p-2"
+        class="flex flex-col gap-2 items-center justify-center bg-blue-600 w-full p-8"
       >
         <.input type="email" name="email" value="" label={gettext("Email")} required />
         <.input type="text" name="first_name" value="" label={gettext("First Name")} />
