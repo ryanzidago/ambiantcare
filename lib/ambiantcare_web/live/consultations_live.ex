@@ -483,10 +483,10 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp start_visit_alternatives_modal(assigns) do
-    pre_recorded_audio_files_options = [
-      {gettext("Generalist 1 visit"), "/audio/generalist_1.mp3"},
-      {gettext("Generalist 2 visit"), "/audio/generalist_2.mp3"}
-    ]
+    pre_recorded_audio_files_options =
+      AmbiantcareWeb.Gettext
+      |> Gettext.get_locale()
+      |> pre_recorded_audio_file_options()
 
     assigns =
       assign(assigns,
@@ -565,6 +565,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       </div>
     </.modal>
     """
+  end
+
+  defp pre_recorded_audio_file_options("it") do
+    [
+      {gettext("Generalist visit"), "/audio/it/generalist_1.mp3"}
+    ]
+  end
+
+  defp pre_recorded_audio_file_options(_locale) do
+    [
+      {gettext("Generalist visit 1"), "/audio/en/generalist_1.mp3"},
+      {gettext("Generalist visit 2"), "/audio/en/generalist_2.mp3"}
+    ]
   end
 
   defp medical_note(assigns) do
