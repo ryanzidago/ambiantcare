@@ -403,7 +403,7 @@ defmodule AmbiantcareWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div>
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id} required={Map.get(@rest, :required, false)}><%= @label %></.label>
       <input
         type={@type}
         name={@name}
@@ -425,12 +425,14 @@ defmodule AmbiantcareWeb.CoreComponents do
   Renders a label.
   """
   attr :for, :string, default: nil
+  attr :required, :boolean, default: false
   slot :inner_block, required: true
 
   def label(assigns) do
     ~H"""
     <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
       <%= render_slot(@inner_block) %>
+      <span :if={@required} class="text-red-600">*</span>
     </label>
     """
   end

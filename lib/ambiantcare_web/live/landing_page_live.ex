@@ -2,9 +2,12 @@ defmodule AmbiantcareWeb.LandingPageLive do
   use AmbiantcareWeb, :live_view
   use Gettext, backend: AmbiantcareWeb.Gettext
 
+  alias Ambiantcare.Waitlists
+  alias Ambiantcare.Waitlists.UserEntry
+
   alias AmbiantcareWeb.Components.Branding
 
-  import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
+  # import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -18,6 +21,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
       <.header_section />
       <.hero_section />
       <.cta_section />
+      <.waitlist_form />
       <.how_it_works_section />
       <.team_section />
       <.footer_section />
@@ -40,7 +44,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           <Branding.logo />
           <div class="flex items-center lg:order-2">
-            <.self_served_demo_cta />
+            <.waitlist_signup_cta />
             <.guided_demo_cta />
             <button
               data-collapse-toggle="mobile-menu-2"
@@ -110,14 +114,8 @@ defmodule AmbiantcareWeb.LandingPageLive do
           <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
             <%= gettext("Press a button and generate medical notes in minutes instead of hours.") %>
           </p>
-          <.self_served_demo_cta />
+          <.waitlist_signup_cta />
           <.guided_demo_cta />
-        </div>
-        <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-          <%!-- <img
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png"
-            alt="mockup"
-          /> --%>
         </div>
       </div>
     </section>
@@ -143,14 +141,48 @@ defmodule AmbiantcareWeb.LandingPageLive do
           <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
             <%= gettext("Focus on what matters: patient care. We'll handle the rest.") %>
           </h2>
-          <p class="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">
-            <%= gettext(
-              "Our copilot helps clinicians generate medical notes from audio transcription or text documents."
-            ) %>
-          </p>
-          <.self_served_demo_cta />
+          <ul class="font-light text-gray-500 md:text-lg dark:text-gray-400 list-disc list-inside mb-6">
+            <li>
+              <%= gettext("Save up to 10 hours per week on documentation") %>
+            </li>
+            <li>
+              <%= gettext(
+                "Reduce the risk of burnout: more time for you, better patient service, and less bureaucracy"
+              ) %>
+            </li>
+          </ul>
+          <.waitlist_signup_cta />
         </div>
       </div>
+    </section>
+    """
+  end
+
+  defp waitlist_form(assigns) do
+    ~H"""
+    <section class="flex flex-col gap-8 items-center bg-white dark:bg-gray-900 " id="waitlist">
+      <div>
+        <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+          <%= gettext("Sign up for the waitlist now") %>
+        </h2>
+        <p class="font-light text-gray-500">
+          <%= gettext("The first 100 physicians have free access until February 2025") %>
+        </p>
+      </div>
+      <.form
+        for={UserEntry.changeset(%UserEntry{}, %{})}
+        phx-submit="submit_waitlist_user_entry"
+        class="flex flex-col gap-2 items-center justify-center bg-blue-600 w-full p-2"
+      >
+        <.input type="email" name="email" value="" label={gettext("Email")} required />
+        <.input type="text" name="first_name" value="" label={gettext("First Name")} />
+        <.input type="text" name="last_name" value="" label={gettext("Last Name")} />
+        <.input type="text" name="specialty" value="" label={gettext("Specialty")} />
+
+        <.button type="submit" class="bg-white hover:bg-white text-zinc-900 mt-8">
+          <%= gettext("Join the waitlist") %>
+        </.button>
+      </.form>
     </section>
     """
   end
@@ -169,13 +201,6 @@ defmodule AmbiantcareWeb.LandingPageLive do
             <p class="mb-4 text-gray-500 dark:text-gray-400">
               <%= gettext("Get your patient's consent and record the consultation.") %>
             </p>
-            <a
-              href="#"
-              class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400"
-            >
-              <%= gettext("Learn how we safely process your patient data") %>
-              <.chevron_right_icon />
-            </a>
           </div>
           <div>
             <.ambiantcare_icon />
@@ -233,7 +258,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
     assigns = assign(assigns, cards: cards)
 
     ~H"""
-    <section class="bg-white dark:bg-gray-900" id="team">
+    <section class="dark:bg-gray-900" id="team">
       <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6 ">
         <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
@@ -333,23 +358,23 @@ defmodule AmbiantcareWeb.LandingPageLive do
     """
   end
 
-  defp chevron_right_icon(assigns) do
-    ~H"""
-    <svg
-      class="ml-1 w-5 h-5"
-      fill="currentColor"
-      viewBox="0 0 20 20"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-        clip-rule="evenodd"
-      >
-      </path>
-    </svg>
-    """
-  end
+  # defp chevron_right_icon(assigns) do
+  #   ~H"""
+  #   <svg
+  #     class="ml-1 w-5 h-5"
+  #     fill="currentColor"
+  #     viewBox="0 0 20 20"
+  #     xmlns="http://www.w3.org/2000/svg"
+  #   >
+  #     <path
+  #       fill-rule="evenodd"
+  #       d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+  #       clip-rule="evenodd"
+  #     >
+  #     </path>
+  #   </svg>
+  #   """
+  # end
 
   defp ambiantcare_icon(assigns) do
     ~H"""
@@ -388,23 +413,36 @@ defmodule AmbiantcareWeb.LandingPageLive do
     """
   end
 
-  defp self_served_demo_cta(assigns) do
-    consultations_path =
-      AmbiantcareWeb.Gettext
-      |> Gettext.get_locale()
-      |> consultations_path()
+  # defp self_served_demo_cta(assigns), do: ~H""
 
-    assigns =
-      assigns
-      |> assign(consultations_path: consultations_path)
+  # defp self_served_demo_cta(assigns) do
+  #   consultations_path =
+  #     AmbiantcareWeb.Gettext
+  #     |> Gettext.get_locale()
+  #     |> consultations_path()
 
+  #   assigns =
+  #     assigns
+  #     |> assign(consultations_path: consultations_path)
+
+  #   ~H"""
+  #   <.link
+  #     href={@consultations_path}
+  #     target="_blank"
+  #     class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mr-2 dark:bg-blue-600 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800"
+  #   >
+  #     <%= gettext("Try for free") %>
+  #   </.link>
+  #   """
+  # end
+
+  defp waitlist_signup_cta(assigns) do
     ~H"""
     <.link
-      href={@consultations_path}
-      target="_blank"
+      href="#waitlist"
       class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mr-2 dark:bg-blue-600 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800"
     >
-      <%= gettext("Try for free") %>
+      <%= gettext("Sign up for the waitlist") %>
     </.link>
     """
   end
@@ -424,5 +462,19 @@ defmodule AmbiantcareWeb.LandingPageLive do
       <%= gettext("Book a demo") %>
     </a>
     """
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("submit_waitlist_user_entry", %{} = attrs, socket) do
+    socket =
+      case Waitlists.get_or_insert_user_entry(attrs) do
+        {:ok, %UserEntry{}} ->
+          put_flash(socket, :info, gettext("You have been added to the waitlist!"))
+
+        {:error, _changeset} ->
+          socket
+      end
+
+    {:noreply, socket}
   end
 end
