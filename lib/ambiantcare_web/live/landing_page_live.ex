@@ -7,8 +7,6 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   alias AmbiantcareWeb.Components.Branding
 
-  # import AmbiantcareWeb.Utils.PathUtils, only: [consultations_path: 1]
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket, layout: {AmbiantcareWeb.Layouts, :landing_page}}
@@ -170,14 +168,56 @@ defmodule AmbiantcareWeb.LandingPageLive do
         </p>
       </div>
       <.form
-        for={UserEntry.changeset(%UserEntry{}, %{})}
+        for={%{}}
         phx-submit="submit_waitlist_user_entry"
-        class="flex flex-col gap-2 items-center justify-center bg-blue-600 w-full p-8"
+        class="flex flex-col items-center justify-center align-center bg-blue-600 w-full p-8"
       >
-        <.input type="email" name="email" value="" label={gettext("Email")} required />
-        <.input type="text" name="first_name" value="" label={gettext("First Name")} />
-        <.input type="text" name="last_name" value="" label={gettext("Last Name")} />
-        <.input type="text" name="specialty" value="" label={gettext("Specialty")} />
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-row gap-4">
+            <.input
+              type="email"
+              name="email"
+              value=""
+              label={gettext("Email")}
+              label_class="text-zinc-50"
+              required
+            />
+            <.input
+              type="tel"
+              name="phone_number"
+              value=""
+              label={gettext("Phone Number")}
+              label_class="text-zinc-50"
+            />
+          </div>
+          <div class="flex flex-row gap-4">
+            <.input
+              type="text"
+              name="first_name"
+              value=""
+              label={gettext("First Name")}
+              label_class="text-zinc-50"
+              required
+            />
+            <.input
+              type="text"
+              name="last_name"
+              value=""
+              label={gettext("Last Name")}
+              label_class="text-zinc-50"
+              required
+            />
+          </div>
+          <div class="">
+            <.input
+              type="text"
+              name="specialty"
+              value=""
+              label={gettext("Specialty")}
+              label_class="text-zinc-50"
+            />
+          </div>
+        </div>
 
         <.button type="submit" class="bg-white hover:bg-white text-zinc-900 mt-8">
           <%= gettext("Join the waitlist") %>
@@ -466,6 +506,8 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   @impl Phoenix.LiveView
   def handle_event("submit_waitlist_user_entry", %{} = attrs, socket) do
+    attrs = Map.new(attrs, fn {k, v} -> {k, String.trim(v)} end)
+
     socket =
       case Waitlists.get_or_insert_user_entry(attrs) do
         {:ok, %UserEntry{}} ->

@@ -11,7 +11,7 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/ambiantcare_web/components/core_components.ex:517
+#: lib/ambiantcare_web/components/core_components.ex:521
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr ""
@@ -167,79 +167,79 @@ msgstr ""
 msgid "Oops, something went wrong!"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:238
-#: lib/ambiantcare_web/live/landing_page_live.ex:250
+#: lib/ambiantcare_web/live/landing_page_live.ex:278
+#: lib/ambiantcare_web/live/landing_page_live.ex:290
 #, elixir-autogen, elixir-format
 msgid ""
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:34
+#: lib/ambiantcare_web/live/landing_page_live.ex:32
 #, elixir-autogen, elixir-format
 msgid "About"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:112
+#: lib/ambiantcare_web/live/landing_page_live.ex:110
 #, elixir-autogen, elixir-format
 msgid "Automated medical notes for clinicians"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:462
+#: lib/ambiantcare_web/live/landing_page_live.ex:502
 #, elixir-autogen, elixir-format
 msgid "Book a demo"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:234
+#: lib/ambiantcare_web/live/landing_page_live.ex:274
 #, elixir-autogen, elixir-format
 msgid "Co-Founder & CEO"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:247
+#: lib/ambiantcare_web/live/landing_page_live.ex:287
 #, elixir-autogen, elixir-format
 msgid "Co-Founder & CTO"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:142
+#: lib/ambiantcare_web/live/landing_page_live.ex:140
 #, elixir-autogen, elixir-format
 msgid "Focus on what matters: patient care. We'll handle the rest."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:202
+#: lib/ambiantcare_web/live/landing_page_live.ex:242
 #, elixir-autogen, elixir-format
 msgid "Get your patient's consent and record the consultation."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:35
-#: lib/ambiantcare_web/live/landing_page_live.ex:195
+#: lib/ambiantcare_web/live/landing_page_live.ex:33
+#: lib/ambiantcare_web/live/landing_page_live.ex:235
 #, elixir-autogen, elixir-format
 msgid "How it works"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:56
+#: lib/ambiantcare_web/live/landing_page_live.ex:54
 #, elixir-autogen, elixir-format
 msgid "Open main menu"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:218
+#: lib/ambiantcare_web/live/landing_page_live.ex:258
 #, elixir-autogen, elixir-format
 msgid "Our copilot will generate a medical notes in minutes. You can edit and download them."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:115
+#: lib/ambiantcare_web/live/landing_page_live.ex:113
 #, elixir-autogen, elixir-format
 msgid "Press a button and generate medical notes in minutes instead of hours."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:315
+#: lib/ambiantcare_web/live/landing_page_live.ex:355
 #, elixir-autogen, elixir-format
 msgid "Spend more time with your patients and less time on paperwork."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:36
+#: lib/ambiantcare_web/live/landing_page_live.ex:34
 #, elixir-autogen, elixir-format
 msgid "Team"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:209
+#: lib/ambiantcare_web/live/landing_page_live.ex:249
 #, elixir-autogen, elixir-format
 msgid "While the recording is happeninig, proceed as usual and let us handle the rest."
 msgstr ""
@@ -319,7 +319,7 @@ msgstr ""
 msgid "Your browser does not support the audio element."
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:265
+#: lib/ambiantcare_web/live/landing_page_live.ex:305
 #, elixir-autogen, elixir-format
 msgid "Our Team"
 msgstr ""
@@ -406,7 +406,7 @@ msgstr ""
 msgid "Don't have an account?"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:177
+#: lib/ambiantcare_web/live/landing_page_live.ex:181
 #: lib/ambiantcare_web/live/user_login_live.ex:28
 #: lib/ambiantcare_web/live/user_registration_live.ex:38
 #, elixir-autogen, elixir-format
@@ -667,17 +667,17 @@ msgstr ""
 msgid "Welcome back!"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:200
+#: lib/ambiantcare_web/live/landing_page_live.ex:240
 #, elixir-autogen, elixir-format
 msgid "1. Record"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:207
+#: lib/ambiantcare_web/live/landing_page_live.ex:247
 #, elixir-autogen, elixir-format
 msgid "2. Consult"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:216
+#: lib/ambiantcare_web/live/landing_page_live.ex:256
 #, elixir-autogen, elixir-format
 msgid "3. Generate"
 msgstr ""
@@ -753,52 +753,57 @@ msgstr ""
 msgid "Ongoing Therapy"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:178
+#: lib/ambiantcare_web/live/landing_page_live.ex:198
 #, elixir-autogen, elixir-format
 msgid "First Name"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:183
+#: lib/ambiantcare_web/live/landing_page_live.ex:223
 #, elixir-autogen, elixir-format
 msgid "Join the waitlist"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:179
+#: lib/ambiantcare_web/live/landing_page_live.ex:206
 #, elixir-autogen, elixir-format
 msgid "Last Name"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:149
+#: lib/ambiantcare_web/live/landing_page_live.ex:147
 #, elixir-autogen, elixir-format
 msgid "Reduce the risk of burnout: more time for you, better patient service, and less bureaucracy"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:146
+#: lib/ambiantcare_web/live/landing_page_live.ex:144
 #, elixir-autogen, elixir-format
 msgid "Save up to 10 hours per week on documentation"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:166
+#: lib/ambiantcare_web/live/landing_page_live.ex:164
 #, elixir-autogen, elixir-format
 msgid "Sign up for the waitlist now"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:180
+#: lib/ambiantcare_web/live/landing_page_live.ex:216
 #, elixir-autogen, elixir-format
 msgid "Specialty"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:169
+#: lib/ambiantcare_web/live/landing_page_live.ex:167
 #, elixir-autogen, elixir-format
 msgid "The first 100 physicians have free access until February 2025"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:445
+#: lib/ambiantcare_web/live/landing_page_live.ex:485
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Sign up for the waitlist"
 msgstr ""
 
-#: lib/ambiantcare_web/live/landing_page_live.ex:472
+#: lib/ambiantcare_web/live/landing_page_live.ex:514
 #, elixir-autogen, elixir-format
 msgid "You have been added to the waitlist!"
+msgstr ""
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:189
+#, elixir-autogen, elixir-format
+msgid "Phone Number"
 msgstr ""

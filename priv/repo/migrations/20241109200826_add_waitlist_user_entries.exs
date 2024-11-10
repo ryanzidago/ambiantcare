@@ -6,6 +6,7 @@ defmodule Ambiantcare.Repo.Migrations.AddWaitlistUserEntries do
       add :email, :string, null: false
       add :first_name, :string
       add :last_name, :string
+      add :phone_number, :string
       add :specialty, :string
 
       timestamps(type: :utc_datetime)
