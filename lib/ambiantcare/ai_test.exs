@@ -8,9 +8,7 @@ defmodule Ambiantcare.AITest do
 
   describe "generate with text_completion" do
     test "returns a response" do
-      expect(Ambiantcare.AI.Backend.Mistral.Mock, :generate, fn %TextCompletion{} = input ->
-        require IEx
-        IEx.pry()
+      expect(Ambiantcare.AI.Backend.Mistral.Mock, :generate, fn %TextCompletion{} ->
         {:ok, "response"}
       end)
 

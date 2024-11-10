@@ -1,5 +1,6 @@
 defmodule Ambiantcare.AI.HuggingFace.Helpers do
   alias Ambiantcare.AI.HuggingFace
+  alias Ambiantcare.AI.Inputs.SpeechToText
 
   @audio_models ~w(openai/whisper-large-v3 openai/whisper-large-v3-turbo)
   @text_models ~w(meta-llama/Meta-Llama-3.1-8B-Instruct)
@@ -41,27 +42,16 @@ defmodule Ambiantcare.AI.HuggingFace.Helpers do
     Application.get_env(:ambiantcare, HuggingFace)
   end
 
-  def content_type(model, opts) when model in @audio_models do
-    upload_metadata = Keyword.fetch!(opts, :upload_metadata)
-
-    case upload_metadata do
+  def content_type(%SpeechToText{} = input) do
+    case input.upload_metadata do
       %{upload_type: :from_user_file_system} ->
-        upload_metadata.client_filename
+        input.upload_metadata.client_filename
         |> Path.extname()
         |> String.replace(".", "")
         |> MIME.type()
 
       _ ->
         "audio/flac"
-    end
-  end
-
-  def content_type(model, opts) when model in @text_models do
-    format = Keyword.get(opts, :format, "json")
-
-    case format do
-      "json" -> "application/json"
-      _ -> "application/text"
     end
   end
 

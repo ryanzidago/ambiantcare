@@ -1,4 +1,4 @@
-defmodule Ambiantcare.AI.HuggingFace.Dedicated.Admin do
+defmodule Ambiantcare.AI.HuggingFace.Admin do
   @moduledoc """
   API for managing dedicated Hugging Face endpoints (AI models deployed on a provider's server).
   """
@@ -100,9 +100,7 @@ defmodule Ambiantcare.AI.HuggingFace.Dedicated.Admin do
   end
 
   defp config do
-    :ambiantcare
-    |> Application.fetch_env!(Ambiantcare.AI.HuggingFace)
-    |> Keyword.fetch!(:dedicated)
+    Application.fetch_env!(:ambiantcare, Ambiantcare.AI.HuggingFace)
   end
 
   defp request(:get, endpoint, opts) do

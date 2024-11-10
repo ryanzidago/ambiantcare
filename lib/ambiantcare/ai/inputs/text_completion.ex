@@ -4,6 +4,7 @@ defmodule Ambiantcare.AI.Inputs.TextCompletion do
   @extension ".toml"
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "ai_text_completion_inputs" do
     field :backend, Ecto.Enum, values: [:huggingface, :mistral]
     field :model, :string

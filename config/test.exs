@@ -43,7 +43,6 @@ config :ambiantcare, Oban, testing: :inline
 
 config :ambiantcare, Ambiantcare.AI,
   backends: [
-    mistral: Ambiantcare.AI.Backend.Mistral.Mock
+    mistral: Ambiantcare.AI.Backend.Mistral.Mock,
+    huggingface: Ambiantcare.AI.Backend.Huggingface.Mock
   ]
-
-System.put_env("CLOAK_ENCRYPTION_KEY", "IkFMbGOpcvw7/1vUmEIJya0qCk6cEHK0eGRB8Y3zhZk=")

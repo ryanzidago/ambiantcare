@@ -20,7 +20,7 @@ defmodule AmbiantcareWeb.UserLoginLiveTest do
         |> live(~p"/en/users/log_in")
         |> follow_redirect(
           conn,
-          "/en/consultations?huggingface_deployment=dedicated&microphone_hook=Microphone&stt_backend=huggingface"
+          "/en/consultations?microphone_hook=Microphone&stt_backend=huggingface"
         )
 
       assert {:ok, _conn} = result

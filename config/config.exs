@@ -73,13 +73,13 @@ hourly_jobs = [
   # every day, at 00:00
   {
     "0 0 * * *",
-    Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker,
+    Ambiantcare.AI.HuggingFace.AutoScalingWorker,
     args: %{"action" => "scale_to_zero"}
   },
   # every day, at 06:00
   {
     "0 6 * * *",
-    Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker,
+    Ambiantcare.AI.HuggingFace.AutoScalingWorker,
     args: %{"action" => "resume"}
   }
 ]
@@ -96,6 +96,14 @@ config :ambiantcare, Ambiantcare.Repo,
   migration_timestamps: [type: :utc_datetime],
   migration_primary_key: [name: :id, type: :binary_id],
   migration_foreign_key: [column: :id, type: :binary_id]
+
+config :ambiantcare, :default_locale, "en"
+
+config :ambiantcare, Ambiantcare.AI,
+  backends: [
+    mistral: Ambiantcare.AI.Backend.Mistral,
+    huggingface: Ambiantcare.AI.HuggingFace
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

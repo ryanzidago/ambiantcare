@@ -25,6 +25,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   alias Ambiantcare.AI
   alias Ambiantcare.AI.Inputs.TextCompletion
+  alias Ambiantcare.AI.Inputs.SpeechToText
   alias Ambiantcare.AI.HuggingFace
   alias Ambiantcare.AI.Gladia
   alias Ambiantcare.AI.SpeechMatics
@@ -49,7 +50,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       # @ryanzidago - refactor this to avoid derived state
       |> assign_consultation_transcription()
       |> assign_speech_to_text_backend(params)
-      |> assign_huggingface_deployment(params)
       |> assign_templates_by_id()
       |> assign_selected_template()
       |> assign(recording?: false)
@@ -75,7 +75,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         auto_upload: true,
         max_file_size: 100_000_000
       )
-      |> maybe_resume_dedicated_endpoint()
+      |> maybe_resume_huggingface_endpoint()
 
     log_values(socket)
 
@@ -1127,14 +1127,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     assign(socket, consultation_transcription: transcription)
   end
 
-  defp assign_huggingface_deployment(socket, params) do
-    if socket.assigns.stt_backend == HuggingFace do
-      assign(socket, huggingface_deployment: HuggingFace.deployment(params))
-    else
-      socket
-    end
-  end
-
   defp audio_to_structured_text(stt_params, upload_metadata, context_params, opts) do
     current_consultation_transcription = context_params.transcription
 
@@ -1179,18 +1171,16 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     {:ok, transcription}
   end
 
-  defp transcribe_audio(stt_params, upload_metadata) do
-    stt_backend = stt_params.stt_backend
-
-    opts =
-      stt_params
-      |> Map.take([:deployment])
-      |> Map.to_list()
-      |> Keyword.merge(upload_metadata: upload_metadata)
+  defp transcribe_audio(_stt_params, upload_metadata) do
+    input = %SpeechToText{
+      backend: :huggingface,
+      model: "openai/whisper-large-v3-turbo",
+      upload_metadata: upload_metadata
+    }
 
     with {:ok, filename} <- write_to_file(upload_metadata),
-         {:ok, transcription} <-
-           apply(stt_backend, :generate, ["openai/whisper-large-v3-turbo", filename, opts]) do
+         input <- struct!(input, filename: filename),
+         {:ok, transcription} <- AI.generate(input) do
       {:ok, transcription}
     else
       {:error, reason} ->
@@ -1198,15 +1188,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     end
   end
 
-  defp backend_opts(HuggingFace, assigns) do
-    [deployment: assigns.huggingface_deployment]
-  end
-
-  defp backend_opts(Gladia, _assigns) do
-    []
-  end
-
-  defp backend_opts(SpeechMatics, _assigns) do
+  defp backend_opts(_backend, _assigns) do
     []
   end
 
@@ -1307,14 +1289,14 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     end
   end
 
-  defp maybe_resume_dedicated_endpoint(%{assigns: %{stt_backend: HuggingFace}} = socket) do
+  defp maybe_resume_huggingface_endpoint(%{assigns: %{stt_backend: HuggingFace}} = socket) do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
     # @ryanzidago - do not hardcode the model name
     with false <- use_local_stt?(),
          {:ok, response} <-
-           HuggingFace.Dedicated.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
+           HuggingFace.Admin.get_endpoint_information("whisper-large-v3-turbo-fkx"),
          state when state != "running" <- get_in(response, ~w(status state)),
-         {:ok, _} <- HuggingFace.Dedicated.Admin.resume("whisper-large-v3-turbo-fkx") do
+         {:ok, _} <- HuggingFace.Admin.resume("whisper-large-v3-turbo-fkx") do
       put_flash(
         socket,
         :warning,
@@ -1327,7 +1309,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp log_values(socket) do
-    keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook, :huggingface_deployment])
+    keys = Map.take(socket.assigns, [:stt_backend, :microphone_hook])
     Logger.info("AmbiantcareWeb.ConsultationsLive mounted with: #{inspect(keys)}")
   end
 
