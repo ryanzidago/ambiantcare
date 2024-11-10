@@ -1,6 +1,7 @@
 defmodule Ambiantcare.AI do
   alias Ambiantcare.AI.Inputs.TextCompletion
   alias Ambiantcare.AI.Inputs.SpeechToText
+  alias Ambiantcare.AI.NumEx
 
   @spec generate(TextCompletion.t() | SpeechToText.t()) :: {:ok, map()} | {:error, String.t()}
   def generate(%TextCompletion{} = input) do
@@ -14,12 +15,16 @@ defmodule Ambiantcare.AI do
     end
   end
 
-  def generate(%SpeechToText{} = input) do
+  def generate(%SpeechToText{backend: :huggingface} = input) do
     with {:ok, response} <- huggingface().generate(input) do
       {:ok, response}
     else
       {:error, error} -> {:error, error}
     end
+  end
+
+  def generate(%SpeechToText{backend: :nx} = input) do
+    NumEx.generate(input)
   end
 
   defp config, do: Application.get_env(:ambiantcare, __MODULE__)

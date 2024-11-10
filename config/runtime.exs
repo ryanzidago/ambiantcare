@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :ambiantcare, AmbiantcareWeb.Endpoint, server: true
 end
 
+config :ambiantcare, Ambiantcare.AI, use_local_stt: System.get_env("USE_LOCAL_STT") == "true"
+
 config :ambiantcare, Ambiantcare.AI.HuggingFace,
   api_key: System.get_env("HUGGING_FACE_API_KEY"),
   namespace: "ambiantcare",

@@ -1151,24 +1151,12 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp transcribe_audio(%{} = stt_params, upload_metadata) when stt_params.use_local_stt? do
-    binary = upload_metadata.binary
-    upload_type = upload_metadata.upload_type
+    input = %SpeechToText{
+      backend: :nx,
+      upload_metadata: upload_metadata
+    }
 
-    input =
-      case upload_type do
-        :from_user_file_system ->
-          filename = System.tmp_dir!() <> "_" <> Ecto.UUID.autogenerate()
-          :ok = File.write!(filename, binary)
-          {:file, filename}
-
-        :from_user_microphone ->
-          Nx.from_binary(binary, :f32)
-      end
-
-    output = Nx.Serving.batched_run(Ambiantcare.Serving, input)
-    transcription = output.chunks |> Enum.map_join(& &1.text) |> String.trim()
-
-    {:ok, transcription}
+    AI.generate(input)
   end
 
   defp transcribe_audio(_stt_params, upload_metadata) do
