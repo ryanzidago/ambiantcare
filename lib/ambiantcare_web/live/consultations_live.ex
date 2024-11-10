@@ -75,7 +75,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         auto_upload: true,
         max_file_size: 100_000_000
       )
-      |> maybe_resume_huggingface_endpoint()
+      |> maybe_resume_endpoint()
 
     log_values(socket)
 
@@ -1277,7 +1277,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     end
   end
 
-  defp maybe_resume_huggingface_endpoint(%{assigns: %{stt_backend: HuggingFace}} = socket) do
+  defp maybe_resume_endpoint(%{assigns: %{stt_backend: HuggingFace}} = socket) do
     # @ryanzidago - ensure the endpoint is always running when someone visits the page
     # @ryanzidago - do not hardcode the model name
     with false <- use_local_stt?(),
@@ -1294,6 +1294,10 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       _ ->
         socket
     end
+  end
+
+  defp maybe_resume_endpoint(socket) do
+    socket
   end
 
   defp log_values(socket) do
