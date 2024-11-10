@@ -861,18 +861,54 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         %{"consultation_transcription" => consultation_transcription},
         socket
       ) do
-    params = %{
-      current_user: socket.assigns.current_user,
-      consultation: socket.assigns.consultation,
-      context: socket.assigns.visit_context.result,
-      transcription: consultation_transcription,
-      template: socket.assigns.selected_template
+    current_user = socket.assigns.current_user
+    consultation = socket.assigns.consultation || %Consultation{}
+    user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
+
+    text_completion = %TextCompletion{
+      system_prompt_id: "consultations/title/v1_0",
+      user_prompt: user_prompt
     }
 
     socket =
-      socket
-      |> assign(medical_note_loading: true)
-      |> start_async(:generate_medical_note, fn -> query_llm(params) end)
+      with {:ok, %{"title" => title}} = AI.generate(text_completion),
+           {:ok, %Consultation{} = consultation} <-
+             Consultations.create_or_update_consultation(
+               current_user,
+               consultation,
+               %{
+                 title: title,
+                 transcription: consultation_transcription,
+                 user_id: current_user.id,
+                 end_datetime: DateTime.utc_now()
+               }
+             ) do
+        params = %{
+          current_user: current_user,
+          consultation: consultation,
+          context: socket.assigns.visit_context.result,
+          transcription: consultation_transcription,
+          template: socket.assigns.selected_template
+        }
+
+        socket
+        |> assign(medical_note_loading: true)
+        |> assign(consultation: consultation)
+        |> assign_consultations()
+        |> start_async(:generate_medical_note, fn ->
+          query_llm(params)
+        end)
+      else
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to generate the medical note: %{reason}", reason: reason)
+
+          socket
+          |> put_flash(:error, message)
+          |> assign(consultation_transcription_loading: false)
+      end
 
     {:noreply, socket}
   end
@@ -1367,7 +1403,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp response_to_changeset(response, params) do
     template = Map.fetch!(params, :template)
     user = Map.fetch!(params, :current_user)
-    # consultation = Map.fetch!(params, :consultation)
+    consultation = Map.fetch!(params, :consultation)
     template_fields_by_name = Map.new(template.fields, &{&1["name"], &1})
 
     fields =
@@ -1384,8 +1420,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
     attrs = %{
       template_id: template.id,
-      # @ryanzidago - this breaks if the user does not have any consultations (e.g. first time user)
-      # consultation_id: consultation.id,
+      consultation_id: consultation.id,
       user_id: user.id,
       fields: fields
     }

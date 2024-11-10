@@ -11,6 +11,7 @@ defmodule Ambiantcare.Consultations.Consultation do
   import Ecto.Changeset
 
   @default_title "New consultation"
+  @non_updatable_fields [:id, :inserted_at, :updated_at]
 
   @type t :: %__MODULE__{}
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -35,7 +36,7 @@ defmodule Ambiantcare.Consultations.Consultation do
   @spec changeset(__MODULE__.t(), map()) :: Ecto.Changeset.t()
   def changeset(%__MODULE__{} = consultation, attrs) do
     consultation
-    |> cast(attrs, __MODULE__.__schema__(:fields))
+    |> cast(attrs, __MODULE__.__schema__(:fields) -- @non_updatable_fields)
     |> validate_required([:user_id])
   end
 
