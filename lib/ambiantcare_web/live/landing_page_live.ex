@@ -7,6 +7,8 @@ defmodule AmbiantcareWeb.LandingPageLive do
 
   alias AmbiantcareWeb.Components.Branding
 
+  alias Ecto.Changeset
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket, layout: {AmbiantcareWeb.Layouts, :landing_page}}
@@ -513,8 +515,13 @@ defmodule AmbiantcareWeb.LandingPageLive do
         {:ok, %UserEntry{}} ->
           put_flash(socket, :info, gettext("You have been added to the waitlist!"))
 
-        {:error, _changeset} ->
-          socket
+        {:error, %Changeset{} = changeset} ->
+          reason = inspect(changeset.errors)
+
+          message =
+            dgettext("errors", "Failed to register for the waitlist: %{reason}", reason: reason)
+
+          put_flash(socket, :error, message)
       end
 
     {:noreply, socket}

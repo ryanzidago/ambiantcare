@@ -120,3 +120,8 @@ msgstr "Impossibile generare la nota medica: %{reason}"
 #, elixir-autogen, elixir-format
 msgid "Failed to update default template: %{reason}"
 msgstr "Impossibile aggiornare il modello predefinito: %{reason}"
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:522
+#, elixir-autogen, elixir-format
+msgid "Failed to register for the waitlist: %{reason}"
+msgstr "Registrazione alla lista d'attesa non riuscita: %{reason}"
