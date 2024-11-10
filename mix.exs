@@ -76,7 +76,8 @@ defmodule Ambiantcare.MixProject do
       {:ex_cldr, "~> 2.0"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:cloak, "~> 1.1"},
-      {:cloak_ecto, "~> 1.3"}
+      {:cloak_ecto, "~> 1.3"},
+      {:mox, "~> 1.2"}
     ]
   end
 

@@ -1,10 +1,10 @@
-defmodule Ambiantcare.AI.HuggingFace.Dedicated.AutoScalingWorker do
+defmodule Ambiantcare.AI.HuggingFace.AutoScalingWorker do
   @moduledoc """
   Worker for autoscaling dedicated Hugging Face endpoints.
   """
   use Oban.Worker, queue: :default
 
-  alias Ambiantcare.AI.HuggingFace.Dedicated.Admin
+  alias Ambiantcare.AI.HuggingFace.Admin
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"action" => "resume"}}) do

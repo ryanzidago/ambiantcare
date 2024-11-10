@@ -23,7 +23,6 @@ defmodule AmbiantcareWeb.Utils.PathUtils do
   @spec query_params() :: Keyword.t()
   def query_params do
     [
-      huggingface_deployment: "dedicated",
       microphone_hook: "Microphone",
       stt_backend: "huggingface"
     ]
