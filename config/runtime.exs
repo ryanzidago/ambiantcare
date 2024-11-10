@@ -67,10 +67,28 @@ config :ambiantcare, Ambiantcare.AI.SpeechMatics,
 
 case config_env() do
   :test ->
-    System.put_env("CLOAK_ENCRYPTION_KEY", "IkFMbGOpcvw7/1vUmEIJya0qCk6cEHK0eGRB8Y3zhZk=")
+    config :ambiantcare, Ambiantcare.Vault,
+      ciphers: [
+        default: {
+          Cloak.Ciphers.AES.GCM,
+          tag: "AES.GCM.V1",
+          key: Base.decode64!("IkFMbGOpcvw7/1vUmEIJya0qCk6cEHK0eGRB8Y3zhZk="),
+          iv_length: 12
+        }
+      ],
+      json_library: Jason
 
   :dev ->
-    System.put_env("CLOAK_ENCRYPTION_KEY", "qKcLDg0BFbCUJR+MIqFF5GO6VoEWm3udIbuncrxoABA=")
+    config :ambiantcare, Ambiantcare.Vault,
+      ciphers: [
+        default: {
+          Cloak.Ciphers.AES.GCM,
+          tag: "AES.GCM.V1",
+          key: Base.decode64!("qKcLDg0BFbCUJR+MIqFF5GO6VoEWm3udIbuncrxoABA="),
+          iv_length: 12
+        }
+      ],
+      json_library: Jason
 
   :prod ->
     database_url =
@@ -172,4 +190,15 @@ case config_env() do
       finch_name: Ambiantcare.Finch,
       project_id: System.fetch_env!("SCW_PROJECT_ID"),
       secret_key: System.fetch_env!("SCW_TRANSACTIONAL_MAILER_SECRET_KEY")
+
+    config :ambiantcare, Ambiantcare.Vault,
+      ciphers: [
+        default: {
+          Cloak.Ciphers.AES.GCM,
+          tag: "AES.GCM.V1",
+          key: Base.decode64!(System.fetch_env!("CLOAK_ENCRYPTION_KEY")),
+          iv_length: 12
+        }
+      ],
+      json_library: Jason
 end
