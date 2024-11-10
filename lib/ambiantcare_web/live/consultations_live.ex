@@ -862,7 +862,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         socket
       ) do
     current_user = socket.assigns.current_user
-    consultation = socket.assigns.consultation || %Consultation{}
+    consultation = socket.assigns.consultation
     user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
 
     text_completion = %TextCompletion{
@@ -950,6 +950,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
           socket
           |> put_flash(:info, gettext("Consultation successfully deleted"))
           |> push_navigate(to: PathUtils.consultations_path())
+          |> assign_consultation(%{})
 
         {:error, %Changeset{} = changeset} ->
           reason = inspect(changeset.errors)
@@ -972,7 +973,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   @impl true
   def handle_async(:audio_to_structured_text, {:ok, {:ok, result}}, socket) do
     current_user = socket.assigns.current_user
-    consultation = socket.assigns.consultation || Consultation.default()
+    consultation = socket.assigns.consultation
     consultation_transcription = result.consultation_transcription
     medical_note_changeset = result.medical_note_changeset
 
@@ -1149,6 +1150,23 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp assign_consultation(socket, _params) do
     current_user = socket.assigns.current_user
     consultation = Consultations.get_latest_consultation(current_user)
+
+    consultation =
+      if consultation do
+        consultation
+      else
+        case Consultations.create_or_update_consultation(
+               current_user,
+               %Consultation{},
+               %{
+                 user_id: current_user.id
+               }
+             ) do
+          {:ok, %Consultation{} = consultation} -> consultation
+          {:error, _} -> nil
+        end
+      end
+
     assign(socket, consultation: consultation)
   end
 
