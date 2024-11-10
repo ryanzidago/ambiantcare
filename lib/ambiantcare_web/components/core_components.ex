@@ -301,6 +301,7 @@ defmodule AmbiantcareWeb.CoreComponents do
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string, default: nil
+  attr :label_class, :string, default: nil
   attr :value, :any
 
   attr :type, :string,
@@ -403,7 +404,9 @@ defmodule AmbiantcareWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div>
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id} class={@label_class} required={Map.get(@rest, :required, false)}>
+        <%= @label %>
+      </.label>
       <input
         type={@type}
         name={@name}
@@ -425,12 +428,15 @@ defmodule AmbiantcareWeb.CoreComponents do
   Renders a label.
   """
   attr :for, :string, default: nil
+  attr :required, :boolean, default: false
+  attr :class, :string, default: nil
   slot :inner_block, required: true
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class={["block text-sm font-semibold leading-6 text-zinc-800", @class]}>
       <%= render_slot(@inner_block) %>
+      <span :if={@required} class="text-red-600">*</span>
     </label>
     """
   end

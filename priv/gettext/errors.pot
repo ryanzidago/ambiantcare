@@ -108,17 +108,17 @@ msgstr ""
 msgid "must be equal to %{number}"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:949
+#: lib/ambiantcare_web/live/consultations_live.ex:961
 #, elixir-autogen, elixir-format
 msgid "Failed to save the consultation: %{reason}"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:907
+#: lib/ambiantcare_web/live/consultations_live.ex:919
 #, elixir-autogen, elixir-format
 msgid "Failed to delete the consultation: %{reason}"
 msgstr ""
 
-#: lib/ambiantcare_web/live/consultations_live.ex:988
+#: lib/ambiantcare_web/live/consultations_live.ex:1000
 #, elixir-autogen, elixir-format
 msgid "Failed to create the medical note: %{reason}"
 msgstr ""
@@ -126,4 +126,9 @@ msgstr ""
 #: lib/ambiantcare_web/live/user_settings_live.ex:341
 #, elixir-autogen, elixir-format
 msgid "Failed to update default template: %{reason}"
+msgstr ""
+
+#: lib/ambiantcare_web/live/landing_page_live.ex:522
+#, elixir-autogen, elixir-format
+msgid "Failed to register for the waitlist: %{reason}"
 msgstr ""

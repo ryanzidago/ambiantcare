@@ -3,7 +3,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   LiveView managing the medical notes form and visit recording.
   """
   use AmbiantcareWeb, :live_view
-
   use Gettext, backend: AmbiantcareWeb.Gettext
 
   require Logger
@@ -486,10 +485,10 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   end
 
   defp start_visit_alternatives_modal(assigns) do
-    pre_recorded_audio_files_options = [
-      {gettext("Generalist 1 visit"), "/audio/generalist_1.mp3"},
-      {gettext("Generalist 2 visit"), "/audio/generalist_2.mp3"}
-    ]
+    pre_recorded_audio_files_options =
+      AmbiantcareWeb.Gettext
+      |> Gettext.get_locale()
+      |> pre_recorded_audio_file_options()
 
     assigns =
       assign(assigns,
@@ -570,6 +569,19 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     """
   end
 
+  defp pre_recorded_audio_file_options("it") do
+    [
+      {gettext("Generalist visit"), "/audio/it/generalist_1.mp3"}
+    ]
+  end
+
+  defp pre_recorded_audio_file_options(_locale) do
+    [
+      {gettext("Generalist visit 1"), "/audio/en/generalist_1.mp3"},
+      {gettext("Generalist visit 2"), "/audio/en/generalist_2.mp3"}
+    ]
+  end
+
   defp medical_note(assigns) do
     current_datetime =
       (DateTime.utc_now()
@@ -642,7 +654,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       assigns
       |> assign(input_type: template_field["input_type"] || "textarea")
       |> assign(name: name)
-      |> assign(label: template_field["label"])
+      |> assign(label: Gettext.gettext(AmbiantcareWeb.Gettext, template_field["label"]))
       |> assign(value: value)
 
     ~H"""

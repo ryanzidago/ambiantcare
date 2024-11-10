@@ -22,7 +22,7 @@ Parse the doctor provided context and the consultation transcription into the me
 
 # Constraints
 1. Only reply in valid JSON format
-2. Use the same language as the input transcript for all text fields in the JSON
+2. The values in the output JSON should be in the same language as the audio transcription
 3. If for a given key, there is no information to be filled from the transcript, return that key with an empty string as a value
 4. Do not paraphrase as it defeats the purpose of the task
 """
@@ -110,5 +110,22 @@ output = """
   "medications": "",
   "physical_examination": "",
   "plan": ""
+}
+"""
+
+[[prompt.examples]]
+input = """
+ Buongiorno, si accomodi pure. Cosa la porta qui oggi? Beh, dottore, ultimamente mi sento davvero stanco e ho questa tosse persistente che non vuole andarsene. Capisco. Da quanto tempo sta avvertendo questi sintomi? La stanchezza dura da circa un mese, ma la tosse è iniziata due settimane fa. D'accordo, mi vuol dire di più sulla tosse? È secca o produttiva? È principalmente secca, ma a volte tossisco un po' di muco al mattino. E la stanchezza? Si sente stanco tutto il giorno, peggiora in certi momenti. Praticamente mi sento stanco tutto il giorno. Faccio fatica ad alzarmi dal lettoto al mattino nel pomeriggio sento come se avessi bisogno di fare un pisolino ok ha problemi a dormire la notte ha notato altri sintomi febbre brividi dolori muscolari e non ho notato febbre ma mi sento un po indolenzito soprattutto nelle articolazioni bene mi dica un pochettino della sua storia clinica. Ha qualche condizione di salute in corso? Eh sì, mi è stata diagnosticata l'ipertensione 5 anni fa, per cui sto prendendo lisinopril, 20 mg tutti i giorni. Mi dica, l'assume regolarmente la terapia? Sì, sì ogni giorno come prescritto infatti la mia pressione è ben controllata siamo su 130 80 bene prende altri farmaci no non prendo altri farmaci prendo soltanto un multivitaminico tutti i giorni ok ha avuto malattie importanti interventi chirurgici mi hanno rimosso l'appendice quando ero adolescente e mi hanno rimosso la colecisti per dei calcoli di cui ho sofferto. Ok, ha allergie a farmaci? No, non che io sappia, nessuna allergia. Bene, riguardo al suo stile di vita, lei fuma, beve alcolici? Allora, non fumo, ma in passato fumavo un pacchetto al giorno, io ho smesso tre anni fa, bevo un bicchiere di vino due volte a settimana e come dieta cerco di mangiare sano, ma ultimamente salto un po' i pasti perché non ho molta fame. Capisco. Per quanto riguarda l'esercizio fisico, lei rimane attivo? Sì, faccio una passeggiata di sera, ma ultimamente sono un po' stanco. Perfetto, grazie per le informazioni. Allora, facciamo un esame obiettivo, va bene? Le ascolto un po' i polmoni. Respiri profondamente. Ancora. Perfetto. I polmoni mi sembra che ci sia un po' di muco nella parte bassa, però vanno abbastanza bene. Gola, non vedo nessuna cosa in particolare, i linfonodi non sono gonfi e la pressione è 120-80. Allora, vediamo un pochettino. Sulla base dei sintomi e di questi esami obiettivi io credo che si tratti di una bronchite. La stanchezza potrebbe essere collegata a questo, potrebbe anche essere un problema a parte che dovremmo approfondire. Allora per il momento lei si idrati, beva due litri d'acqua al giorno, eviti il caffè. Per la bronchite le prescrivo intanto un illalatore, il formoterolo, un puff al giorno per 5 giorni e poi faremo una revisione del trattamento al prossimo appuntamento. Dottore quanto ci vorrà per sentirsi meglio? Nella maggior parte dei casi entro una settimana o due dovrebbe stare meglio, anche perché questa è una bronchite verosimilmente virale per cui non c'è bisogno di antibiotico. C'è altro che dovrei sapere dottore? No, ricordi di seguire la terapia come prescritto, continui i farmaci per la pressione, se hai domande o preoccupazioni non esiti a chiamare l'ambulatorio e continui così. Perfetto, grazie dottore, ci vediamo fra tre settimane. Grazie.
+"""
+output = """
+{
+  "allergies": "Nessuna allergia nota ai farmaci",
+  "past_medical_history": "Ipertensione diagnosticata 5 anni fa, appendicectomia in adolescenza, colecistectomia per calcoli, ex fumatore (smesso 3 anni fa, precedentemente 1 pacchetto/giorno)",
+  "assessment": "Bronchite, verosimilmente virale",
+  "chief_complaint": "Stanchezza e tosse persistente",
+  "history_of_present_illness": "Stanchezza da circa un mese, tosse secca da due settimane con muco mattutino. Stanchezza presente tutto il giorno, difficoltà ad alzarsi, dolori articolari. No febbre. Beve un bicchiere di vino due volte/settimana, diminuzione dell'appetito recente",
+  "medications": "Lisinopril 20mg/die, multivitaminico quotidiano",
+  "physical_examination": "Polmoni: presenza di muco nella parte bassa. Gola: nella norma. Linfonodi: non gonfi. PA: 120/80",
+  "plan": "Idratazione 2L/die, evitare caffè. Formoterolo inalatore 1 puff/die per 5 giorni. Rivalutazione tra tre settimane"
 }
 """
