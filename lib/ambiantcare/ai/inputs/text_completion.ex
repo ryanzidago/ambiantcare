@@ -23,7 +23,9 @@ defmodule Ambiantcare.AI.Inputs.TextCompletion do
           |> Map.fetch!("prompt")
           |> build_system_prompt()
 
-        text_completion = struct!(text_completion, system_prompt: system_prompt)
+        fields = [system_prompt: system_prompt, model: get_in(config, ~w(config model))]
+        text_completion = struct!(text_completion, fields)
+
         {:ok, text_completion}
 
       {:error, error} ->
