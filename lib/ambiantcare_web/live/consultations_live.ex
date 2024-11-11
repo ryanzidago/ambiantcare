@@ -1144,7 +1144,15 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   defp assign_consultation(socket, %{"consultation_id" => consultation_id}) do
     current_user = socket.assigns.current_user
     consultation = Consultations.get_consultation(current_user, consultation_id)
-    assign(socket, consultation: consultation)
+
+    if is_nil(consultation) do
+      # @ryanzidago Redirect to the consultations page if the consultation is not found
+      socket
+      |> push_navigate(to: PathUtils.consultations_path())
+      |> assign(consultation: nil)
+    else
+      assign(socket, consultation: consultation)
+    end
   end
 
   defp assign_consultation(socket, _params) do
