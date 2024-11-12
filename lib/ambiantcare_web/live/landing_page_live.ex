@@ -494,7 +494,7 @@ defmodule AmbiantcareWeb.LandingPageLive do
   defp guided_demo_cta(assigns) do
     ~H"""
     <a
-      href="#"
+      href="https://zcal.co/luigiespasianomd/ambiant"
       target="_blank"
       class={[
         "px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800",
