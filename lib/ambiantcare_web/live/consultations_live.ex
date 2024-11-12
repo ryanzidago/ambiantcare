@@ -39,6 +39,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   import Ecto.Changeset
   import AmbiantcareWeb.ConsultationsLive.Helpers
 
+  @default_consultation_title Consultation.default_title()
+
   @impl LiveView
   def mount(params, session, socket) do
     socket =
@@ -858,27 +860,22 @@ defmodule AmbiantcareWeb.ConsultationsLive do
 
   def handle_event(
         "generate_medical_note",
-        %{"consultation_transcription" => consultation_transcription},
+        %{"consultation_transcription" => transcription},
         socket
       ) do
     current_user = socket.assigns.current_user
     consultation = socket.assigns.consultation
-    user_prompt = Prompts.consultation_title_user_prompt(consultation_transcription)
-
-    text_completion = %TextCompletion{
-      system_prompt_id: "consultations/title/v1_0",
-      user_prompt: user_prompt
-    }
 
     socket =
-      with {:ok, %{"title" => title}} = AI.generate(text_completion),
+      with {:ok, %{"title" => title}} =
+             maybe_update_consultation_title(consultation, transcription),
            {:ok, %Consultation{} = consultation} <-
              Consultations.create_or_update_consultation(
                current_user,
                consultation,
                %{
                  title: title,
-                 transcription: consultation_transcription,
+                 transcription: transcription,
                  user_id: current_user.id,
                  end_datetime: DateTime.utc_now()
                }
@@ -887,7 +884,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
           current_user: current_user,
           consultation: consultation,
           context: socket.assigns.visit_context.result,
-          transcription: consultation_transcription,
+          transcription: transcription,
           template: socket.assigns.selected_template
         }
 
@@ -1454,5 +1451,21 @@ defmodule AmbiantcareWeb.ConsultationsLive do
     changeset = Ecto.Changeset.change(%MedicalNote{}, attrs)
 
     {:ok, changeset}
+  end
+
+  def maybe_update_consultation_title(%Consultation{} = consultation, transcription)
+      when is_nil(consultation.title) or consultation.title == @default_consultation_title do
+    user_prompt = Prompts.consultation_title_user_prompt(transcription)
+
+    text_completion = %TextCompletion{
+      system_prompt_id: "consultations/title/v1_0",
+      user_prompt: user_prompt
+    }
+
+    AI.generate(text_completion)
+  end
+
+  def maybe_update_consultation_title(%Consultation{} = consultation, _transcription) do
+    {:ok, %{"title" => consultation.title}}
   end
 end
