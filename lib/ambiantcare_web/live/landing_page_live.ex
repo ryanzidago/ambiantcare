@@ -126,9 +126,9 @@ defmodule AmbiantcareWeb.LandingPageLive do
     ~H"""
     <section class="bg-white dark:bg-gray-900">
       <div class="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
-        <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+        <div style="position: relative; padding-bottom: 64.63195691202873%; height: 0;">
           <iframe
-            src="https://www.loom.com/embed/bb421e18690d419593e19f01cd974976?sid=4b6006e5-0668-4c16-9551-a033e9b2811f"
+            src="https://www.loom.com/embed/15e3267b49404d3f9e8cd034e7261bb5?sid=87ff2a41-479e-4e72-a323-724291be92d0"
             frameborder="0"
             webkitallowfullscreen
             mozallowfullscreen
