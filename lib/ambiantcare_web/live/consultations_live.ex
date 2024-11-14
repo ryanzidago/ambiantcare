@@ -64,7 +64,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       |> assign(current_action: "transcription")
       |> assign(upload_type: :from_user_microphone)
       |> assign(selected_pre_recorded_audio_file: nil)
-      |> assign(edit_consultation_title?: false)
       |> allow_upload(:audio_from_user_microphone,
         accept: :any,
         progress: &process_audio/3,
@@ -107,7 +106,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
           consultation={@consultation}
-          edit_consultation_title?={@edit_consultation_title?}
         />
       </:main>
     </Shell.with_sidebar>
@@ -311,7 +309,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       recording?={@recording?}
       selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
       consultation={@consultation}
-      edit_consultation_title?={@edit_consultation_title?}
     />
     """
   end
@@ -348,7 +345,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         upload_type={@upload_type}
         selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
         consultation={@consultation}
-        edit_consultation_title?={@edit_consultation_title?}
       />
 
       <div class="flex flex-col">
@@ -421,7 +417,6 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   attr :upload_type, :atom, default: nil
   attr :selected_pre_recorded_audio_file, :string, default: nil
   attr :consultation, Consultation, required: true
-  attr :edit_consultation_title?, :boolean, default: false
 
   defp recording_button(assigns) do
     ~H"""
