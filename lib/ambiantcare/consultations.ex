@@ -55,4 +55,12 @@ defmodule Ambiantcare.Consultations do
       when user.id == consultation.user_id do
     Repo.delete(consultation)
   end
+
+  @spec update_title(User.t(), Consultation.t(), String.t()) ::
+          {:ok, Consultation.t()} | {:error, Changeset.t()}
+  def update_title(%User{} = _user, %Consultation{} = consultation, title) do
+    consultation
+    |> Consultation.update_title_changeset(%{title: title})
+    |> Repo.update()
+  end
 end

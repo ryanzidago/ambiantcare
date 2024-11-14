@@ -40,6 +40,12 @@ defmodule Ambiantcare.Consultations.Consultation do
     |> validate_required([:user_id])
   end
 
+  def update_title_changeset(%__MODULE__{} = consultation, attrs) do
+    consultation
+    |> cast(attrs, [:title])
+    |> validate_required([:title])
+  end
+
   def default, do: %__MODULE__{}
 
   def default_title, do: gettext(@default_title)

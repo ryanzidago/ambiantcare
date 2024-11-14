@@ -64,6 +64,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       |> assign(current_action: "transcription")
       |> assign(upload_type: :from_user_microphone)
       |> assign(selected_pre_recorded_audio_file: nil)
+      |> assign(edit_consultation_title?: false)
       |> allow_upload(:audio_from_user_microphone,
         accept: :any,
         progress: &process_audio/3,
@@ -105,6 +106,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
           selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
           medical_note_changeset={@medical_note_changeset}
           selected_template={@selected_template}
+          consultation={@consultation}
+          edit_consultation_title?={@edit_consultation_title?}
         />
       </:main>
     </Shell.with_sidebar>
@@ -147,7 +150,7 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             phx-value-consultation_id={consultation.id}
             class="flex flex-row items-center gap-2 justify-between hover:bg-gray-200 hover:text-blue-700 focus:text-blue-700 hover:shadow-xs p-1 rounded focus:bg-gray-200 transition-all transform duration-200"
           >
-            <span class=""><%= consultation.title || Consultation.default_title() %></span>
+            <span><%= consultation.title || Consultation.default_title() %></span>
             <span class="text-xs hover:font-medium">
               <%= grouping_key && consultation_start_datetime_label(consultation.start_datetime) %>
             </span>
@@ -307,6 +310,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
       microphone_hook={@microphone_hook}
       recording?={@recording?}
       selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+      consultation={@consultation}
+      edit_consultation_title?={@edit_consultation_title?}
     />
     """
   end
@@ -342,6 +347,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         uploads={@uploads}
         upload_type={@upload_type}
         selected_pre_recorded_audio_file={@selected_pre_recorded_audio_file}
+        consultation={@consultation}
+        edit_consultation_title?={@edit_consultation_title?}
       />
 
       <div class="flex flex-col">
@@ -413,6 +420,8 @@ defmodule AmbiantcareWeb.ConsultationsLive do
   attr :uploads, :any, required: true
   attr :upload_type, :atom, default: nil
   attr :selected_pre_recorded_audio_file, :string, default: nil
+  attr :consultation, Consultation, required: true
+  attr :edit_consultation_title?, :boolean, default: false
 
   defp recording_button(assigns) do
     ~H"""
@@ -468,6 +477,21 @@ defmodule AmbiantcareWeb.ConsultationsLive do
         <.spinner />
         <%= gettext("Generating the transcription ...") %>
       </div>
+
+      <.form
+        :if={not @consultation_transcription_loading}
+        for={%{}}
+        phx-change="change_consultation_title"
+        class="flex flex-row items-center gap-1 group text-sm"
+      >
+        <input
+          type="text"
+          name="consultation_title"
+          value={@consultation.title}
+          class="border-none rounded focus:shadow w-96 hover:ring-1 hover:ring-blue-600"
+        />
+        <.icon name="hero-pencil" class="w-3 h-3 hidden group-hover:block" />
+      </.form>
     </div>
     """
   end
@@ -956,6 +980,30 @@ defmodule AmbiantcareWeb.ConsultationsLive do
             dgettext("errors", "Failed to delete the consultation: %{reason}", reason: reason)
 
           put_flash(socket, :error, message)
+      end
+
+    {:noreply, socket}
+  end
+
+  # @ryanzidago - add phx-debounce on input field later
+  def handle_event("change_consultation_title", %{"consultation_title" => title}, socket) do
+    current_user = socket.assigns.current_user
+    consultation = socket.assigns.consultation
+
+    socket =
+      case Consultations.update_title(current_user, consultation, title) do
+        {:ok, %Consultation{} = consultation} ->
+          socket
+          |> assign(consultation: consultation)
+          |> update(:consultations, fn consultations ->
+            Enum.map(consultations, fn
+              c when c.id == consultation.id -> consultation
+              c -> c
+            end)
+          end)
+
+        {:error, %Changeset{} = _changeset} ->
+          socket
       end
 
     {:noreply, socket}
